@@ -1,6 +1,7 @@
 
 
 #include "TestScene.h"
+#include "Food.h"
 #include <string>
 
 USING_NS_CC;
@@ -53,7 +54,31 @@ bool TestScene::init()
         this->setViewPointCenter(player->getPosition());
     }
     deltaPosition.setZero();
-    
+
+    DeerMeat* deerMeat = new DeerMeat();
+    log(deerMeat->getDescription());
+
+    auto deerMeatSprite = Sprite::create(deerMeat->getImageFileName());
+    if (deerMeatSprite)
+    {
+        deerMeatSprite->setScale(0.25);
+        deerMeatSprite->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+        this->addChild(deerMeatSprite);
+        this->setViewPointCenter(deerMeatSprite->getPosition());
+    }
+
+    auto deerMeatSprite2 = ItemSprite::create();
+    DeerMeat* deerMeat2 = new DeerMeat();
+    if (deerMeatSprite2)
+    {
+        deerMeatSprite2->setItem(deerMeat2);
+        deerMeatSprite2->setScale(0.25);
+        deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
+        this->addChild(deerMeatSprite2);
+        this->setViewPointCenter(deerMeatSprite2->getPosition());
+    }
+
+    deltaPosition.setZero();
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
