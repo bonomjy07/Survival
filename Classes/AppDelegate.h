@@ -27,11 +27,15 @@
 
 #include "cocos2d.h"
 
+#include <map>
+#include <string>
+
 /**
 @brief    The cocos2d Application.
 
 Private inheritance here hides part of interface from Director.
 */
+
 class  AppDelegate : private cocos2d::Application
 {
 public:
@@ -58,6 +62,15 @@ public:
     @param  the pointer of the application
     */
     virtual void applicationWillEnterForeground();
+    
+public:
+    /* keyTable is used for key binding service */
+    static std::map<cocos2d::EventKeyboard::KeyCode, std::string> keyTable;
+    
+private:
+    /*
+     @brief Initialize keyTable */
+    void initKeyTable();
 };
 
 #endif // _APP_DELEGATE_H_

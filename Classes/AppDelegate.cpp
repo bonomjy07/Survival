@@ -25,6 +25,7 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
 #include "TiledMapScene.h"
+#include "MainScene.h"
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -48,8 +49,11 @@ static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 
+std::map<cocos2d::EventKeyboard::KeyCode, std::string> AppDelegate::keyTable;
+
 AppDelegate::AppDelegate()
 {
+    initKeyTable();
 }
 
 AppDelegate::~AppDelegate() 
@@ -120,8 +124,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     //auto scene = HelloWorld::createScene();
-    auto scene = TiledMapScene::createScene();
+    // auto scene = TiledMapScene::createScene();
 
+    auto scene = MainScene::createScene();
 
     // run
     director->runWithScene(scene);
@@ -151,4 +156,12 @@ void AppDelegate::applicationWillEnterForeground() {
     SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
     SimpleAudioEngine::getInstance()->resumeAllEffects();
 #endif
+}
+
+void AppDelegate::initKeyTable()
+{
+    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_W, "Up"});
+    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_S, "Down"});
+    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_D, "Right"});
+    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_A, "Left"});
 }

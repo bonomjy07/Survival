@@ -9,6 +9,9 @@
 //#include "TiledMapScene.hpp"
 
 #include "TiledMapScene.h"
+#include "PawnSprite.h"
+#include "AppDelegate.h"
+
 #include <string>
 
 USING_NS_CC;
@@ -23,7 +26,6 @@ Scene* TiledMapScene::createScene()
     return scene;
 }
 
-
 bool TiledMapScene::init()
 {
     if (!Layer::init())
@@ -35,7 +37,6 @@ bool TiledMapScene::init()
     _tileMap = TMXTiledMap::create("res/TileGameResources/TileMap.tmx");
     _background = _tileMap->getLayer("Background");
     _meta = _tileMap->getLayer("Meta");
-    //_meta->setVisible(false);
     this->addChild(_tileMap);
     
     // Get SpawnPoint location
@@ -50,16 +51,15 @@ bool TiledMapScene::init()
     float y = spawnPoint["y"].asFloat();
     
     // Create player character
-    _player = Sprite::create("res/TileGameResources/Player.png");
+    _player = PawnSprite::create("res/TileGameResources/Player.png", 100.f);
     if (_player)
     {
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
         this->addChild(_player);
         this->setViewPointCenter(_player->getPosition());
     }
-    deltaPosition.setZero();
-    
-    // Register keyboard listener for player
+ 
+    // Register listener
     auto listener = EventListenerKeyboard::create();
     listener->onKeyPressed = CC_CALLBACK_2(TiledMapScene::onKeyPressed, this);
     listener->onKeyReleased = CC_CALLBACK_2(TiledMapScene::onKeyReleased, this);
@@ -86,97 +86,77 @@ void TiledMapScene::setViewPointCenter(const cocos2d::Vec2 position)
     this->setPosition(viewPoint);
 }
 
-void TiledMapScene::setPlayerPosition(const cocos2d::Vec2 posotion)
-{
-    _player->setPosition(posotion);
-}
-
 void TiledMapScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    // Add delta Position and set direction
-    if (keyCode == EventKeyboard::KeyCode::KEY_W)
+    std::map<EventKeyboard::KeyCode, std::string>& keyTable = AppDelegate::keyTable;
+    if (keyTable.find(keyCode) == keyTable.end()) return;
+    
+    // PawnSprite movement
+    // Plus delta position to move
+    if (!keyTable.find(keyCode)->second.compare("Up"))
     {
-        deltaPosition.y += _tileMap->getTileSize().height;
-        direction = Direction::Vertical;
+        _player->addDeltaPosition(0.f, +_tileMap->getTileSize().height);
+        _player->setCurrentDirection(PawnDirection::Vertical);
     }
-    else if (keyCode == EventKeyboard::KeyCode::KEY_S)
+    else if (!keyTable.find(keyCode)->second.compare("Down"))
     {
-        deltaPosition.y -= _tileMap->getTileSize().height;
-        direction = Direction::Vertical;
+        _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
+        _player->setCurrentDirection(PawnDirection::Vertical);
     }
-    else if (keyCode == EventKeyboard::KeyCode::KEY_D)
+    else if (!keyTable.find(keyCode)->second.compare("Right"))
     {
-        deltaPosition.x += _tileMap->getTileSize().width;
-        direction = Direction::Horizon;
+        _player->addDeltaPosition(+_tileMap->getTileSize().width, 0.f);
+        _player->setCurrentDirection(PawnDirection::Horizon);
     }
-    else if (keyCode == EventKeyboard::KeyCode::KEY_A)
+    else if (!keyTable.find(keyCode)->second.compare("Left"))
     {
-        deltaPosition.x -= _tileMap->getTileSize().width;
-        direction = Direction::Horizon;
+        _player->addDeltaPosition(-_tileMap->getTileSize().width, 0.f);
+        _player->setCurrentDirection(PawnDirection::Horizon);
     }
 }
 
 void TiledMapScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    // Sub delta position and no task for direction
+    std::map<EventKeyboard::KeyCode, std::string>& keyTable = AppDelegate::keyTable;
+    
+    // PawnSprite movement
+    // Works as opposite onKeyReleased but no work for direction which is not concern on this function
+    if (!keyTable.find(keyCode)->second.compare("Up"))
     {
-        if (keyCode == EventKeyboard::KeyCode::KEY_W)
-        {
-            deltaPosition.y -= _tileMap->getTileSize().height;
-        }
-        else if (keyCode == EventKeyboard::KeyCode::KEY_S)
-        {
-            deltaPosition.y += _tileMap->getTileSize().height;
-        }
-        else if (keyCode == EventKeyboard::KeyCode::KEY_D)
-        {
-            deltaPosition.x -= _tileMap->getTileSize().width;
-        }
-        else if (keyCode == EventKeyboard::KeyCode::KEY_A)
-        {
-            deltaPosition.x += _tileMap->getTileSize().width;
-       }
-   }
+        _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
+    }
+    else if (!keyTable.find(keyCode)->second.compare("Down"))
+    {
+        _player->addDeltaPosition(0.f, +_tileMap->getTileSize().height);
+    }
+    else if (!keyTable.find(keyCode)->second.compare("Right"))
+    {
+        _player->addDeltaPosition(-_tileMap->getTileSize().width, 0.f);
+    }
+    else if (!keyTable.find(keyCode)->second.compare("Left"))
+    {
+        _player->addDeltaPosition(+_tileMap->getTileSize().width, 0.f);
+    }
 }
 
 void TiledMapScene::update(float deltaTime)
 {
+    // Keep view-point center
     setViewPointCenter(_player->getPosition());
     
-    // Move player to direction and multiple action is not allowed
-    if (!deltaPosition.equals(Vec2(0.f, 0.f)) && _player->getNumberOfRunningActions() < 1)
+    // Player is valid && Player can do one action only && Player's delta position is not zero
+    if (_player && _player->getNumberOfRunningActions() < 1 && !_player->getDeltaPositionOnDirection().equals(Vec2::ZERO))
     {
-        Vec2 newPosition = _player->getPosition();
+        const Vec2& newPosition = _player->getPosition() + _player->getDeltaPositionOnDirection();
         
-        // Diagnol movement is not allowed
-        if (abs(deltaPosition.x) == abs(deltaPosition.y))
-        {
-            // Add recent direction only
-            if (direction == Direction::Vertical)
-            {
-                newPosition.y += deltaPosition.y;
-            }
-            else if (direction == Direction::Horizon)
-            {
-                newPosition.x += deltaPosition.x;
-            }
-        }
-        // If it's not diagnol movement, just add delta position to new position
-        else
-        {
-            newPosition += deltaPosition;
-        }
-        
-        // Can't move to collidable postion
+        // Is it collidable
         if (!isCollidableTile(newPosition))
         {
-            // New postion has to be within the world.
-            float duration = 0.125f;
-            float worldWidth  = _tileMap->getMapSize().width  * _tileMap->getTileSize().width;
-            float worldHeight = _tileMap->getMapSize().height * _tileMap->getTileSize().height;
-            if (0.f <= newPosition.x && newPosition.x <= worldWidth &&
-                0.f <= newPosition.y && newPosition.y <= worldHeight)
+            // Is it within world
+            if (0.f <= newPosition.x && newPosition.x <= _tileMap->getTileSize().width*_tileMap->getMapSize().width &&
+                0.f <= newPosition.y && newPosition.y <= _tileMap->getTileSize().height*_tileMap->getMapSize().height)
             {
+                float duration = 0.125f;
                 auto moveTo = MoveTo::create(duration, newPosition);
                 _player->runAction(moveTo);
             }
@@ -196,23 +176,15 @@ bool TiledMapScene::isCollidableTile(const cocos2d::Vec2& position)
 {
     Point tileCoord = getTileCoorForPosition(position);
     int tileGid = _meta->getTileGIDAt(tileCoord);
-    if (tileGid)
+    Value properties = _tileMap->getPropertiesForGID(tileGid);
+    if (!properties.isNull())
     {
-        Value properties = _tileMap->getPropertiesForGID(tileGid);
-        if (!properties.isNull())
+        ValueMap propsMap = properties.asValueMap();
+        auto collidable = propsMap.find("Collidable");
+        if (collidable != propsMap.end() && collidable->second.asBool())
         {
-            ValueMap propsMap = properties.asValueMap();
-            auto collidable = propsMap.find("Collidable");
-            if (collidable != propsMap.end() && collidable->second.asBool())
-            {
-                return true;
-            }
+            return true;
         }
     }
-    
     return false;
 }
-
-
-
-
