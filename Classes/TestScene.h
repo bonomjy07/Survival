@@ -1,5 +1,5 @@
-#ifndef TestScene_h
-#define TestScene_h
+#ifndef TEST_SCENE_H__
+#define TEST_SCENE_H__
 
 #include "cocos2d.h"
 
@@ -42,4 +42,4 @@ private:
     cocos2d::Sprite* player;
 };
 
-#endif // TestScene_h
+#endif // TEST_SCENE_H__
