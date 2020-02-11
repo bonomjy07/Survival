@@ -39,8 +39,7 @@ bool TestScene::init()
     // Create tile map and layer in tile map
     _tileMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx");
     _meta = _tileMap->getLayer("BlockLayer");
-    auto backgroundLayer2 = _tileMap->getLayer("BackgroundLayer2");
-    backgroundLayer2->setVisible(true);
+    _meta->setVisible(false);
     this->addChild(_tileMap);
     
     // Get SpawnPoint location
@@ -232,7 +231,7 @@ bool TestScene::isCollidableTile(const cocos2d::Vec2& position)
     if (!properties.isNull())
     {
         ValueMap propsMap = properties.asValueMap();
-        auto collidable = propsMap.find("Collidable");
+        auto collidable = propsMap.find("collision");
         if (collidable != propsMap.end() && collidable->second.asBool())
         {
             return true;
