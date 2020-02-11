@@ -4,6 +4,9 @@
 //
 //  Created by jy_maeng on 2020/02/06.
 //
+
+#pragma once
+
 #ifndef KeyTableScene_h
 #define KeyTableScene_h
 
@@ -14,31 +17,27 @@
 
 #endif /* KeyTableScene_h */
 
-class keyTableScene : public cocos2d::Layer
+class KeyTableScene : public cocos2d::Layer
 {
 public:
     static cocos2d::Scene* createScene();
     virtual bool init() override;
-    CREATE_FUNC(keyTableScene);
+    CREATE_FUNC(KeyTableScene);
     
 public:
     static std::map<cocos2d::EventKeyboard::KeyCode, std::string> keyTable;
-    
-private:
-    cocos2d::Menu* buttonMenu;
-    cocos2d::MenuItemLabel* applyMenuLabel;
-    cocos2d::MenuItemLabel* backMenuLabel;
+    static void initKeyTable();
 
-    cocos2d::Menu* keyTableMenu;
-    cocos2d::Vector<cocos2d::MenuItem*> keyCodeTextField;
-    cocos2d::Vector<cocos2d::MenuItem*> keyCommandLabels;
+private:
+    cocos2d::Vector<cocos2d::Label*> keyCommandLabels;
+    cocos2d::Vector<cocos2d::TextFieldTTF*> keyCodeTextFields;
     
-    /*
+    /**
      @brief Called if 'apply' button is pressed
      */
     void applyNewKeyTable();
     
-    /*
+    /**
      @brief Called if 'Back' button is pressed,
      or clicked 'ESC'
      */

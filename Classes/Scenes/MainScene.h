@@ -24,11 +24,9 @@ public:
     virtual bool init() override;
     CREATE_FUNC(MainScene);
     
-    void startCallback();
-
-    void keyBindingCallback();
-    
 private:
-    cocos2d::Menu* menu;
-    cocos2d::Vector<cocos2d::MenuItem*> menuItems;
+    void startCallback();
+    void keyBindingCallback();
+    void exitGameCallback();
+    void onEnterCallback();
 };

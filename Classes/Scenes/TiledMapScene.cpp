@@ -5,12 +5,10 @@
 //  Created by jy_maeng on 2020/01/31.
 //
 
-// Below code is default code.
-//#include "TiledMapScene.hpp"
-
 #include "TiledMapScene.h"
 #include "PawnSprite.h"
-#include "AppDelegate.h"
+#include "KeyTableScene.h"
+#include "SpawnManager.h"
 
 #include <string>
 
@@ -20,7 +18,15 @@ Scene* TiledMapScene::createScene()
 {
     auto scene = Scene::create();
     
+    if (scene)
+    {
+        scene->initWithPhysics();
+        auto world = scene->getPhysicsWorld();
+        world->setAutoStep(false);
+    }
+    
     TiledMapScene* layer = TiledMapScene::create();
+    layer->setName("GameLayer");
     scene->addChild(layer);
     
     return scene;
@@ -32,10 +38,9 @@ bool TiledMapScene::init()
     {
         return false;
     }
-        
+
     // Create tile map and layer in tile map
     _tileMap = TMXTiledMap::create("res/TileGameResources/TileMap.tmx");
-    _background = _tileMap->getLayer("Background");
     _meta = _tileMap->getLayer("Meta");
     this->addChild(_tileMap);
     
@@ -50,6 +55,15 @@ bool TiledMapScene::init()
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
     
+    // Create spawn manager for tree
+    ValueMap spawnArea = objectGroup->getObject("SpawnArea");
+    SpawnManager* pawnManager = SpawnManager::create(spawnArea, "PawnSprite", "res/TileGameResources/Player.png");
+    if (pawnManager)
+    {
+        this->addChild(pawnManager);
+        pawnManager->startSpawn();
+    }
+    
     // Create player character
     _player = PawnSprite::create("res/TileGameResources/Player.png", 100.f);
     if (_player)
@@ -57,15 +71,18 @@ bool TiledMapScene::init()
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
         this->addChild(_player);
         this->setViewPointCenter(_player->getPosition());
+        _player->initPhysics();
     }
- 
-    // Register listener
+    
+    // Register keyboard listener
     auto listener = EventListenerKeyboard::create();
     listener->onKeyPressed = CC_CALLBACK_2(TiledMapScene::onKeyPressed, this);
     listener->onKeyReleased = CC_CALLBACK_2(TiledMapScene::onKeyReleased, this);
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
+    // Allow update(float dt) to be called so that pawns move
     this->scheduleUpdate();
+    
     return true;
 }
 
@@ -88,7 +105,7 @@ void TiledMapScene::setViewPointCenter(const cocos2d::Vec2 position)
 
 void TiledMapScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    std::map<EventKeyboard::KeyCode, std::string>& keyTable = AppDelegate::keyTable;
+    const std::map<EventKeyboard::KeyCode, std::string>& keyTable = KeyTableScene::keyTable;
     if (keyTable.find(keyCode) == keyTable.end()) return;
     
     // PawnSprite movement
@@ -117,10 +134,10 @@ void TiledMapScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2
 
 void TiledMapScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    std::map<EventKeyboard::KeyCode, std::string>& keyTable = AppDelegate::keyTable;
+    const std::map<EventKeyboard::KeyCode, std::string>& keyTable = KeyTableScene::keyTable;
     
     // PawnSprite movement
-    // Works as opposite onKeyReleased but no work for direction which is not concern on this function
+    // Works as opposite onKeyPressed but no work for direction which is not concern on this function
     if (!keyTable.find(keyCode)->second.compare("Up"))
     {
         _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
@@ -149,12 +166,12 @@ void TiledMapScene::update(float deltaTime)
     {
         const Vec2& newPosition = _player->getPosition() + _player->getDeltaPositionOnDirection();
         
-        // Is it collidable
-        if (!isCollidableTile(newPosition))
+        // Player can move only within world
+        if (0.f <= newPosition.x && newPosition.x <= _tileMap->getTileSize().width*_tileMap->getMapSize().width &&
+            0.f <= newPosition.y && newPosition.y <= _tileMap->getTileSize().height*_tileMap->getMapSize().height)
         {
-            // Is it within world
-            if (0.f <= newPosition.x && newPosition.x <= _tileMap->getTileSize().width*_tileMap->getMapSize().width &&
-                0.f <= newPosition.y && newPosition.y <= _tileMap->getTileSize().height*_tileMap->getMapSize().height)
+            // player can't move to collidable tile
+            if (!isCollidableTile(newPosition))
             {
                 float duration = 0.125f;
                 auto moveTo = MoveTo::create(duration, newPosition);
@@ -167,6 +184,7 @@ void TiledMapScene::update(float deltaTime)
 Point TiledMapScene::getTileCoorForPosition(const cocos2d::Vec2& position)
 {
     int x = position.x / _tileMap->getTileSize().width;
+    // TileMap::'y' and cocos2d::'y' are opposite
     int y = ((_tileMap->getMapSize().height*_tileMap->getTileSize().height) - position.y) / _tileMap->getTileSize().height;
     
     return Point(x, y);
@@ -176,6 +194,7 @@ bool TiledMapScene::isCollidableTile(const cocos2d::Vec2& position)
 {
     Point tileCoord = getTileCoorForPosition(position);
     int tileGid = _meta->getTileGIDAt(tileCoord);
+    // Get the tile properties
     Value properties = _tileMap->getPropertiesForGID(tileGid);
     if (!properties.isNull())
     {
@@ -186,5 +205,6 @@ bool TiledMapScene::isCollidableTile(const cocos2d::Vec2& position)
             return true;
         }
     }
+    
     return false;
 }

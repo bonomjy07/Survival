@@ -28,41 +28,66 @@ bool MainScene::init()
         return false;
     }
     
-    // Create start label
-    auto startLabel = Label::createWithSystemFont("Start!", "arial", 16);
-    auto menuStartLabel = MenuItemLabel::create(startLabel, CC_CALLBACK_0(MainScene::startCallback, this));
-    menuItems.pushBack(menuStartLabel);
+    Vector<MenuItem*> menuItems;
+    // Create menu start label
+    if (auto startLabel = Label::createWithSystemFont("New Game Start", "arial", 16))
+    {
+        if (auto menuStartLabel = MenuItemLabel::create(startLabel, CC_CALLBACK_0(MainScene::startCallback, this)))
+        {
+            menuItems.pushBack(menuStartLabel);
+        }
+    }
+    // Create menu key binding label
+    if (auto keyBindinglabel = Label::createWithSystemFont("Key Setting", "arial", 16))
+    {
+        if (auto menuKeyBindingLael = MenuItemLabel::create(keyBindinglabel, CC_CALLBACK_0(MainScene::keyBindingCallback, this)))
+        {
+            menuItems.pushBack(menuKeyBindingLael);
+        }
+    }
+    // Create menu exix label
+    if (auto exitLabel = Label::createWithSystemFont("Exit", "arial", 16))
+    {
+        if (auto menuExitLabel = MenuItemLabel::create(exitLabel, CC_CALLBACK_0(MainScene::exitGameCallback, this)))
+        {
+            menuItems.pushBack(menuExitLabel);
+        }
+    }
     
-    // Create key binding label
-    auto label = Label::createWithSystemFont("Key setting", "arial", 16);
-    auto menuLabel = MenuItemLabel::create(label, CC_CALLBACK_0(MainScene::keyBindingCallback, this));
-    menuLabel->setPosition(100, 100);
-    menuItems.pushBack(menuLabel);
-    
-    menu = Menu::createWithArray(menuItems);
-    this->addChild(menu);
-    
+    // Create menu with menu items
+    if (auto menu = Menu::createWithArray(menuItems))
+    {
+        menu->alignItemsVertically();
+        this->addChild(menu);
+    }
     return true;
 }
 
 void MainScene::startCallback()
 {
-    log("start!");
+    log("Gane start!");
     
     auto director = Director::getInstance();
     auto tiledMapScene = TiledMapScene::createScene();
-    
-    auto currScene = director->getRunningScene();
-    director->pushScene(currScene);
+    director->pushScene(director->getRunningScene());
     director->replaceScene(tiledMapScene);
 }
 
 void MainScene::keyBindingCallback()
 {
     auto director = Director::getInstance();
-    auto keyTableScene = keyTableScene::createScene();
-    
+    auto keyTableScene = KeyTableScene::createScene();
     director->pushScene(director->getRunningScene());
     director->replaceScene(keyTableScene);
+}
+
+void MainScene::exitGameCallback()
+{
+    Director::getInstance()->end();
+}
+
+void MainScene::onEnterCallback()
+{
+    log("entered!");
 }
 

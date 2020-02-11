@@ -5,14 +5,12 @@
 //  Created by jy_maeng on 2020/02/05.
 //
 
-// Below code is default code.
-//#include "Pawn.hpp"
-
 #include "PawnSprite.h"
 
 #include <string>
 
 USING_NS_CC;
+
 PawnSprite* PawnSprite::create(const std::string& filename, const float initialHealth)
 {
     PawnSprite* sprite = new (std::nothrow) PawnSprite(initialHealth);
@@ -85,3 +83,13 @@ const Vec2& PawnSprite::getDeltaPosition() const
 {
     return deltaPosition;
 }
+
+void PawnSprite::initPhysics()
+{
+    auto physcisBody = PhysicsBody::createBox(Size(32.f, 32.f),  PhysicsMaterial(0.1f, 1.0f, 0.0f));
+    this->addComponent(physcisBody);
+    this->getPhysicsBody()->setCategoryBitmask(0x01);
+    this->getPhysicsBody()->setCollisionBitmask(0x02);
+    //this->addComponent(physcisBody);
+}
+

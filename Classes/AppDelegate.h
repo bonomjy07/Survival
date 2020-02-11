@@ -63,14 +63,6 @@ public:
     */
     virtual void applicationWillEnterForeground();
     
-public:
-    /* keyTable is used for key binding service */
-    static std::map<cocos2d::EventKeyboard::KeyCode, std::string> keyTable;
-    
-private:
-    /*
-     @brief Initialize keyTable */
-    void initKeyTable();
 };
 
 #endif // _APP_DELEGATE_H_

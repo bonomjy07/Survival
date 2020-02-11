@@ -5,74 +5,101 @@
 //  Created by jy_maeng on 2020/02/06.
 //
 
-// Below code is default code.
-//#include "KeyTableScene.hpp"
-
 #include "KeyTableScene.h"
 #include "ui/CocosGUI.h"
 
 USING_NS_CC;
 
-Scene* keyTableScene::createScene()
+std::map<cocos2d::EventKeyboard::KeyCode, std::string> KeyTableScene::keyTable;
+
+void KeyTableScene::initKeyTable()
+{
+    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_W, "Up"});
+    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_S, "Down"});
+    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_D, "Right"});
+    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_A, "Left"});
+}
+
+Scene* KeyTableScene::createScene()
 {
     auto scene = Scene::create();
     
-    keyTableScene* layer = keyTableScene::create();
+    KeyTableScene* layer = KeyTableScene::create();
     scene->addChild(layer);
     
     return scene;
 }
 
-bool keyTableScene::init()
+bool KeyTableScene::init()
 {
     if (!Layer::init())
     {
         return false;
     }
     
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    auto visibleOrigin = Director::getInstance()->getVisibleOrigin();
+    
     // Create title label
-    auto titleLabel = Label::createWithSystemFont("key binding setting", "arial", 16);
-    if (titleLabel)
+    if (auto titleLabel = Label::createWithSystemFont("Key Binding Setting", "arial", 16))
     {
-        titleLabel->setPosition(200, 100);
+        titleLabel->setPosition(visibleOrigin.x + visibleSize.width/2,
+                                visibleOrigin.y + visibleSize.height - titleLabel->getContentSize().height);
         this->addChild(titleLabel);
     }
-    // Create apply label
-    auto applyLabel = Label::createWithSystemFont("Apply", "arial", 16);
-    if (titleLabel)
+    
+    Vector<MenuItem*> menuItems;
+    // Create menu apply label
+    if (auto applyLabel = Label::createWithSystemFont("Apply", "arial", 16))
     {
-        //applyLabel->setPosition(150, 100);
+        if (auto menuApplyLabel = MenuItemLabel::create(applyLabel, CC_CALLBACK_0(KeyTableScene::applyNewKeyTable, this)))
+        {
+            menuItems.pushBack(menuApplyLabel);
+        }
     }
-    // Create back label
-    auto backLabel = Label::createWithSystemFont("Back", "arial", 16);
-    if (titleLabel)
+    // Create menu back label
+    if (auto backLabel = Label::createWithSystemFont("Back", "arial", 16))
     {
-        //backLabel->setPosition(200, 100);
+        if (auto menuBackLabel = MenuItemLabel::create(backLabel, CC_CALLBACK_0(KeyTableScene::goBack, this)))
+        {
+            menuItems.pushBack(menuBackLabel);
+        }
+    }
+    // Create menu for 'apply' and 'back'
+    if (auto menu = Menu::createWithArray(menuItems))
+    {
+        menu->setPosition(visibleOrigin.x + visibleSize.width/2, visibleOrigin.y + 30);
+        menu->alignItemsHorizontally();
+        this->addChild(menu);
     }
     
-    Vector<MenuItem*> items;
-    applyMenuLabel = MenuItemLabel::create(applyLabel, CC_CALLBACK_0(keyTableScene::applyNewKeyTable, this));
-    items.pushBack(applyMenuLabel);
-    
-    backMenuLabel = MenuItemLabel::create(backLabel, CC_CALLBACK_0(keyTableScene::goBack, this));
-    backMenuLabel->setPosition(50, 50);
-    items.pushBack(backMenuLabel);
-    
-    buttonMenu = Menu::createWithArray(items);
-    this->addChild(buttonMenu);
+    Vector<ui::TextField*> textFields;
+    Vector<Label*> labels;
+    // Key binding list
+    float y = 100.f;
+    for (auto keyPair : keyTable)
+    {
+        std::string sKeyCode = std::to_string(static_cast<int>(keyPair.first));
+        auto textField = ui::TextField::create(sKeyCode, "arial", 16);
+        auto label2 = Label::createWithSystemFont(keyPair.second, "arial", 16);
+        label2->setPosition(visibleSize.width/2, y);
+        textField->Node::setPosition(visibleSize.width/2 + 50.f, y);
+        y += label2->getContentSize().height;
+        this->addChild(label2);
+        this->addChild(textField);
+    }
     
     return true;
 }
 
-void keyTableScene::applyNewKeyTable()
+void KeyTableScene::applyNewKeyTable()
 {
-    log("apply");
-    
+    log("apply new key binding");
 }
 
-void keyTableScene::goBack()
+void KeyTableScene::goBack()
 {
-    log("dads");
+    log("Back");
     auto director = Director::getInstance();
     director->popScene();
 }

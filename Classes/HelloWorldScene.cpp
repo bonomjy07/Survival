@@ -115,6 +115,37 @@ bool HelloWorld::init()
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }
+    
+    auto listener = EventListenerMouse::create();
+    listener->onMouseDown = [](cocos2d::Event* event){
+        
+        try {
+            EventMouse* mouseEvent = dynamic_cast<EventMouse*>(event);
+            mouseEvent->getMouseButton();
+            std::stringstream message;
+           // message << "Mouse event: Button: " << mouseEvent->getMouseButton() << "pressed at point (" <<
+            //mouseEvent->getLocation().x << "," << mouseEvent->getLocation().y << ")";
+            //MessageBox(message.str().c_str(), "Mouse Event Details");
+            
+        }
+        catch (std::bad_cast& e){
+            // Not sure what kind of event you passed us cocos, but it was the wrong one
+            return;
+        }
+    };
+    
+    listener->onMouseMove = [](cocos2d::Event* event){
+        // Cast Event to EventMouse for position details like above
+        cocos2d::log("Mouse moved event");
+        
+        EventMouse* eventMouse = static_cast<EventMouse*>(event);
+        log("%f %f", eventMouse->getCursorX(), eventMouse->getCursorY());
+        
+    };
+    
+    _eventDispatcher->addEventListenerWithFixedPriority(listener, 1);
+
+    
     return true;
 }
 
@@ -131,3 +162,5 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 
 
 }
+
+
