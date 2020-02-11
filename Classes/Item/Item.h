@@ -7,6 +7,8 @@ class Item
 {
 public:
     Item();
+    Item(char const * _des, char const * _img,
+     char const * _thumb, int _weight);
     virtual ~Item();
 
     const char * getDescription();
@@ -14,19 +16,37 @@ public:
     const char * getImageFileName();
     const char * getThumbnailFileName();
 
-    virtual const bool isMaterial() override;
-    virtual bool use() override;
+    virtual bool isMaterial()=0;
+    virtual bool use()=0;
 
 protected:
     // description of item
     const char * &description;
 
     // item image on tile
-    const char * &imagefileName;
+    const char * &imageFileName;
     // item image on ui
     const char * &thumbnailFileName;
 
     int weight;
+};
+
+class ItemSprite : public cocos2d::Sprite
+{
+public:
+    ItemSprite();
+    virtual ~ItemSprite();
+
+    virtual bool init();
+
+    Item * getItem();
+    void setItem(Item *_item);
+
+    void setItemTexture();
+
+    CREATE_FUNC(ItemSprite);
+protected:
+    Item *item;
 };
 
 // craft item interface
@@ -34,7 +54,7 @@ class Craftable
 {
     virtual ~Craftable();
 
-    virtual bool craft() override;
+    virtual bool craft();
 };
 
 // consume item interface
@@ -42,7 +62,7 @@ class Consumable
 {
     virtual ~Consumable();
 
-    virtual bool consume() override;
+    virtual bool consume();
 };
 
 // place item interface
@@ -50,7 +70,7 @@ class Placeable
 {
     virtual ~Placeable();
 
-    virtual bool place() override;
+    virtual bool place();
 };
 
 // ride item interface
@@ -58,7 +78,7 @@ class Rideable
 {
     virtual ~Rideable();
 
-    virtual bool ride() override;
+    virtual bool ride();
 };
 
 // swing item interface
@@ -66,7 +86,7 @@ class Swingable
 {
     virtual ~Swingable();
 
-    virtual bool swing() override;
+    virtual bool swing();
 };
 
 #endif // ITEM_H__
