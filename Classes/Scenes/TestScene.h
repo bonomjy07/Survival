@@ -1,15 +1,7 @@
-//
-//  TiledMapScene.h
-//  MyGame
-//
-//  Created by jy_maeng on 2020/01/31.
-//
-#ifndef TiledMapScene_h
-#define TiledMapScene_h
+#ifndef TEST_SCENE_H__
+#define TEST_SCENE_H__
 
 #include "cocos2d.h"
-
-#endif /* TiledMapScene_h */
 
 enum class Direction
 {
@@ -17,12 +9,12 @@ enum class Direction
     Horizon
 };
 
-class TiledMapScene : public cocos2d::Layer
+class TestScene : public cocos2d::Layer
 {
 public:
     static cocos2d::Scene* createScene();
     virtual bool init() override;
-    CREATE_FUNC(TiledMapScene);
+    CREATE_FUNC(TestScene);
     
 public:
     /**
@@ -63,3 +55,5 @@ private:
     
     class PawnSprite* _player;
 };
+
+#endif // TEST_SCENE_H__

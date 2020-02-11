@@ -23,12 +23,9 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
-#include "HelloWorldScene.h"
-#include "TiledMapScene.h"
+
 #include "MainScene.h"
 #include "KeyTableScene.h"
-
-#include "TestScene.h"
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1

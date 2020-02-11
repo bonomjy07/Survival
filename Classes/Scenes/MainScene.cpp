@@ -6,7 +6,7 @@
 //
 
 #include "MainScene.h"
-#include "TiledMapScene.h"
+#include "TestScene.h"
 #include "KeyTableScene.h"
 
 USING_NS_CC;
@@ -68,7 +68,7 @@ void MainScene::startCallback()
     log("Gane start!");
     
     auto director = Director::getInstance();
-    auto tiledMapScene = TiledMapScene::createScene();
+    auto tiledMapScene = TestScene::createScene();
     director->pushScene(director->getRunningScene());
     director->replaceScene(tiledMapScene);
 }
