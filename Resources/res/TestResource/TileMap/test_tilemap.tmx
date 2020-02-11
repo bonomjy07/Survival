@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="2">
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="3">
  <tileset firstgid="1" name="desert_tileset" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8">
   <image source="../TileImage/img_desert_tile.png" width="265" height="199"/>
  </tileset>
@@ -27,6 +27,11 @@
    eAFjYBgFoyEwGgKjIUB5CEQAjYikIo4i0kmJQHVJVMTJo/ZiDYEsoGg2FXEOVltGBUdDYPiEAADV6igz
   </data>
  </layer>
+ <layer id="5" name="SpawnAreaLayer" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eAFjYBgFoyEwskOgCuh9YjC1Q4kYO0FqRsFoCIyGwGgIjIbA0AsBAMInCYk=
+  </data>
+ </layer>
  <layer id="2" name="BlockLayer" width="30" height="20">
   <data encoding="base64" compression="zlib">
    eAHtU+0KgEAIu9fu7cNiMIZ51ln9UQi/5kZaY3xvm0hann1k9EiVz8NwDfisJvDMMYujGegaxxWOMTOtbB+c8DyHGjz3VmLwsWc+rltsBn9m93PMtX9vA3ojU9JbVuSZN6jQUY7W9f873dNqntlzY/7bgN232vDNeLyRXtTzuKprT/R3lktN/g==
@@ -34,5 +39,6 @@
  </layer>
  <objectgroup id="3" name="Objects">
   <object id="1" name="SpawnPoint" x="256" y="224" width="32" height="32"/>
+  <object id="2" name="SpawnArea" x="416" y="192" width="320" height="64"/>
  </objectgroup>
 </map>

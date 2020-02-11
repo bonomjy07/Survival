@@ -6,7 +6,7 @@
 //
 
 #include "SpawnManager.h"
-#include "TiledMapScene.h"
+#include "TestScene.h"
 #include "PawnSprite.h"
 
 USING_NS_CC;
@@ -68,7 +68,7 @@ void SpawnManager::spawnTheSprite(float dt) // dt is not used
             // CurrentScene's layer is real game-playing layer
             auto gameLayer = currentScene->getChildByName("GameLayer");
             // Add new sprite in world(gameLayer)
-            if (auto tiledMapScene = static_cast<TiledMapScene*>(gameLayer))
+            if (auto tiledMapScene = static_cast<TestScene*>(gameLayer))
             {
                 if (auto sprite = createSpriteToSpawn())
                 {
