@@ -26,6 +26,7 @@ PawnSprite* PawnSprite::create(const std::string& filename, const float initialH
 PawnSprite::PawnSprite(float initialHealth) : currentHealth(initialHealth), deltaPosition(0.f, 0.f)
 {
     log("Pawn is created!");
+    log("asd");
 }
 
 void PawnSprite::setCurrentHealth(float newHealth)
