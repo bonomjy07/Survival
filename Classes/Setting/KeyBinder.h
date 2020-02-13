@@ -9,15 +9,17 @@ class KeyBinder : public cocos2d::Ref
 {
 public:
     virtual ~KeyBinder();
-
     virtual bool init();
-
-    bool setGameKey(cocos2d::EventKeyboard::KeyCode key, std::string value);
-    std::string findGameKey(cocos2d::EventKeyboard::KeyCode key);
-    void loadGameKeys();
-
     CREATE_FUNC(KeyBinder);
-protected:
+
+    void setGameKeyAction(cocos2d::EventKeyboard::KeyCode key, std::string value);
+    std::string findGameKeyAction(cocos2d::EventKeyboard::KeyCode key);
+    bool checkGameKeyAction(cocos2d::EventKeyboard::KeyCode key, std::string value);
+
+public:
+    static void loadGameKeyActions();
+    static std::string getKeyName(cocos2d::EventKeyboard::KeyCode key);
+public:
     static std::map<cocos2d::EventKeyboard::KeyCode, std::string> gameKeyTable;
 };
 
