@@ -16,3 +16,5 @@ proj.linux/
 proj.win32/
 
 XVim2
+
+.vscode/

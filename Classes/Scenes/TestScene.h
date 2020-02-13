@@ -54,6 +54,8 @@ private:
     cocos2d::TMXLayer *_meta;
     
     class PawnSprite* _player;
+
+    class KeyBinder *gameKeyBinder;
 };
 
 #endif // TEST_SCENE_H__

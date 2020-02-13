@@ -4,6 +4,9 @@
 //
 //  Created by jy_maeng on 2020/02/06.
 //
+#include "KeyBinder.h"
+#include <string>
+
 
 #include "KeyTableScene.h"
 #include "ui/CocosGUI.h"
@@ -14,10 +17,11 @@ std::map<cocos2d::EventKeyboard::KeyCode, std::string> KeyTableScene::keyTable;
 
 void KeyTableScene::initKeyTable()
 {
-    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_W, "Up"});
-    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_S, "Down"});
-    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_D, "Right"});
-    keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_A, "Left"});
+    KeyBinder::loadGameKeyActions();
+    // keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_W, "Up"});
+    // keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_S, "Down"});
+    // keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_D, "Right"});
+    // keyTable.insert({cocos2d::EventKeyboard::KeyCode::KEY_A, "Left"});
 }
 
 Scene* KeyTableScene::createScene()
@@ -72,21 +76,31 @@ bool KeyTableScene::init()
         menu->alignItemsHorizontally();
         this->addChild(menu);
     }
-    
+
+    canSetKey = false;
+    curButton = nullptr;
+
+    listener = EventListenerKeyboard::create();
+    listener->onKeyPressed = CC_CALLBACK_2(KeyTableScene::onKeyPressed, this);
+    this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+
     Vector<ui::TextField*> textFields;
     Vector<Label*> labels;
     // Key binding list
     float y = 100.f;
-    for (auto keyPair : keyTable)
+    for (auto keyPair : KeyBinder::gameKeyTable)
     {
-        std::string sKeyCode = std::to_string(static_cast<int>(keyPair.first));
-        auto textField = ui::TextField::create(sKeyCode, "arial", 16);
+        std::string sKeyCode = KeyBinder::getKeyName(keyPair.first);
+        auto btn = ui::Button::create();
+        btn->setTitleText(sKeyCode);
+        btn->setActionTag(static_cast<int>(keyPair.first));
+        btn->addTouchEventListener(CC_CALLBACK_2(KeyTableScene::onButtonPressed, this));
         auto label2 = Label::createWithSystemFont(keyPair.second, "arial", 16);
-        label2->setPosition(visibleSize.width/2, y);
-        textField->Node::setPosition(visibleSize.width/2 + 50.f, y);
+        label2->setPosition(visibleSize.width/3, y);
+        btn->Node::setPosition(visibleSize.width/3 + 100.f, y);
         y += label2->getContentSize().height;
         this->addChild(label2);
-        this->addChild(textField);
+        this->addChild(btn);
     }
     
     return true;
@@ -102,4 +116,36 @@ void KeyTableScene::goBack()
     log("Back");
     auto director = Director::getInstance();
     director->popScene();
+}
+
+void KeyTableScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
+{
+    log("onKeyPressed");
+    log(canSetKey?"true":"false");
+    if( canSetKey && curButton != NULL ){
+        EventKeyboard::KeyCode key = static_cast<EventKeyboard::KeyCode>(curButton->getActionTag());
+        std::string action = gameKeyBinder->findGameKeyAction(key);
+        log(action.c_str());
+        if(!action.compare("None")){
+            canSetKey = false;
+            curButton = nullptr;
+            return;
+        }
+        gameKeyBinder->setGameKeyAction(keyCode, action);
+        curButton->setTitleText(KeyBinder::getKeyName(keyCode));
+        curButton->setActionTag(static_cast<int>(keyCode));
+    }
+    canSetKey = false;
+    curButton = nullptr;
+}
+
+void KeyTableScene::onButtonPressed(Ref* button, ui::Widget::TouchEventType eventType)
+{
+    log("onButtonPressed");
+    switch(eventType){
+        case ui::Widget::TouchEventType::BEGAN:
+            curButton = (ui::Button*)button;
+            canSetKey = true;
+            break;
+    }
 }
