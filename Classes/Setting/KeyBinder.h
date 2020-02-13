@@ -8,14 +8,17 @@
 class KeyBinder : public cocos2d::Ref
 {
 public:
+    virtual ~KeyBinder();
+
     virtual bool init();
 
-    CREATE_FUNC(KeyBinder);
+    bool setGameKey(cocos2d::EventKeyboard::KeyCode key, std::string value);
+    std::string findGameKey(cocos2d::EventKeyboard::KeyCode key);
+    void loadGameKeys();
 
-    bool setKey(cocos2d::EventKeyboard::KeyCode key, std::string value);
-    std::string find(cocos2d::EventKeyboard::KeyCode key);
+    CREATE_FUNC(KeyBinder);
 protected:
-    cocos2d::Map<cocos2d::EventKeyboard::KeyCode, std::string>keyTable;
+    static std::map<cocos2d::EventKeyboard::KeyCode, std::string> gameKeyTable;
 };
 
 #endif // KEY_BIND_H__
