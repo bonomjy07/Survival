@@ -97,19 +97,22 @@ protected:
      Returns false if it fails to create physics box.
      */
     bool initPhysics();
+    
+    bool canPawnMove(const cocos2d::Vec2& newPosition);
 
     /**
-    @brief Called every frame if delta position is not zero
-    Moves the pawn on delta position
+    @brief Called every frame if delta position is not zero.
+    Moves the pawn to new position
+    @warning CanPawnMove function must be called before call this function
     */
-    void moveThePawn();
+    void moveThePawn(const cocos2d::Vec2& newPosition);
 
     /**
     @brief Called every frame to check if the object in front of player exists
     */
-    void checkFrontObject();
+    cocos2d::Node* checkFrontObject(float distance);
     
-    inline cocos2d::Vec2 getFrontVec2() const;
+    cocos2d::Vec2 getFrontVec2() const;
 
     /**
     @brief This function is callback method.
@@ -118,5 +121,6 @@ protected:
     @param data it'll be assign the Node* that holds caught shape
     */
     bool OnQueryPoint(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* data);
+    
 };
 

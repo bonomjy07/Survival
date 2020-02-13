@@ -110,60 +110,73 @@ bool PawnSprite::initPhysics()
 
 void PawnSprite::update(float dt)
 {
-    if (!this->_deltaPosition.equals(Vec2::ZERO) && this->getNumberOfRunningActions() < 1)
+    if (!_deltaPosition.equals(Vec2::ZERO))
     {
-        moveThePawn();
-    }
-}
-
-void PawnSprite::moveThePawn()
-{
-    auto currentScene = Director::getInstance()->getRunningScene();
-    if (TestScene* gameLayer = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
-    {
-        const auto map = gameLayer->getTiledMap();
-        const Vec2 newPosition = this->getPosition() + this->getDeltaPositionOnDirection();
-
-        // Check if new position is within the world
-        if (0.f <= newPosition.x && newPosition.x <= map->getTileSize().width * map->getMapSize().width &&
-            (0.f <= newPosition.y && newPosition.y <= map->getTileSize().height * map->getMapSize().height))
+        Vec2 newPosition = getPosition()+getDeltaPositionOnDirection();
+        if (canPawnMove(newPosition))
         {
-            // Check if the tile on position is collidable
-            if (!gameLayer->isCollidableTileForPosition(newPosition))
-            {
-                _interactableObject=nullptr;
-                checkFrontObject();
-                if (!_interactableObject)
-                {
-                    float duration = 0.125f; // Speed
-                    auto moveTo = MoveTo::create(duration, newPosition);
-                    this->runAction(moveTo);
-                }
-            }
+            moveThePawn(newPosition);
         }
     }
 }
 
-void PawnSprite::checkFrontObject()
+bool PawnSprite::canPawnMove(const Vec2& newPosition)
 {
+    // 1. Only one action is allowed at a time
+    if (getNumberOfRunningActions() < 1)
+    {
+        // 2. Pawn needs gameLayer for tiled Map information
+        auto currentScene = Director::getInstance()->getRunningScene();
+        if (TestScene* gameLayer = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
+        {
+            // 3. New position must be within the world
+            const auto map = gameLayer->getTiledMap();
+            if (0.f <= newPosition.x && newPosition.x <= map->getTileSize().width*map->getMapSize().width &&
+                0.f <= newPosition.y && newPosition.y <= map->getTileSize().height*map->getMapSize().height)
+            {
+                // 4. A tile ahead of player mustn't be collidable tile
+                if (!gameLayer->isCollidableTileForPosition(newPosition))
+                {
+                    // 5. A object ahead of player mustn't exist
+                    if (!checkFrontObject(map->getTileSize().width))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void PawnSprite::moveThePawn(const Vec2 &newPosition)
+{
+    float duration = 0.125f; // Less duration, More speed
+    auto moveTo = MoveTo::create(duration, newPosition);
+    this->runAction(moveTo);
+}
+
+Node* PawnSprite::checkFrontObject(float distance)
+{
+    Node* node = nullptr;
     auto currentScene = Director::getInstance()->getRunningScene();
     if (auto pWorld = currentScene->getPhysicsWorld())
     {
         if (auto gameLayer = static_cast<TestScene*> (currentScene->getChildByName("GameLayer")))
         {
-            Vec2 fv = getFrontVec2();
+            Vec2 fv = getFrontVec2()*distance;
             Vec2 point(this->getPositionX() + gameLayer->getPositionX() + fv.x, this->getPositionY() + gameLayer->getPositionY() + fv.y);
-            pWorld->queryPoint(CC_CALLBACK_3(PawnSprite::OnQueryPoint, this), point,
-                               (void*)&_interactableObject);
+            pWorld->queryPoint(CC_CALLBACK_3(PawnSprite::OnQueryPoint, this), point, (void*)&node);
         }
     }
+    return node;
 }
 
 bool PawnSprite::OnQueryPoint(PhysicsWorld& world, PhysicsShape& shape, void* data)
 {
     if (auto pBody = shape.getBody())
     {
-        // 'data' holds address of _interactableObject
+        // 'data' is holding address of node to be returned
         *static_cast<Node**>(data) = pBody->getNode();
     }
     return true;
@@ -174,19 +187,19 @@ Vec2 PawnSprite::getFrontVec2() const
     Vec2 v(0.f, 0.f);
     if (_currentDirection == PawnDirection::Up)
     {
-        v = {0.f, +32.f};
+        v = {0.f, +1.f};
     }
     else if (_currentDirection == PawnDirection::Down)
     {
-        v = {0.f, -32.f};
+        v = {0.f, -1.f};
     }
     else if (_currentDirection == PawnDirection::Right)
     {
-        v = {+32.f, 0.f};
+        v = {+1.f, 0.f};
     }
     else if (_currentDirection == PawnDirection::Left)
     {
-        v = {-32.f, 0.f};
+        v = {-1.f, 0.f};
     }
     return v;
 }

@@ -196,27 +196,6 @@ void TestScene::update(float deltaTime)
 {
     // Keep view-point center
     setViewPointCenter(_player->getPosition());
-    
-    /*
-     // Player is valid && Player can do one action only && Player's delta position is not zero
-     if (_player && _player->getNumberOfRunningActions() < 1 && !_player->getDeltaPositionOnDirection().equals(Vec2::ZERO))
-     {
-     const Vec2& newPosition = _player->getPosition() + _player->getDeltaPositionOnDirection();
-     
-     // Player can move only within world
-     if (0.f <= newPosition.x && newPosition.x <= _tiledMap->getTileSize().width*_tiledMap->getMapSize().width &&
-     0.f <= newPosition.y && newPosition.y <= _tiledMap->getTileSize().height*_tiledMap->getMapSize().height)
-     {
-     // player can't move to collidable tile
-     if (!isCollidableTileForPosition(newPosition))
-     {
-     float duration = 0.125f;
-     auto moveTo = MoveTo::create(duration, newPosition);
-     _player->runAction(moveTo);
-     }
-     }
-     }
-     */
 }
 
 Point TestScene::getTileCoorForPosition(const cocos2d::Vec2& position)
