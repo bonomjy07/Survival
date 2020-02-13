@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include "cocos2d.h"
+#include "ui/CocosGUI.h"
 
 #endif /* KeyTableScene_h */
 
@@ -27,11 +28,17 @@ public:
 public:
     static std::map<cocos2d::EventKeyboard::KeyCode, std::string> keyTable;
     static void initKeyTable();
+protected:
+    void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) override;
+    void onButtonPressed(cocos2d::Ref* button, cocos2d::ui::Widget::TouchEventType eventType);
 
 private:
     cocos2d::Vector<cocos2d::Label*> keyCommandLabels;
     cocos2d::Vector<cocos2d::TextFieldTTF*> keyCodeTextFields;
-    
+    cocos2d::EventListenerKeyboard *listener;
+    bool canSetKey;
+    cocos2d::ui::Button *curButton;
+    class KeyBinder *gameKeyBinder;
     /**
      @brief Called if 'apply' button is pressed
      */

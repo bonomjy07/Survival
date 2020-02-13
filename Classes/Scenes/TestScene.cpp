@@ -108,8 +108,8 @@ bool TestScene::init()
     this->addChild(label, 1);
 
     // create key binder
+    //KeyBinder::loadGameKeyActions();
     gameKeyBinder = KeyBinder::create();
-    gameKeyBinder->loadGameKeys();
 
     // Register keyboard listener
     auto listener = EventListenerKeyboard::create();
@@ -144,22 +144,22 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 {
     // PawnSprite movement
     // Plus delta position to move
-    if (!gameKeyBinder->findGameKey(keyCode).compare("Up"))
+    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
     {
         _player->addDeltaPosition(0.f, +_tileMap->getTileSize().height);
         _player->setCurrentDirection(PawnDirection::Vertical);
     }
-    else if (!gameKeyBinder->findGameKey(keyCode).compare("Down"))
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
     {
         _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
         _player->setCurrentDirection(PawnDirection::Vertical);
     }
-    else if (!gameKeyBinder->findGameKey(keyCode).compare("Right"))
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
     {
         _player->addDeltaPosition(+_tileMap->getTileSize().width, 0.f);
         _player->setCurrentDirection(PawnDirection::Horizon);
     }
-    else if (!gameKeyBinder->findGameKey(keyCode).compare("Left"))
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
     {
         _player->addDeltaPosition(-_tileMap->getTileSize().width, 0.f);
         _player->setCurrentDirection(PawnDirection::Horizon);
@@ -171,19 +171,19 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     
     // PawnSprite movement
     // Works as opposite onKeyPressed but no work for direction which is not concern on this function
-    if (!gameKeyBinder->findGameKey(keyCode).compare("Up"))
+    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
     {
         _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
     }
-    else if (!gameKeyBinder->findGameKey(keyCode).compare("Down"))
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
     {
         _player->addDeltaPosition(0.f, +_tileMap->getTileSize().height);
     }
-    else if (!gameKeyBinder->findGameKey(keyCode).compare("Right"))
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
     {
         _player->addDeltaPosition(-_tileMap->getTileSize().width, 0.f);
     }
-    else if (!gameKeyBinder->findGameKey(keyCode).compare("Left"))
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
     {
         _player->addDeltaPosition(+_tileMap->getTileSize().width, 0.f);
     }
