@@ -13,19 +13,18 @@ USING_NS_CC;
 
 Scene* TestScene::createScene()
 {
-    auto scene = Scene::create();
-    
-    if (scene)
+    //auto scene = Scene::create();
+    auto scene = Scene::createWithPhysics();
+    if (auto pWorld = scene->getPhysicsWorld())
     {
-        scene->initWithPhysics();
-        auto world = scene->getPhysicsWorld();
-        world->setAutoStep(false);
+        pWorld->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+        pWorld->setGravity(Vec2(0.f, 0.f));
     }
     
-    TestScene* layer = TestScene::create();
+    auto layer = TestScene::create();
     layer->setName("GameLayer");
-    scene->addChild(layer);
     
+    scene->addChild(layer);
     return scene;
 }
 
@@ -37,13 +36,13 @@ bool TestScene::init()
     }
 
     // Create tile map and layer in tile map
-    _tileMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx");
-    _meta = _tileMap->getLayer("BlockLayer");
+    _tiledMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx");
+    _meta = _tiledMap->getLayer("BlockLayer");
     _meta->setVisible(false);
-    this->addChild(_tileMap);
+    this->addChild(_tiledMap);
     
     // Get SpawnPoint location
-    TMXObjectGroup* objectGroup = _tileMap->getObjectGroup("Objects");
+    TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
     if (objectGroup == NULL)
     {
         log("No object group naemd : Objects");
@@ -59,7 +58,7 @@ bool TestScene::init()
     if (pawnManager)
     {
         this->addChild(pawnManager);
-        pawnManager->startSpawn();
+        //pawnManager->startSpawn();
     }
     
     // Create player character
@@ -68,8 +67,13 @@ bool TestScene::init()
     {
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
         this->addChild(_player);
-        this->setViewPointCenter(_player->getPosition());
-        _player->initPhysics();
+    }
+    
+    auto _player2 = PawnSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+    if (_player2)
+    {
+        _player2->setPosition(x + 16.f + 64.f, y + 16.f); // Locate it center of tile.
+        this->addChild(_player2);
     }
 
     DeerMeat* deerMeat = new DeerMeat();
@@ -125,8 +129,8 @@ void TestScene::setViewPointCenter(const cocos2d::Vec2 position)
     float x = MAX(position.x, WinSize.width/2);
     float y = MAX(position.y, WinSize.height/2);
     
-    x = MIN(x, (_tileMap->getMapSize().width*_tileMap->getTileSize().width) - WinSize.width/2);
-    y = MIN(y, (_tileMap->getMapSize().height*_tileMap->getTileSize().height) - WinSize.height/2);
+    x = MIN(x, (_tiledMap->getMapSize().width*_tiledMap->getTileSize().width) - WinSize.width/2);
+    y = MIN(y, (_tiledMap->getMapSize().height*_tiledMap->getTileSize().height) - WinSize.height/2);
     
     Vec2 actualPosition(x, y);
     Vec2 centerOfView(WinSize.width/2, WinSize.height/2);
@@ -144,23 +148,23 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     // Plus delta position to move
     if (!keyTable.find(keyCode)->second.compare("Up"))
     {
-        _player->addDeltaPosition(0.f, +_tileMap->getTileSize().height);
-        _player->setCurrentDirection(PawnDirection::Vertical);
+        _player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
+        _player->setCurrentDirection(PawnDirection::Up);
     }
     else if (!keyTable.find(keyCode)->second.compare("Down"))
     {
-        _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
-        _player->setCurrentDirection(PawnDirection::Vertical);
+        _player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
+        _player->setCurrentDirection(PawnDirection::Down);
     }
     else if (!keyTable.find(keyCode)->second.compare("Right"))
     {
-        _player->addDeltaPosition(+_tileMap->getTileSize().width, 0.f);
-        _player->setCurrentDirection(PawnDirection::Horizon);
+        _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
+        _player->setCurrentDirection(PawnDirection::Right);
     }
     else if (!keyTable.find(keyCode)->second.compare("Left"))
     {
-        _player->addDeltaPosition(-_tileMap->getTileSize().width, 0.f);
-        _player->setCurrentDirection(PawnDirection::Horizon);
+        _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
+        _player->setCurrentDirection(PawnDirection::Left);
     }
 }
 
@@ -172,19 +176,19 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     // Works as opposite onKeyPressed but no work for direction which is not concern on this function
     if (!keyTable.find(keyCode)->second.compare("Up"))
     {
-        _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
+        _player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
     }
     else if (!keyTable.find(keyCode)->second.compare("Down"))
     {
-        _player->addDeltaPosition(0.f, +_tileMap->getTileSize().height);
+        _player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
     }
     else if (!keyTable.find(keyCode)->second.compare("Right"))
     {
-        _player->addDeltaPosition(-_tileMap->getTileSize().width, 0.f);
+        _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
     }
     else if (!keyTable.find(keyCode)->second.compare("Left"))
     {
-        _player->addDeltaPosition(+_tileMap->getTileSize().width, 0.f);
+        _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
     }
 }
 
@@ -193,41 +197,43 @@ void TestScene::update(float deltaTime)
     // Keep view-point center
     setViewPointCenter(_player->getPosition());
     
-    // Player is valid && Player can do one action only && Player's delta position is not zero
-    if (_player && _player->getNumberOfRunningActions() < 1 && !_player->getDeltaPositionOnDirection().equals(Vec2::ZERO))
-    {
-        const Vec2& newPosition = _player->getPosition() + _player->getDeltaPositionOnDirection();
-        
-        // Player can move only within world
-        if (0.f <= newPosition.x && newPosition.x <= _tileMap->getTileSize().width*_tileMap->getMapSize().width &&
-            0.f <= newPosition.y && newPosition.y <= _tileMap->getTileSize().height*_tileMap->getMapSize().height)
-        {
-            // player can't move to collidable tile
-            if (!isCollidableTile(newPosition))
-            {
-                float duration = 0.125f;
-                auto moveTo = MoveTo::create(duration, newPosition);
-                _player->runAction(moveTo);
-            }
-        }
-    }
+    /*
+     // Player is valid && Player can do one action only && Player's delta position is not zero
+     if (_player && _player->getNumberOfRunningActions() < 1 && !_player->getDeltaPositionOnDirection().equals(Vec2::ZERO))
+     {
+     const Vec2& newPosition = _player->getPosition() + _player->getDeltaPositionOnDirection();
+     
+     // Player can move only within world
+     if (0.f <= newPosition.x && newPosition.x <= _tiledMap->getTileSize().width*_tiledMap->getMapSize().width &&
+     0.f <= newPosition.y && newPosition.y <= _tiledMap->getTileSize().height*_tiledMap->getMapSize().height)
+     {
+     // player can't move to collidable tile
+     if (!isCollidableTileForPosition(newPosition))
+     {
+     float duration = 0.125f;
+     auto moveTo = MoveTo::create(duration, newPosition);
+     _player->runAction(moveTo);
+     }
+     }
+     }
+     */
 }
 
 Point TestScene::getTileCoorForPosition(const cocos2d::Vec2& position)
 {
-    int x = position.x / _tileMap->getTileSize().width;
+    int x = position.x / _tiledMap->getTileSize().width;
     // TileMap::'y' and cocos2d::'y' are opposite
-    int y = ((_tileMap->getMapSize().height*_tileMap->getTileSize().height) - position.y) / _tileMap->getTileSize().height;
+    int y = ((_tiledMap->getMapSize().height*_tiledMap->getTileSize().height) - position.y) / _tiledMap->getTileSize().height;
     
     return Point(x, y);
 }
 
-bool TestScene::isCollidableTile(const cocos2d::Vec2& position)
+bool TestScene::isCollidableTileForPosition(const cocos2d::Vec2& position)
 {
     Point tileCoord = getTileCoorForPosition(position);
     int tileGid = _meta->getTileGIDAt(tileCoord);
     // Get the tile properties
-    Value properties = _tileMap->getPropertiesForGID(tileGid);
+    Value properties = _tiledMap->getPropertiesForGID(tileGid);
     if (!properties.isNull())
     {
         ValueMap propsMap = properties.asValueMap();
@@ -239,4 +245,14 @@ bool TestScene::isCollidableTile(const cocos2d::Vec2& position)
     }
     
     return false;
+}
+
+TMXTiledMap* TestScene::getTiledMap() const
+{
+    return _tiledMap;
+}
+
+TMXLayer* TestScene::getMetaLayer() const
+{
+    return _meta;
 }
