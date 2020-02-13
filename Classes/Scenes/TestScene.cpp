@@ -6,6 +6,7 @@
 
 #include "Item.h"
 #include "Food.h"
+#include "KeyBinder.h"
 
 #include <string>
 
@@ -25,7 +26,7 @@ Scene* TestScene::createScene()
     TestScene* layer = TestScene::create();
     layer->setName("GameLayer");
     scene->addChild(layer);
-    
+
     return scene;
 }
 
@@ -106,6 +107,10 @@ bool TestScene::init()
     // add the label as a child to this layer
     this->addChild(label, 1);
 
+    // create key binder
+    gameKeyBinder = KeyBinder::create();
+    gameKeyBinder->loadGameKeys();
+
     // Register keyboard listener
     auto listener = EventListenerKeyboard::create();
     listener->onKeyPressed = CC_CALLBACK_2(TestScene::onKeyPressed, this);
@@ -137,27 +142,24 @@ void TestScene::setViewPointCenter(const cocos2d::Vec2 position)
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    const std::map<EventKeyboard::KeyCode, std::string>& keyTable = KeyTableScene::keyTable;
-    if (keyTable.find(keyCode) == keyTable.end()) return;
-    
     // PawnSprite movement
     // Plus delta position to move
-    if (!keyTable.find(keyCode)->second.compare("Up"))
+    if (!gameKeyBinder->findGameKey(keyCode).compare("Up"))
     {
         _player->addDeltaPosition(0.f, +_tileMap->getTileSize().height);
         _player->setCurrentDirection(PawnDirection::Vertical);
     }
-    else if (!keyTable.find(keyCode)->second.compare("Down"))
+    else if (!gameKeyBinder->findGameKey(keyCode).compare("Down"))
     {
         _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
         _player->setCurrentDirection(PawnDirection::Vertical);
     }
-    else if (!keyTable.find(keyCode)->second.compare("Right"))
+    else if (!gameKeyBinder->findGameKey(keyCode).compare("Right"))
     {
         _player->addDeltaPosition(+_tileMap->getTileSize().width, 0.f);
         _player->setCurrentDirection(PawnDirection::Horizon);
     }
-    else if (!keyTable.find(keyCode)->second.compare("Left"))
+    else if (!gameKeyBinder->findGameKey(keyCode).compare("Left"))
     {
         _player->addDeltaPosition(-_tileMap->getTileSize().width, 0.f);
         _player->setCurrentDirection(PawnDirection::Horizon);
@@ -166,23 +168,22 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    const std::map<EventKeyboard::KeyCode, std::string>& keyTable = KeyTableScene::keyTable;
     
     // PawnSprite movement
     // Works as opposite onKeyPressed but no work for direction which is not concern on this function
-    if (!keyTable.find(keyCode)->second.compare("Up"))
+    if (!gameKeyBinder->findGameKey(keyCode).compare("Up"))
     {
         _player->addDeltaPosition(0.f, -_tileMap->getTileSize().height);
     }
-    else if (!keyTable.find(keyCode)->second.compare("Down"))
+    else if (!gameKeyBinder->findGameKey(keyCode).compare("Down"))
     {
         _player->addDeltaPosition(0.f, +_tileMap->getTileSize().height);
     }
-    else if (!keyTable.find(keyCode)->second.compare("Right"))
+    else if (!gameKeyBinder->findGameKey(keyCode).compare("Right"))
     {
         _player->addDeltaPosition(-_tileMap->getTileSize().width, 0.f);
     }
-    else if (!keyTable.find(keyCode)->second.compare("Left"))
+    else if (!gameKeyBinder->findGameKey(keyCode).compare("Left"))
     {
         _player->addDeltaPosition(+_tileMap->getTileSize().width, 0.f);
     }
