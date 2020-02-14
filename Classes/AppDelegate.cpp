@@ -23,7 +23,6 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
-
 #include "MainScene.h"
 #include "KeyTableScene.h"
 
