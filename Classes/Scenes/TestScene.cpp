@@ -18,7 +18,7 @@ Scene* TestScene::createScene()
     if (auto pWorld = scene->getPhysicsWorld())
     {
         pWorld->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-        pWorld->setGravity(Vec2(0.f, 0.f));
+        pWorld->setGravity(Vec2(0.f, 0.f)); // No gravity
     }
     
     auto layer = TestScene::create();
@@ -57,7 +57,7 @@ bool TestScene::init()
     if (pawnManager)
     {
         this->addChild(pawnManager);
-        //pawnManager->startSpawn();
+        pawnManager->startSpawn();
     }
     
     // Create player character
@@ -71,8 +71,7 @@ bool TestScene::init()
     auto _player2 = PawnSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
     if (_player2)
     {
-        _player2->setPosition(x + 16.f + 64.f, y + 16.f); // Locate it center of tile.
-        log("position: %f %f", _player2->getPositionX(), _player2->getPositionY());
+        _player2->setPosition(x + 16.f + 64.f, y + 16.f);
         this->addChild(_player2);
     }
 
@@ -167,6 +166,12 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
         _player->setCurrentDirection(PawnDirection::Left);
     }
+    
+    // Meng test...
+    if (keyCode == EventKeyboard::KeyCode::KEY_Q)
+    {
+        log("_player position: (%d, %d)", (int)_player->getPositionX(), (int)_player->getPositionY());
+    }
 }
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
@@ -225,14 +230,14 @@ bool TestScene::isCollidableTileForPosition(const cocos2d::Vec2& position)
     return false;
 }
 
-Node* TestScene::checkNodeAtPosition(const Vec2& position)
+Node* TestScene::checkNodeAtPosition(const Vec2& actualPosition)
 {
     Node* node = nullptr;
     if (auto testScene = static_cast<Scene*>(getParent()))
     {
         if (auto pWorld = testScene->getPhysicsWorld())
         {
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPoint, this), position, (void*)&node);
+            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPoint, this), actualPosition, (void*)&node);
         }
     }
     return node;

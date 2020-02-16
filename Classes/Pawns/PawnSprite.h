@@ -70,11 +70,6 @@ public:
     */
     void addDeltaPosition(float x, float y);
     
-    /**
-     @brief Retuns Node* if there is a object distance away
-     */
-    cocos2d::Node* checkFrontObject(float distance);
-
 protected:
     /**
      @brief Delta position is amount of movement
@@ -100,6 +95,7 @@ protected:
     /**
      @brief Initiates physics for pawn, this is called in the constructor.
      Returns false if it fails to create physics box.
+     @TODO Hard-coding is needed to be removed...
      */
     bool initPhysics();
     
@@ -115,12 +111,17 @@ protected:
     cocos2d::Vec2 getFrontVec2() const;
 
     /**
+     @brief Retuns Node* if there is a object distance away
+     */
+    //cocos2d::Node* checkFrontObject(float distance);
+    
+    /**
     @brief This function is callback method.
     Called to check the object in front of player.
     @param shape A shape has point within its own physicsBody
     @param data it'll be assign the Node* that holds caught shape
     */
-    bool OnQueryPoint(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* data);
+    //bool OnQueryPoint(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* data);
     
 };
 

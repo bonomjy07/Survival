@@ -24,10 +24,10 @@ PawnSprite* PawnSprite::create(const std::string& filename, const float initialH
 
 PawnSprite::PawnSprite(float initialHealth) : _currentHealth(initialHealth), _deltaPosition(0.f, 0.f), _interactableObject(nullptr)
 {
-    log("PawnSprite is created");
-    
     static int id = 0;
-    setName("pawn::" + std::to_string(++id));
+    log("PawnSprite is created(id:%d)", ++id);
+    
+    setName("pawn::" + std::to_string(id));
 }
 
 PawnSprite::~PawnSprite()
@@ -79,6 +79,27 @@ Vec2 PawnSprite::getDeltaPositionOnDirection() const
 const Vec2& PawnSprite::getDeltaPosition() const
 {
     return _deltaPosition;
+}
+
+Vec2 PawnSprite::getFrontVec2() const
+{
+    if (_currentDirection == PawnDirection::Up)
+    {
+        return {0.f, +1.f};
+    }
+    else if (_currentDirection == PawnDirection::Down)
+    {
+        return {0.f, -1.f};
+    }
+    else if (_currentDirection == PawnDirection::Right)
+    {
+        return {+1.f, 0.f};
+    }
+    else if (_currentDirection == PawnDirection::Left)
+    {
+        return {-1.f, 0.f};
+    }
+    return Vec2::ZERO;
 }
 
 void PawnSprite::takeDamage(float damagedHealth)
@@ -157,11 +178,12 @@ void PawnSprite::moveThePawn(const Vec2 &newPosition)
     this->runAction(moveTo);
 }
 
-Node* PawnSprite::checkFrontObject(float distance)
-{
-    Node* node = nullptr;
-    auto currentScene = Director::getInstance()->getRunningScene();
-    if (auto pWorld = currentScene->getPhysicsWorld())
+/*
+ Node* PawnSprite::checkFrontObject(float distance)
+ {
+ Node* node = nullptr;
+ auto currentScene = Director::getInstance()->getRunningScene();
+ if (auto pWorld = currentScene->getPhysicsWorld())
     {
         if (auto gameLayer = static_cast<TestScene*> (currentScene->getChildByName("GameLayer")))
         {
@@ -182,25 +204,4 @@ bool PawnSprite::OnQueryPoint(PhysicsWorld& world, PhysicsShape& shape, void* da
     }
     return true;
 }
-
-Vec2 PawnSprite::getFrontVec2() const
-{
-    Vec2 v(0.f, 0.f);
-    if (_currentDirection == PawnDirection::Up)
-    {
-        v = {0.f, +1.f};
-    }
-    else if (_currentDirection == PawnDirection::Down)
-    {
-        v = {0.f, -1.f};
-    }
-    else if (_currentDirection == PawnDirection::Right)
-    {
-        v = {+1.f, 0.f};
-    }
-    else if (_currentDirection == PawnDirection::Left)
-    {
-        v = {-1.f, 0.f};
-    }
-    return v;
-}
+ */
