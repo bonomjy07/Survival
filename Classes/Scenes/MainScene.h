@@ -25,8 +25,7 @@ public:
     CREATE_FUNC(MainScene);
     
 private:
-    void startCallback();
-    void keyBindingCallback();
-    void exitGameCallback();
-    void onEnterCallback();
+    void onStartGame();
+    void onKeyBinding();
+    void onExitGame();
 };

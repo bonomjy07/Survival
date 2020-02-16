@@ -32,7 +32,7 @@ bool MainScene::init()
     // Create menu start label
     if (auto startLabel = Label::createWithSystemFont("New Game Start", "arial", 16))
     {
-        if (auto menuStartLabel = MenuItemLabel::create(startLabel, CC_CALLBACK_0(MainScene::startCallback, this)))
+        if (auto menuStartLabel = MenuItemLabel::create(startLabel, CC_CALLBACK_0(MainScene::onStartGame, this)))
         {
             menuItems.pushBack(menuStartLabel);
         }
@@ -40,7 +40,7 @@ bool MainScene::init()
     // Create menu key binding label
     if (auto keyBindinglabel = Label::createWithSystemFont("Key Setting", "arial", 16))
     {
-        if (auto menuKeyBindingLael = MenuItemLabel::create(keyBindinglabel, CC_CALLBACK_0(MainScene::keyBindingCallback, this)))
+        if (auto menuKeyBindingLael = MenuItemLabel::create(keyBindinglabel, CC_CALLBACK_0(MainScene::onKeyBinding, this)))
         {
             menuItems.pushBack(menuKeyBindingLael);
         }
@@ -48,7 +48,7 @@ bool MainScene::init()
     // Create menu exix label
     if (auto exitLabel = Label::createWithSystemFont("Exit", "arial", 16))
     {
-        if (auto menuExitLabel = MenuItemLabel::create(exitLabel, CC_CALLBACK_0(MainScene::exitGameCallback, this)))
+        if (auto menuExitLabel = MenuItemLabel::create(exitLabel, CC_CALLBACK_0(MainScene::onExitGame, this)))
         {
             menuItems.pushBack(menuExitLabel);
         }
@@ -63,7 +63,7 @@ bool MainScene::init()
     return true;
 }
 
-void MainScene::startCallback()
+void MainScene::onStartGame()
 {
     log("Gane start!");
     
@@ -73,7 +73,7 @@ void MainScene::startCallback()
     director->replaceScene(tiledMapScene);
 }
 
-void MainScene::keyBindingCallback()
+void MainScene::onKeyBinding()
 {
     auto director = Director::getInstance();
     auto keyTableScene = KeyTableScene::createScene();
@@ -81,13 +81,7 @@ void MainScene::keyBindingCallback()
     director->replaceScene(keyTableScene);
 }
 
-void MainScene::exitGameCallback()
+void MainScene::onExitGame()
 {
     Director::getInstance()->end();
 }
-
-void MainScene::onEnterCallback()
-{
-    log("entered!");
-}
-
