@@ -58,29 +58,27 @@ void SpawnManager::stopSpawn()
 void SpawnManager::spawnTheSprite(float dt) // dt is not used
 {
     // Don't spawn if current spawned sprite is max
-    if (_currentSpawnNumber >= _maxSpawnNumber) return;
-    
-    // Get director to tiledMapScene which is game-world
-    if (auto director = Director::getInstance())
+    if (_currentSpawnNumber >= _maxSpawnNumber)
     {
-        if (auto currentScene = director->getRunningScene())
+        stopSpawn();
+        return;
+    }
+    
+    // Get timed map and create a sprite to spawn at random point
+    if (auto currentScene = Director::getInstance()->getRunningScene())
+    {
+        // Add new sprite in world(GameLayer)
+        if (auto tiledMapScene = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
         {
-            // CurrentScene's layer is real game-playing layer
-            auto gameLayer = currentScene->getChildByName("GameLayer");
-            // Add new sprite in world(gameLayer)
-            if (auto tiledMapScene = static_cast<TestScene*>(gameLayer))
+            if (auto sprite = createSpriteToSpawn())
             {
-                if (auto sprite = createSpriteToSpawn())
-                {
-                    sprite->setPosition(getRandomPointInArea());
-                    tiledMapScene->addChild(sprite);
-                    ++_currentSpawnNumber;
-                    log("%s is spawned", _whatToSpawn.c_str());
-                }
+                sprite->setPosition(getRandomPointInArea());
+                tiledMapScene->addChild(sprite);
+                ++_currentSpawnNumber;
+                log("%s is spawned", _whatToSpawn.c_str());
             }
         }
     }
-    
 }
 
 Vec2 SpawnManager::getRandomPointInArea() const

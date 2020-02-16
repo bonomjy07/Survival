@@ -14,7 +14,6 @@ USING_NS_CC;
 
 Scene* TestScene::createScene()
 {
-    //auto scene = Scene::create();
     auto scene = Scene::createWithPhysics();
     if (auto pWorld = scene->getPhysicsWorld())
     {
@@ -73,6 +72,7 @@ bool TestScene::init()
     if (_player2)
     {
         _player2->setPosition(x + 16.f + 64.f, y + 16.f); // Locate it center of tile.
+        log("position: %f %f", _player2->getPositionX(), _player2->getPositionY());
         this->addChild(_player2);
     }
 
@@ -222,8 +222,30 @@ bool TestScene::isCollidableTileForPosition(const cocos2d::Vec2& position)
             return true;
         }
     }
-    
     return false;
+}
+
+Node* TestScene::checkNodeAtPosition(const Vec2& position)
+{
+    Node* node = nullptr;
+    if (auto testScene = static_cast<Scene*>(getParent()))
+    {
+        if (auto pWorld = testScene->getPhysicsWorld())
+        {
+            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPoint, this), position, (void*)&node);
+        }
+    }
+    return node;
+}
+
+bool TestScene::onQueryPoint(PhysicsWorld &world, PhysicsShape &shape, void *node)
+{
+    PhysicsBody* pBody;
+    if (node && (pBody = shape.getBody()))
+    {
+        *static_cast<Node**>(node) = pBody->getNode();
+    }
+    return true;
 }
 
 TMXTiledMap* TestScene::getTiledMap() const
@@ -234,4 +256,16 @@ TMXTiledMap* TestScene::getTiledMap() const
 TMXLayer* TestScene::getMetaLayer() const
 {
     return _meta;
+}
+
+TestScene* TestScene::getGameLayer()
+{
+    if (auto currentScene = Director::getInstance()->getRunningScene())
+    {
+        if (auto gameLayer = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
+        {
+            return gameLayer;
+        }
+    }
+    return nullptr;
 }

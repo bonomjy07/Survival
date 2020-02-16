@@ -126,8 +126,7 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
     if (getNumberOfRunningActions() < 1)
     {
         // 2. Pawn needs gameLayer for tiled Map information
-        auto currentScene = Director::getInstance()->getRunningScene();
-        if (TestScene* gameLayer = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
+        if (auto gameLayer = TestScene::getGameLayer())
         {
             // 3. New position must be within the world
             const auto map = gameLayer->getTiledMap();
@@ -138,7 +137,9 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
                 if (!gameLayer->isCollidableTileForPosition(newPosition))
                 {
                     // 5. A object ahead of player mustn't exist
-                    if (!checkFrontObject(map->getTileSize().width))
+                    float distance = map->getTileSize().width;
+                    Vec2 actualPosition = getPosition() + gameLayer->getPosition(); // Real pawn's position
+                    if (!gameLayer->checkNodeAtPosition(actualPosition+(getFrontVec2()*distance)))
                     {
                         return true;
                     }

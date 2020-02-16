@@ -69,6 +69,11 @@ public:
     @brief Adds delta position
     */
     void addDeltaPosition(float x, float y);
+    
+    /**
+     @brief Retuns Node* if there is a object distance away
+     */
+    cocos2d::Node* checkFrontObject(float distance);
 
 protected:
     /**
@@ -107,11 +112,6 @@ protected:
     */
     void moveThePawn(const cocos2d::Vec2& newPosition);
 
-    /**
-    @brief Called every frame to check if the object in front of player exists
-    */
-    cocos2d::Node* checkFrontObject(float distance);
-    
     cocos2d::Vec2 getFrontVec2() const;
 
     /**
