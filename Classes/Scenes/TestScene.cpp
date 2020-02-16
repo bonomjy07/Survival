@@ -3,6 +3,7 @@
 #include "PawnSprite.h"
 #include "KeyTableScene.h"
 #include "SpawnManager.h"
+#include "PauseLayer.h"
 
 #include "Item.h"
 #include "Food.h"
@@ -167,10 +168,24 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         _player->setCurrentDirection(PawnDirection::Left);
     }
     
-    // Meng test...
-    if (keyCode == EventKeyboard::KeyCode::KEY_Q)
+    if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
     {
-        log("_player position: (%d, %d)", (int)_player->getPositionX(), (int)_player->getPositionY());
+        if (auto scene = getParent())
+        {
+            auto child = scene->getChildByName("PauseLayer");
+            if (!child)
+            {
+                if (auto pauseLayer = PauseLayer::create())
+                {
+                    auto scene = static_cast<Scene*>(this->getParent());
+                    scene->addChild(pauseLayer);
+                }
+            }
+            else
+            {
+                scene->removeChild(child);
+            }
+        }
     }
 }
 
@@ -259,10 +274,10 @@ TMXTiledMap* TestScene::getTiledMap() const
 }
 
 TMXLayer* TestScene::getMetaLayer() const
-{
-    return _meta;
-}
-
+    {
+        return _meta;
+    }
+    
 TestScene* TestScene::getGameLayer()
 {
     if (auto currentScene = Director::getInstance()->getRunningScene())

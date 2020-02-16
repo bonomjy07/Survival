@@ -14,7 +14,7 @@ USING_NS_CC;
 Scene* MainScene::createScene()
 {
     auto scene = Scene::create();
-    
+
     MainScene* layer = MainScene::create();
     scene->addChild(layer);
     
@@ -28,6 +28,8 @@ bool MainScene::init()
         return false;
     }
     
+    this->setColor(Color3B::YELLOW);
+
     Vector<MenuItem*> menuItems;
     // Create menu start label
     if (auto startLabel = Label::createWithSystemFont("New Game Start", "arial", 16))

@@ -10,17 +10,21 @@
 #ifndef PauseLayer_h
 #define PauseLayer_h
 
+#include "cocos2d.h"
+
 #endif /* PauseLayer_h */
 
+//class PauseLayer : public cocos2d::LayerColor
 class PauseLayer : public cocos2d::Layer
 {
 public:
     bool init() override;
+    //static PauseLayer* create();
     CREATE_FUNC(PauseLayer);
-    
+
 public:
-    PauseLayer();
-    virtual ~PauseLayer();
+    // PauseLayer();
+    // virtual ~PauseLayer();
 
 private:
     cocos2d::MenuItemLabel* _qSaveLabel;
