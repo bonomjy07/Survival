@@ -7,8 +7,8 @@ class Item
 {
 public:
     Item();
-    Item(char const * _des, char const * _img,
-     char const * _thumb, int _weight);
+    Item(const char * _des, const char * _img,
+     const char * _thumb, const int _weight);
     virtual ~Item();
 
     const char * getDescription();
@@ -21,14 +21,14 @@ public:
 
 protected:
     // description of item
-    const char * &description;
+    const char * const description;
 
     // item image on tile
-    const char * &imageFileName;
+    const char * const imageFileName;
     // item image on ui
-    const char * &thumbnailFileName;
+    const char * const thumbnailFileName;
 
-    int weight;
+    const int weight;
 };
 
 class ItemSprite : public cocos2d::Sprite

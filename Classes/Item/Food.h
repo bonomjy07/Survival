@@ -31,9 +31,9 @@ public:
     virtual bool isMaterial() override;
 
 private:
-    static const char *DEER_MEAT_DESCRIPTION;
-    static const char *DEER_MEAT_IMAGE_FILE_NAME;
-    static const char *DEER_MEAT_THUMBNAIL_FILE_NAME;
+    static const char * const DEER_MEAT_DESCRIPTION;
+    static const char * const DEER_MEAT_IMAGE_FILE_NAME;
+    static const char * const DEER_MEAT_THUMBNAIL_FILE_NAME;
     static const int DEER_MEAT_WEIGHT;
 };
 
