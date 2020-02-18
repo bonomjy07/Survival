@@ -36,7 +36,10 @@ const char * Item::getThumbnailFileName()
 // def ItemSprite class
 ItemSprite::ItemSprite(){}
 
-ItemSprite::~ItemSprite(){}
+ItemSprite::~ItemSprite()
+{
+    item->release();
+}
 
 bool ItemSprite::init()
 {

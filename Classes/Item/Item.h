@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 
-class Item
+class Item : public cocos2d::Ref
 {
 public:
     Item();
