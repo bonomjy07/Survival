@@ -21,13 +21,11 @@
 class KeyTableScene : public cocos2d::Layer
 {
 public:
+    virtual ~KeyTableScene();
     static cocos2d::Scene* createScene();
     virtual bool init() override;
     CREATE_FUNC(KeyTableScene);
     
-public:
-    static std::map<cocos2d::EventKeyboard::KeyCode, std::string> keyTable;
-    static void initKeyTable();
 protected:
     void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) override;
     void onButtonPressed(cocos2d::Ref* button, cocos2d::ui::Widget::TouchEventType eventType);
@@ -49,5 +47,6 @@ private:
      or clicked 'ESC'
      */
     void goBack();
-    
+
+    void showGameKeys();
 };
