@@ -9,13 +9,7 @@
 #ifndef MainScene_h
 #define MainScene_h
 
-#include <stdio.h>
-#include <iostream>
-
 #include "cocos2d.h"
-
-
-#endif /* MainScene_h */
 
 class MainScene : public cocos2d::Layer
 {
@@ -29,3 +23,4 @@ private:
     void onKeyBinding();
     void onExitGame();
 };
+#endif /* MainScene_h */

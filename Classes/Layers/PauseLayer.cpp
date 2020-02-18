@@ -9,35 +9,14 @@
 
 USING_NS_CC;
 
-/*
-PauseLayer* PauseLayer::create()
-{
-    PauseLayer *pauseLayer = new(std::nothrow) PauseLayer();
-    if (pauseLayer && pauseLayer->initWithColor(Color4B::GRAY))
-    {
-        pauseLayer->autorelease();
-        return pauseLayer;
-    }
-    else
-    {
-        delete pauseLayer;
-        pauseLayer = nullptr;
-        return nullptr;
-    }
-}
- */
-
-
 bool PauseLayer::init()
 {
     if (!Layer::init())
     {
         return false;
     }
-    this->setName("PauseLayer");
     
     auto winSize = Director::getInstance()->getWinSize();
-    
     if (auto label = Label::createWithSystemFont("- Pause -", "arial", 32))
     {
         label->setPosition(winSize.width/2, winSize.height - label->getContentSize().height);
@@ -45,7 +24,6 @@ bool PauseLayer::init()
     }
     
     Vector<MenuItem*> menuItems;
-    
     if (auto label = Label::createWithSystemFont("Quick Save", "arial", 16))
     {
         if ((_qSaveLabel = MenuItemLabel::create(label, CC_CALLBACK_0(PauseLayer::onQuickSave, this))))
@@ -80,6 +58,8 @@ bool PauseLayer::init()
         menu->alignItemsVertically();
         this->addChild(menu);
     }
+    
+    this->setName("PauseLayer");
     
     return true;
 }

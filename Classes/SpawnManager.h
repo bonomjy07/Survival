@@ -12,8 +12,6 @@
 
 #include "cocos2d.h"
 
-#endif /* SpawnManager_h */
-
 class SpawnManager : public cocos2d::Node
 {
 public:
@@ -96,5 +94,5 @@ private:
      */
     cocos2d::Sprite* createSpriteToSpawn() const;
     
-    // Collision..
 };
+#endif /* SpawnManager_h */

@@ -71,8 +71,7 @@ void SpawnManager::spawnTheSprite(float dt) // dt is not used
     {
         // 2. Get valid random poisition
         auto randomPosition = getRandomPointInArea();
-        auto actualPosition = randomPosition + gameLayer->getPosition();
-        if (!gameLayer->checkNodeAtPosition(actualPosition))
+        if (!gameLayer->checkNodeAtPosition(randomPosition))
         {
             if (auto sprite = createSpriteToSpawn())
             {
@@ -82,24 +81,6 @@ void SpawnManager::spawnTheSprite(float dt) // dt is not used
             }
         }
     }
-    
-    /*
-     // Get timed map and create a sprite to spawn at random point
-     if (auto currentScene = Director::getInstance()->getRunningScene())
-     {
-     // Add new sprite in world(GameLayer)
-     if (auto tiledMapScene = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
-     {
-     if (auto sprite = createSpriteToSpawn())
-     {
-     sprite->setPosition(getRandomPointInArea());
-     tiledMapScene->addChild(sprite);
-     ++_currentSpawnNumber;
-     log("%s is spawned", _whatToSpawn.c_str());
-     }
-     }
-     }
-     */
 }
 
 Vec2 SpawnManager::getRandomPointInArea() const

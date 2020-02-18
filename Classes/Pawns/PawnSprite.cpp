@@ -22,11 +22,22 @@ PawnSprite* PawnSprite::create(const std::string& filename, const float initialH
     return nullptr;
 }
 
-PawnSprite::PawnSprite(float initialHealth) : _currentHealth(initialHealth), _deltaPosition(0.f, 0.f), _interactableObject(nullptr)
+void PawnSprite::update(float dt)
+{
+    if (!_deltaPosition.equals(Vec2::ZERO))
+    {
+        Vec2 newPosition = getPosition()+getDeltaPositionOnDirection();
+        if (canPawnMove(newPosition))
+        {
+            moveThePawn(newPosition);
+        }
+    }
+}
+
+PawnSprite::PawnSprite(float initialHealth) : _currentHealth(initialHealth), _deltaPosition(0.f, 0.f)
 {
     static int id = 0;
     log("PawnSprite is created(id:%d)", ++id);
-    
     setName("pawn::" + std::to_string(id));
 }
 
@@ -129,18 +140,6 @@ bool PawnSprite::initPhysics()
     return true;
 }
 
-void PawnSprite::update(float dt)
-{
-    if (!_deltaPosition.equals(Vec2::ZERO))
-    {
-        Vec2 newPosition = getPosition()+getDeltaPositionOnDirection();
-        if (canPawnMove(newPosition))
-        {
-            moveThePawn(newPosition);
-        }
-    }
-}
-
 bool PawnSprite::canPawnMove(const Vec2& newPosition)
 {
     // 1. Only one action is allowed at a time
@@ -150,17 +149,14 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
         if (auto gameLayer = TestScene::getGameLayer())
         {
             // 3. New position must be within the world
-            const auto map = gameLayer->getTiledMap();
-            if (0.f <= newPosition.x && newPosition.x <= map->getTileSize().width*map->getMapSize().width &&
-                0.f <= newPosition.y && newPosition.y <= map->getTileSize().height*map->getMapSize().height)
+            Vec2 newPosition = getPosition() + getDeltaPositionOnDirection();
+            if (gameLayer->isPositionWithinWorld(newPosition))
             {
-                // 4. A tile ahead of player mustn't be collidable tile
+                // 4. New position mustn't be collidable tile
                 if (!gameLayer->isCollidableTileForPosition(newPosition))
                 {
                     // 5. A object ahead of player mustn't exist
-                    float distance = map->getTileSize().width;
-                    Vec2 actualPosition = getPosition() + gameLayer->getPosition(); // Real pawn's position
-                    if (!gameLayer->checkNodeAtPosition(actualPosition+(getFrontVec2()*distance)))
+                    if (!gameLayer->checkNodeAtPosition(getPosition(), getFrontVec2()))
                     {
                         return true;
                     }
@@ -177,31 +173,3 @@ void PawnSprite::moveThePawn(const Vec2 &newPosition)
     auto moveTo = MoveTo::create(duration, newPosition);
     this->runAction(moveTo);
 }
-
-/*
- Node* PawnSprite::checkFrontObject(float distance)
- {
- Node* node = nullptr;
- auto currentScene = Director::getInstance()->getRunningScene();
- if (auto pWorld = currentScene->getPhysicsWorld())
-    {
-        if (auto gameLayer = static_cast<TestScene*> (currentScene->getChildByName("GameLayer")))
-        {
-            Vec2 fv = getFrontVec2()*distance;
-            Vec2 point(this->getPositionX() + gameLayer->getPositionX() + fv.x, this->getPositionY() + gameLayer->getPositionY() + fv.y);
-            pWorld->queryPoint(CC_CALLBACK_3(PawnSprite::OnQueryPoint, this), point, (void*)&node);
-        }
-    }
-    return node;
-}
-
-bool PawnSprite::OnQueryPoint(PhysicsWorld& world, PhysicsShape& shape, void* data)
-{
-    if (auto pBody = shape.getBody())
-    {
-        // 'data' is holding address of node to be returned
-        *static_cast<Node**>(data) = pBody->getNode();
-    }
-    return true;
-}
- */

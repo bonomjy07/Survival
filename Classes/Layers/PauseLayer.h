@@ -12,14 +12,10 @@
 
 #include "cocos2d.h"
 
-#endif /* PauseLayer_h */
-
-//class PauseLayer : public cocos2d::LayerColor
 class PauseLayer : public cocos2d::Layer
 {
 public:
     bool init() override;
-    //static PauseLayer* create();
     CREATE_FUNC(PauseLayer);
 
 public:
@@ -38,3 +34,5 @@ private:
     void onBackToMain();
     void onResume();
 };
+
+#endif /* PauseLayer_h */

@@ -1,9 +1,10 @@
 
 #include "TestScene.h"
-#include "PawnSprite.h"
+#include "SurvivorSprite.h"
 #include "KeyTableScene.h"
 #include "SpawnManager.h"
 #include "PauseLayer.h"
+#include "StatLayer.h"
 
 #include "Item.h"
 #include "Food.h"
@@ -24,6 +25,7 @@ Scene* TestScene::createScene()
     
     auto layer = TestScene::create();
     layer->setName("GameLayer");
+
     scene->addChild(layer);
     return scene;
 }
@@ -34,7 +36,7 @@ bool TestScene::init()
     {
         return false;
     }
-
+    
     // Create tile map and layer in tile map
     _tiledMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx");
     _meta = _tiledMap->getLayer("BlockLayer");
@@ -62,23 +64,17 @@ bool TestScene::init()
     }
     
     // Create player character
-    _player = PawnSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+    _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
     if (_player)
     {
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+        _player->startDrainStats();
         this->addChild(_player);
     }
     
-    auto _player2 = PawnSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-    if (_player2)
-    {
-        _player2->setPosition(x + 16.f + 64.f, y + 16.f);
-        this->addChild(_player2);
-    }
-
     DeerMeat* deerMeat = new DeerMeat();
     log(deerMeat->getDescription());
-
+    
     auto deerMeatSprite = Sprite::create(deerMeat->getImageFileName());
     if (deerMeatSprite)
     {
@@ -87,7 +83,7 @@ bool TestScene::init()
         this->addChild(deerMeatSprite);
         this->setViewPointCenter(deerMeatSprite->getPosition());
     }
-
+    
     auto deerMeatSprite2 = ItemSprite::create();
     DeerMeat* deerMeat2 = new DeerMeat();
     if (deerMeatSprite2)
@@ -102,18 +98,18 @@ bool TestScene::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto label = Label::createWithTTF("Test World", "fonts/Marker Felt.ttf", 24);
-
+    
     // position the label on the center of the screen
     label->setPosition(Vec2(origin.x + visibleSize.width/2,
                             origin.y + visibleSize.height - label->getContentSize().height));
-
+    
     // add the label as a child to this layer
     this->addChild(label, 1);
-
+    
     // create key binder
     //KeyBinder::loadGameKeyActions();
     gameKeyBinder = KeyBinder::create();
-
+    
     // Register keyboard listener
     auto listener = EventListenerKeyboard::create();
     listener->onKeyPressed = CC_CALLBACK_2(TestScene::onKeyPressed, this);
@@ -124,6 +120,85 @@ bool TestScene::init()
     this->scheduleUpdate();
     
     return true;
+}
+
+void TestScene::update(float deltaTime)
+{
+    // Keep view-point center
+    if (_player)
+    {
+        setViewPointCenter(_player->getPosition());
+    }
+    
+    // Drain player's stat
+}
+
+TestScene* TestScene::getGameLayer()
+{
+    if (auto currentScene = Director::getInstance()->getRunningScene())
+    {
+        if (auto gameLayer = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
+        {
+            return gameLayer;
+        }
+    }
+    return nullptr;
+}
+
+bool TestScene::isCollidableTileForPosition(const cocos2d::Vec2& position)
+{
+    Point tileCoord = getTileCoorForPosition(position);
+    int tileGid = _meta->getTileGIDAt(tileCoord);
+    // Get the tile properties
+    Value properties = _tiledMap->getPropertiesForGID(tileGid);
+    if (!properties.isNull())
+    {
+        ValueMap propsMap = properties.asValueMap();
+        auto collidable = propsMap.find("collision");
+        if (collidable != propsMap.end() && collidable->second.asBool())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TestScene::isPositionWithinWorld(const Vec2 &position)
+{
+   if ((0.f <= position.x && position.x <= _tiledMap->getTileSize().width*_tiledMap->getMapSize().width) &&
+       (0.f <= position.y && position.y <= _tiledMap->getTileSize().height*_tiledMap->getMapSize().height))
+   {
+       return true;
+   }
+    return false;
+}
+
+Node* TestScene::checkNodeAtPosition(const Vec2& position)
+{
+    Node* node = nullptr;
+    if (auto testScene = static_cast<Scene*>(getParent()))
+    {
+        if (auto pWorld = testScene->getPhysicsWorld())
+        {
+            Vec2 actualPosition = position + this->getPosition();
+            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPoint, this), actualPosition, (void*)&node);
+        }
+    }
+    return node;
+}
+
+Node* TestScene::checkNodeAtPosition(const Vec2& position, const Vec2& frontVec)
+{
+    Node* node = nullptr;
+    if (auto testScene = static_cast<Scene*>(getParent()))
+    {
+        if (auto pWorld = testScene->getPhysicsWorld())
+        {
+            Vec2 actualPosition = position + this->getPosition() + _tiledMap->getTileSize().width*frontVec;
+            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPoint, this), actualPosition, (void*)&node);
+        }
+    }
+    return node;
 }
 
 void TestScene::setViewPointCenter(const cocos2d::Vec2 position)
@@ -168,24 +243,51 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         _player->setCurrentDirection(PawnDirection::Left);
     }
     
+    // ESC action
     if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
     {
-        if (auto scene = getParent())
+        if (Scene* parent = static_cast<Scene*>(getParent()))
         {
-            auto child = scene->getChildByName("PauseLayer");
-            if (!child)
+            // Remove pause scene if it exists already
+            if (auto pauseLayer = parent->getChildByName("PauseLayer"))
+            {
+                parent->removeChild(pauseLayer);
+            }
+            // Create pause scene if it doens't exist
+            else
             {
                 if (auto pauseLayer = PauseLayer::create())
                 {
-                    auto scene = static_cast<Scene*>(this->getParent());
-                    scene->addChild(pauseLayer);
+                    parent->addChild(pauseLayer);
                 }
             }
+        }
+    }
+    
+    if (EventKeyboard::KeyCode::KEY_TAB == keyCode)
+    {
+        if (Scene* parent = static_cast<Scene*>(getParent()))
+        {
+            // Remove pause scene if it exists already
+            if (auto statLayer = parent->getChildByName("StatLayer"))
+            {
+                parent->removeChild(statLayer);
+            }
+            // Create pause scene if it doens't exist
             else
             {
-                scene->removeChild(child);
+                if (auto statLayer = StatLayer::create(_player->getStat()))
+                {
+                    parent->addChild(statLayer);
+                }
             }
         }
+    }
+    
+    // Interact
+    if (keyCode == EventKeyboard::KeyCode::KEY_F)
+    {
+        
     }
 }
 
@@ -212,12 +314,6 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     }
 }
 
-void TestScene::update(float deltaTime)
-{
-    // Keep view-point center
-    setViewPointCenter(_player->getPosition());
-}
-
 Point TestScene::getTileCoorForPosition(const cocos2d::Vec2& position)
 {
     int x = position.x / _tiledMap->getTileSize().width;
@@ -225,37 +321,6 @@ Point TestScene::getTileCoorForPosition(const cocos2d::Vec2& position)
     int y = ((_tiledMap->getMapSize().height*_tiledMap->getTileSize().height) - position.y) / _tiledMap->getTileSize().height;
     
     return Point(x, y);
-}
-
-bool TestScene::isCollidableTileForPosition(const cocos2d::Vec2& position)
-{
-    Point tileCoord = getTileCoorForPosition(position);
-    int tileGid = _meta->getTileGIDAt(tileCoord);
-    // Get the tile properties
-    Value properties = _tiledMap->getPropertiesForGID(tileGid);
-    if (!properties.isNull())
-    {
-        ValueMap propsMap = properties.asValueMap();
-        auto collidable = propsMap.find("collision");
-        if (collidable != propsMap.end() && collidable->second.asBool())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-Node* TestScene::checkNodeAtPosition(const Vec2& actualPosition)
-{
-    Node* node = nullptr;
-    if (auto testScene = static_cast<Scene*>(getParent()))
-    {
-        if (auto pWorld = testScene->getPhysicsWorld())
-        {
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPoint, this), actualPosition, (void*)&node);
-        }
-    }
-    return node;
 }
 
 bool TestScene::onQueryPoint(PhysicsWorld &world, PhysicsShape &shape, void *node)
@@ -266,26 +331,4 @@ bool TestScene::onQueryPoint(PhysicsWorld &world, PhysicsShape &shape, void *nod
         *static_cast<Node**>(node) = pBody->getNode();
     }
     return true;
-}
-
-TMXTiledMap* TestScene::getTiledMap() const
-{
-    return _tiledMap;
-}
-
-TMXLayer* TestScene::getMetaLayer() const
-    {
-        return _meta;
-    }
-    
-TestScene* TestScene::getGameLayer()
-{
-    if (auto currentScene = Director::getInstance()->getRunningScene())
-    {
-        if (auto gameLayer = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
-        {
-            return gameLayer;
-        }
-    }
-    return nullptr;
 }
