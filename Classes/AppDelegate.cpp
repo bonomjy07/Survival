@@ -25,7 +25,7 @@
 #include "AppDelegate.h"
 
 #include "MainScene.h"
-#include "KeyTableScene.h"
+#include "KeyBinder.h"
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -51,7 +51,7 @@ static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 
 AppDelegate::AppDelegate()
 {
-    KeyTableScene::initKeyTable();
+    KeyBinder::initGameKeyActions();
 }
 
 AppDelegate::~AppDelegate() 
