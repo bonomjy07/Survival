@@ -106,6 +106,9 @@ void KeyBinder::initGameKeyActions()
     gameKeyTable[EventKeyboard::KeyCode::KEY_D] = "Right";
     gameKeyTable[EventKeyboard::KeyCode::KEY_A] = "Left";
     gameKeyTable[EventKeyboard::KeyCode::KEY_S] = "Down";
+    gameKeyTable[EventKeyboard::KeyCode::KEY_Z] = "Collect";
+    gameKeyTable[EventKeyboard::KeyCode::KEY_SPACE] = "Use";
+    gameKeyTable[EventKeyboard::KeyCode::KEY_F] = "Interact";
 }
 
 std::string KeyBinder::getKeyName(EventKeyboard::KeyCode key)
