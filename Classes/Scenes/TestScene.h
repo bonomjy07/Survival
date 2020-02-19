@@ -35,13 +35,18 @@ public:
     bool isPositionWithinWorld(const cocos2d::Vec2& position);
     
     /**
-     @brief Check if there is object which has physicsBody
+     @brief Check if there is a object which has physicsBody at position
      @details If frontVec is passed, frontVec*tileSize will be added to position
      @param frontVec Front vector to check a tile in front of position
      @return Node* address of object which has physicsBody
      */
     cocos2d::Node* checkNodeAtPosition(const cocos2d::Vec2& position);
     cocos2d::Node* checkNodeAtPosition(const cocos2d::Vec2& position, const cocos2d::Vec2& frontVec);
+    
+    /**
+     @brief Check if there is objects which have physicsBody at position.
+     @return Nodes will be retruned.
+     */
     void checkNodesAtPosition(const cocos2d::Vec2& position, cocos2d::Vector<Node*>* nodes);
     
 private:
@@ -77,6 +82,12 @@ private:
      @return true As always
      */
     bool onQueryPointNode(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* node);
+    
+    /**
+     @brief Callback function for queryPoint()
+     @param node Actual type is Vector<Node*>*
+     @return true As always
+     */
     bool onQueryPointNodes(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* nodes);
 };
 

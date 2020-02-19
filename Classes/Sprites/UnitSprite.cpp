@@ -19,18 +19,18 @@ UnitSprite* UnitSprite::create(const std::string& filename, float maxHealth)
     return nullptr;
 }
 
-UnitSprite::UnitSprite(float maxHealth) : _maxHealth(maxHealth), _currentHealth(_maxHealth) {}
+UnitSprite::UnitSprite(float maxHealth) : _maxHealth(maxHealth) {_currentHealth = _maxHealth;}
 
 UnitSprite::~UnitSprite() {}
-
-void UnitSprite::setCurrentHealth(float newCurrentHealth)
-{
-    _currentHealth = newCurrentHealth;
-}
 
 float UnitSprite::getCurrentHealth() const
 {
     return _currentHealth;
+}
+
+void UnitSprite::setCurrentHealth(float newCurrentHealth)
+{
+    _currentHealth = newCurrentHealth;
 }
 
 void UnitSprite::takeDamage(float deltaDamage)
@@ -45,5 +45,6 @@ void UnitSprite::takeDamage(float deltaDamage)
 
 void UnitSprite::onDeath()
 {
+    // TODO: Show visual effect and ....
 }
 

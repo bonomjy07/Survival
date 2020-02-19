@@ -24,14 +24,14 @@ public:
     virtual ~UnitSprite();
     
 public:
-    /* Set current health newCurrentHealth */
-    void setCurrentHealth(float newCurrnetHealth);
+    /* Returns unit's max health */
+    float getMaxHealth() const;
     
     /* Returns unit's current health */
     float getCurrentHealth() const;
     
-    /* Returns unit's max health */
-    float getMaxHealth() const;
+    /* Set current health newCurrentHealth */
+    void setCurrentHealth(float newCurrnetHealth);
     
     /**
      @Brief Takes the damages unit gets

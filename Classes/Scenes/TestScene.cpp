@@ -50,10 +50,7 @@ bool TestScene::init()
         log("No object group naemd : Objects");
         return false;
     }
-    ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
-    float x = spawnPoint["x"].asFloat();
-    float y = spawnPoint["y"].asFloat();
-    
+
     // Create spawn manager for tree
     ValueMap spawnArea = objectGroup->getObject("SpawnArea");
     SpawnManager* pawnManager = SpawnManager::create(spawnArea, "TreeSprite", "res/tileset/qubodup-bush_berries_0.png");
@@ -64,6 +61,9 @@ bool TestScene::init()
     }
     
     // Create player character
+    ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
+    float x = spawnPoint["x"].asFloat();
+    float y = spawnPoint["y"].asFloat();
     _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
     if (_player)
     {
@@ -350,8 +350,8 @@ bool TestScene::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void
     PhysicsBody* pBody;
     if (nodes && (pBody = shape.getBody()))
     {
-        Vector<Node*>* nodes = static_cast<Vector<Node*>*>(nodes);
-        nodes->pushBack(pBody->getNode());
+        Vector<Node*>* tmpNodes = static_cast<Vector<Node*>*>(nodes);
+        tmpNodes->pushBack(pBody->getNode());
     }
     return true;
 }

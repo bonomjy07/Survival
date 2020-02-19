@@ -26,8 +26,6 @@ SurvivorSprite* SurvivorSprite::create(const std::string &filename, float maxHea
 void SurvivorSprite::update(float dt)
 {
     PawnSprite::update(dt);
-    
-    // Drains the stats
 }
 
 SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
@@ -69,9 +67,15 @@ void SurvivorSprite::collect()
         gameLayer->checkNodesAtPosition(getPosition(), &nodes);
         for (const auto node : nodes)
         {
-           if (ItemSprite* item = dynamic_cast<ItemSprite*>(node))
+           if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node))
            {
-               log("Item!");
+               // TODO: Implement inventory member variable.....
+               
+               // TODO: inventory.pushback(itemSprite->getItem());
+               // TODO: itemSprite->wasCollect(); // Show visual effect and delete ItemSprite on gameLayer
+               // TODO: log("Item %s was collected", itemSprite->getName());
+               log("item...");
+               // TODO: break; ??????
            }
         }
     }
