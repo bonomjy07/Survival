@@ -2,6 +2,7 @@
 #define ITEM_H__
 
 #include "cocos2d.h"
+#include "MySprite.h"
 
 class Item
 {
@@ -31,7 +32,8 @@ protected:
     int weight;
 };
 
-class ItemSprite : public cocos2d::Sprite
+// class ItemSprite : public cocos2d::Sprite
+class ItemSprite : public MySprite
 {
 public:
     ItemSprite();

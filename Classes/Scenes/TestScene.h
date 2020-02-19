@@ -42,6 +42,7 @@ public:
      */
     cocos2d::Node* checkNodeAtPosition(const cocos2d::Vec2& position);
     cocos2d::Node* checkNodeAtPosition(const cocos2d::Vec2& position, const cocos2d::Vec2& frontVec);
+    void checkNodesAtPosition(const cocos2d::Vec2& position, cocos2d::Vector<Node*>* nodes);
     
 private:
     cocos2d::TMXTiledMap *_tiledMap;
@@ -75,7 +76,8 @@ private:
      @param node Acutal type is Node**
      @return true As always
      */
-    bool onQueryPoint(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* node);
+    bool onQueryPointNode(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* node);
+    bool onQueryPointNodes(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* nodes);
 };
 
 #endif // TEST_SCENE_H__

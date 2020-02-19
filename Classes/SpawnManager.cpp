@@ -109,5 +109,9 @@ Sprite* SpawnManager::createSpriteToSpawn() const
     {
         sprite = PawnSprite::create(_filename, 100.f);
     }
+    else if (!_whatToSpawn.compare("TreeSprite"))
+    {
+        sprite = UnitSprite::create(_filename);
+    }
     return sprite;
 }

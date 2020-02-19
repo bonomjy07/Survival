@@ -56,7 +56,7 @@ bool TestScene::init()
     
     // Create spawn manager for tree
     ValueMap spawnArea = objectGroup->getObject("SpawnArea");
-    SpawnManager* pawnManager = SpawnManager::create(spawnArea, "PawnSprite", "res/TestResource/TileImage/img_test_player.png");
+    SpawnManager* pawnManager = SpawnManager::create(spawnArea, "TreeSprite", "res/tileset/qubodup-bush_berries_0.png");
     if (pawnManager)
     {
         this->addChild(pawnManager);
@@ -68,31 +68,30 @@ bool TestScene::init()
     if (_player)
     {
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-        _player->startDrainStats();
         this->addChild(_player);
     }
     
-    DeerMeat* deerMeat = new DeerMeat();
-    log(deerMeat->getDescription());
-    
-    auto deerMeatSprite = Sprite::create(deerMeat->getImageFileName());
-    if (deerMeatSprite)
-    {
-        deerMeatSprite->setScale(0.25);
-        deerMeatSprite->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-        this->addChild(deerMeatSprite);
-        this->setViewPointCenter(deerMeatSprite->getPosition());
-    }
+    /*
+     DeerMeat* deerMeat = new DeerMeat();
+     log(deerMeat->getDescription());
+     auto deerMeatSprite = Sprite::create(deerMeat->getImageFileName());
+     if (deerMeatSprite)
+     {
+     deerMeatSprite->setScale(0.25);
+     deerMeatSprite->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+     this->addChild(deerMeatSprite);
+     //this->setViewPointCenter(deerMeatSprite->getPosition());
+     }
+     */
     
     auto deerMeatSprite2 = ItemSprite::create();
-    DeerMeat* deerMeat2 = new DeerMeat();
     if (deerMeatSprite2)
     {
-        deerMeatSprite2->setItem(deerMeat2);
-        deerMeatSprite2->setScale(0.25);
+        deerMeatSprite2->setTexture("res/TestResource/items/RawMeat.png");
         deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
+        deerMeatSprite2->setContentSize(Size(32,32));
+        deerMeatSprite2->initPhysicsBody();
         this->addChild(deerMeatSprite2);
-        this->setViewPointCenter(deerMeatSprite2->getPosition());
     }
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -124,13 +123,11 @@ bool TestScene::init()
 
 void TestScene::update(float deltaTime)
 {
-    // Keep view-point center
+    // Keep the player on center of view
     if (_player)
     {
         setViewPointCenter(_player->getPosition());
     }
-    
-    // Drain player's stat
 }
 
 TestScene* TestScene::getGameLayer()
@@ -165,9 +162,9 @@ bool TestScene::isCollidableTileForPosition(const cocos2d::Vec2& position)
 
 bool TestScene::isPositionWithinWorld(const Vec2 &position)
 {
-   if ((0.f <= position.x && position.x <= _tiledMap->getTileSize().width*_tiledMap->getMapSize().width) &&
-       (0.f <= position.y && position.y <= _tiledMap->getTileSize().height*_tiledMap->getMapSize().height))
-   {
+    if ((0.f <= position.x && position.x <= _tiledMap->getTileSize().width*_tiledMap->getMapSize().width) &&
+        (0.f <= position.y && position.y <= _tiledMap->getTileSize().height*_tiledMap->getMapSize().height))
+    {
        return true;
    }
     return false;
@@ -181,7 +178,7 @@ Node* TestScene::checkNodeAtPosition(const Vec2& position)
         if (auto pWorld = testScene->getPhysicsWorld())
         {
             Vec2 actualPosition = position + this->getPosition();
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPoint, this), actualPosition, (void*)&node);
+            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNode, this), actualPosition, (void*)&node);
         }
     }
     return node;
@@ -195,10 +192,22 @@ Node* TestScene::checkNodeAtPosition(const Vec2& position, const Vec2& frontVec)
         if (auto pWorld = testScene->getPhysicsWorld())
         {
             Vec2 actualPosition = position + this->getPosition() + _tiledMap->getTileSize().width*frontVec;
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPoint, this), actualPosition, (void*)&node);
+            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNode, this), actualPosition, (void*)&node);
         }
     }
     return node;
+}
+
+void TestScene::checkNodesAtPosition(const Vec2& position, Vector<Node*>* nodes)
+{
+    if (auto testScene = static_cast<Scene*>(getParent()))
+    {
+        if (auto pWorld = testScene->getPhysicsWorld())
+        {
+            Vec2 actualPosition = position + this->getPosition();
+            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNodes, this), actualPosition, (void*)nodes);
+        }
+    }
 }
 
 void TestScene::setViewPointCenter(const cocos2d::Vec2 position)
@@ -220,27 +229,29 @@ void TestScene::setViewPointCenter(const cocos2d::Vec2 position)
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
+    if (!_player) return;
+    
     // PawnSprite movement
     // Plus delta position to move
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
     {
         _player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
-        _player->setCurrentDirection(PawnDirection::Up);
+        _player->setCurrentDirection(PawnSprite::Direction::Up);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
     {
         _player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
-        _player->setCurrentDirection(PawnDirection::Down);
+        _player->setCurrentDirection(PawnSprite::Direction::Down);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
     {
         _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
-        _player->setCurrentDirection(PawnDirection::Right);
+        _player->setCurrentDirection(PawnSprite::Direction::Right);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
     {
         _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
-        _player->setCurrentDirection(PawnDirection::Left);
+        _player->setCurrentDirection(PawnSprite::Direction::Left);
     }
     
     // ESC action
@@ -284,16 +295,17 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         }
     }
     
-    // Interact
+    // Collect
     if (keyCode == EventKeyboard::KeyCode::KEY_F)
     {
-        
+        _player->collect();
     }
 }
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
     
+    if (!_player) return;
     // PawnSprite movement
     // Works as opposite onKeyPressed but no work for direction which is not concern on this function
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
@@ -323,7 +335,7 @@ Point TestScene::getTileCoorForPosition(const cocos2d::Vec2& position)
     return Point(x, y);
 }
 
-bool TestScene::onQueryPoint(PhysicsWorld &world, PhysicsShape &shape, void *node)
+bool TestScene::onQueryPointNode(PhysicsWorld &world, PhysicsShape &shape, void *node)
 {
     PhysicsBody* pBody;
     if (node && (pBody = shape.getBody()))
@@ -332,3 +344,15 @@ bool TestScene::onQueryPoint(PhysicsWorld &world, PhysicsShape &shape, void *nod
     }
     return true;
 }
+
+bool TestScene::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void* nodes)
+{
+    PhysicsBody* pBody;
+    if (nodes && (pBody = shape.getBody()))
+    {
+        Vector<Node*>* nodes = static_cast<Vector<Node*>*>(nodes);
+        nodes->pushBack(pBody->getNode());
+    }
+    return true;
+}
+

@@ -10,10 +10,10 @@
 
 USING_NS_CC;
 
-PawnSprite* PawnSprite::create(const std::string& filename, const float initialHealth)
+PawnSprite* PawnSprite::create(const std::string& filename, const float maxHealth)
 {
-    PawnSprite* sprite = new (std::nothrow) PawnSprite(initialHealth);
-    if (sprite && sprite->initWithFile(filename) && sprite->initPhysics())
+    PawnSprite* sprite = new (std::nothrow) PawnSprite(maxHealth);
+    if (sprite && sprite->initWithFile(filename) && sprite->initPhysicsBody())
     {
         sprite->autorelease();
         return sprite;
@@ -34,34 +34,16 @@ void PawnSprite::update(float dt)
     }
 }
 
-PawnSprite::PawnSprite(float initialHealth) : _currentHealth(initialHealth), _deltaPosition(0.f, 0.f)
-{
-    static int id = 0;
-    log("PawnSprite is created(id:%d)", ++id);
-    setName("pawn::" + std::to_string(id));
-}
+PawnSprite::PawnSprite(float maxHealth) : UnitSprite(maxHealth), _deltaPosition(0.f, 0.f) {}
 
-PawnSprite::~PawnSprite()
-{
-    log("PawnSprite is deleted");
-}
+PawnSprite::~PawnSprite() {}
 
-void PawnSprite::setCurrentHealth(float newHealth)
-{
-    _currentHealth = newHealth;
-}
-
-void PawnSprite::setCurrentDirection(const PawnDirection& newDirection)
+void PawnSprite::setCurrentDirection(const Direction& newDirection)
 {
     _currentDirection = newDirection;
 }
 
-float PawnSprite::getCurrentHealth() const
-{
-    return _currentHealth;
-}
-
-const PawnDirection& PawnSprite::getCurrentDirection() const
+const PawnSprite::Direction& PawnSprite::getCurrentDirection() const
 {
     return _currentDirection;
 }
@@ -71,15 +53,15 @@ Vec2 PawnSprite::getDeltaPositionOnDirection() const
     // Diagnal movement is not allowed
     if (fabs(_deltaPosition.x) == fabs(_deltaPosition.y))
     {
-        if (_currentDirection == PawnDirection::Up ||
-            _currentDirection == PawnDirection::Down)
+        if ((Direction::Up == _currentDirection) ||
+            (Direction::Down == _currentDirection))
         {
-            return Vec2(0, _deltaPosition.y);
+            return Vec2(0.f, _deltaPosition.y);
         }
-        else if (_currentDirection == PawnDirection::Right ||
-                 _currentDirection == PawnDirection::Left)
+        else if ((Direction::Right == _currentDirection) ||
+                 (Direction::Left == _currentDirection))
         {
-            return Vec2(_deltaPosition.x, 0);
+            return Vec2(_deltaPosition.x, 0.f);
         }
     }
     
@@ -94,50 +76,29 @@ const Vec2& PawnSprite::getDeltaPosition() const
 
 Vec2 PawnSprite::getFrontVec2() const
 {
-    if (_currentDirection == PawnDirection::Up)
+    if (Direction::Up == _currentDirection)
     {
         return {0.f, +1.f};
     }
-    else if (_currentDirection == PawnDirection::Down)
+    else if (Direction::Down == _currentDirection)
     {
         return {0.f, -1.f};
     }
-    else if (_currentDirection == PawnDirection::Right)
+    else if (Direction::Right == _currentDirection)
     {
         return {+1.f, 0.f};
     }
-    else if (_currentDirection == PawnDirection::Left)
+    else if (Direction::Left == _currentDirection)
     {
         return {-1.f, 0.f};
     }
     return Vec2::ZERO;
 }
 
-void PawnSprite::takeDamage(float damagedHealth)
-{
-    setCurrentHealth(_currentHealth - damagedHealth);
-}
-
 void PawnSprite::addDeltaPosition(float x, float y)
 {
     _deltaPosition.x += x;
     _deltaPosition.y += y;
-}
-
-bool PawnSprite::initPhysics()
-{
-    PhysicsBody* pBody;
-    if (!(pBody = PhysicsBody::createBox(Size(28.f, 28.f), PhysicsMaterial(0.1f, 1.0f, 0.0f))))
-    {
-        log("Failed to create physcis body for pawn");
-        return false;
-    }
-    pBody->setGroup(0x01);
-    pBody->setCategoryBitmask(0x02);
-    pBody->setCollisionBitmask(0x04);
-    pBody->setContactTestBitmask(0x08);
-    this->addComponent(pBody);
-    return true;
 }
 
 bool PawnSprite::canPawnMove(const Vec2& newPosition)
@@ -155,8 +116,10 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
                 // 4. New position mustn't be collidable tile
                 if (!gameLayer->isCollidableTileForPosition(newPosition))
                 {
-                    // 5. A object ahead of player mustn't exist
-                    if (!gameLayer->checkNodeAtPosition(getPosition(), getFrontVec2()))
+                    // 5. A sprite ahead of player mustn't be unit-sprite
+                    Node* node = gameLayer->checkNodeAtPosition(getPosition(), getFrontVec2());
+                    UnitSprite* unit = dynamic_cast<UnitSprite*>(node);
+                    if (!unit)
                     {
                         return true;
                     }

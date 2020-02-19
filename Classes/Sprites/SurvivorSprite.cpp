@@ -11,10 +11,10 @@
 
 USING_NS_CC;
 
-SurvivorSprite* SurvivorSprite::create(const std::string &filename, float initialHealth)
+SurvivorSprite* SurvivorSprite::create(const std::string &filename, float maxHealth)
 {
-    SurvivorSprite* sprite = new (std::nothrow) SurvivorSprite(initialHealth);
-    if (sprite && sprite->initWithFile(filename) && sprite->initPhysics())
+    SurvivorSprite* sprite = new (std::nothrow) SurvivorSprite(maxHealth);
+    if (sprite && sprite->initWithFile(filename) && sprite->initPhysicsBody())
     {
         sprite->autorelease();
         return sprite;
@@ -35,9 +35,7 @@ SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
     _drainDelay = 1.f;
 }
 
-SurvivorSprite::~SurvivorSprite()
-{
-}
+SurvivorSprite::~SurvivorSprite() {}
 
 const Stat& SurvivorSprite::getStat() const
 {
@@ -62,17 +60,19 @@ void SurvivorSprite::stopDrainStats()
     }
 }
 
-// TODO: Item must has physicsBody.....
 void SurvivorSprite::collect()
 {
-    // Get a node at front
     if (auto gameLayer = TestScene::getGameLayer())
     {
-        // TODO: Casting ItemSprite later....
-        if (Node* node = gameLayer->checkNodeAtPosition(getPosition(), getFrontVec2()))
+        // Get nodes at the sprite's position
+        Vector<Node*> nodes;
+        gameLayer->checkNodesAtPosition(getPosition(), &nodes);
+        for (const auto node : nodes)
         {
-            // TODO: Add it inventory
-            // TODO: item->wasCollected();
+           if (ItemSprite* item = dynamic_cast<ItemSprite*>(node))
+           {
+               log("Item!");
+           }
         }
     }
 }
