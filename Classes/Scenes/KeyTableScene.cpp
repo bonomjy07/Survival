@@ -127,6 +127,11 @@ void KeyTableScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
     log("onKeyPressed");
     log(canSetKey?"true":"false");
+    if( keyCode == EventKeyboard::KeyCode::KEY_ESCAPE ){
+        canSetKey = false;
+        curButton = nullptr;
+        return;
+    }
     if( canSetKey && curButton != NULL ){
         EventKeyboard::KeyCode key = static_cast<EventKeyboard::KeyCode>(curButton->getActionTag());
         std::string action = gameKeyBinder->findNewGameKeyAction(key);
