@@ -80,11 +80,7 @@ bool KeyTableScene::init()
     listener->onKeyPressed = CC_CALLBACK_2(KeyTableScene::onKeyPressed, this);
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
-    Vector<ui::TextField*> textFields;
-    Vector<Label*> labels;
-    // Key binding list
-    float y = 100.f;
-    
+    // Key binding   
     gameKeyBinder = new KeyBinder();
 
     showGameKeys();
@@ -108,8 +104,8 @@ void KeyTableScene::goBack()
 void KeyTableScene::showGameKeys(){
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
-    float x = 100.f;
-    float y = 100.f;
+    float x = visibleSize.width/3;
+    float y = visibleSize.height / 2;
 
     for (auto keyPair : gameKeyBinder->newGameKeyTable)
     {
@@ -119,8 +115,8 @@ void KeyTableScene::showGameKeys(){
         btn->setActionTag(static_cast<int>(keyPair.first));
         btn->addTouchEventListener(CC_CALLBACK_2(KeyTableScene::onButtonPressed, this));
         auto label2 = Label::createWithSystemFont(keyPair.second, "arial", 16);
-        label2->setPosition(visibleSize.width/3, y);
-        btn->Node::setPosition(visibleSize.width/3 + x, y);
+        label2->setPosition(x, y);
+        btn->Node::setPosition(x + x, y);
         y += label2->getContentSize().height;
         this->addChild(label2);
         this->addChild(btn);
