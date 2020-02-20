@@ -61,7 +61,7 @@ void SurvivorSprite::stopDrainStats()
 
 void SurvivorSprite::collect()
 {
-    if (auto gameLayer = TestScene::getGameLayer())
+    if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
     {
         // Get nodes at the sprite's position
         Vector<Node*> nodes;
