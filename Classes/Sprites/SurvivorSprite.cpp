@@ -8,6 +8,7 @@
 #include "SurvivorSprite.h"
 #include "TestScene.h"
 #include "Item.h"
+#include "ItemSprite.h"
 
 USING_NS_CC;
 
@@ -72,7 +73,7 @@ void SurvivorSprite::collect()
                // TODO: Implement inventory member variable.....
                
                // TODO: inventory.pushback(itemSprite->getItem());
-               // TODO: itemSprite->wasCollect(); // Show visual effect and delete ItemSprite on gameLayer
+               itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
                // TODO: log("Item %s was collected", itemSprite->getName());
                log("item...");
                // TODO: break; ??????
