@@ -6,7 +6,7 @@
 #include "PauseLayer.h"
 #include "StatLayer.h"
 
-#include "Item.h"
+#include "ItemSprite.h"
 #include "Food.h"
 #include "KeyBinder.h"
 
@@ -70,24 +70,12 @@ bool TestScene::init()
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
         this->addChild(_player);
     }
-    
-    /*
-     DeerMeat* deerMeat = new DeerMeat();
-     log(deerMeat->getDescription());
-     auto deerMeatSprite = Sprite::create(deerMeat->getImageFileName());
-     if (deerMeatSprite)
-     {
-     deerMeatSprite->setScale(0.25);
-     deerMeatSprite->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-     this->addChild(deerMeatSprite);
-     //this->setViewPointCenter(deerMeatSprite->getPosition());
-     }
-     */
-    
+
+    // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
     {
-        deerMeatSprite2->setTexture("res/TestResource/items/RawMeat.png");
+        deerMeatSprite2->setItem(new DeerMeat());
         deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
         deerMeatSprite2->setContentSize(Size(32,32));
         deerMeatSprite2->initPhysicsBody();
@@ -253,7 +241,11 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
         _player->setCurrentDirection(PawnSprite::Direction::Left);
     }
-    
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
+    {
+        _player->collect();
+    }
+
     // ESC action
     if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
     {
@@ -295,11 +287,6 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         }
     }
     
-    // Collect
-    if (keyCode == EventKeyboard::KeyCode::KEY_F)
-    {
-        _player->collect();
-    }
 }
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
@@ -355,4 +342,3 @@ bool TestScene::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void
     }
     return true;
 }
-
