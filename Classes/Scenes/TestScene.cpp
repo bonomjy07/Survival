@@ -107,8 +107,8 @@ bool TestScene::init()
     
     // create key binder
     //KeyBinder::loadGameKeyActions();
-    gameKeyBinder = KeyBinder::create();
-    
+    gameKeyBinder = new KeyBinder();
+
     // Register keyboard listener
     auto listener = EventListenerKeyboard::create();
     listener->onKeyPressed = CC_CALLBACK_2(TestScene::onKeyPressed, this);

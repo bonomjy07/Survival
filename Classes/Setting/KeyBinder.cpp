@@ -4,18 +4,44 @@
 USING_NS_CC;
 
 std::map<EventKeyboard::KeyCode, std::string> KeyBinder::gameKeyTable;
-KeyBinder::~KeyBinder(){}
+
+KeyBinder::KeyBinder(){
+    init();
+}
+KeyBinder::~KeyBinder(){
+    log("keybinder deleted");
+}
 
 bool KeyBinder::init()
 {
+    getNewGameKeyTable();
     return true;
 }
 
-void KeyBinder::setGameKeyAction(EventKeyboard::KeyCode key, std::string action)
+std::map<cocos2d::EventKeyboard::KeyCode, std::string>* KeyBinder::getTable(int table)
 {
+    std::map<cocos2d::EventKeyboard::KeyCode, std::string> *keyTable;
+    switch(table){
+        case 0:
+            keyTable = &(this->gameKeyTable);
+            break;
+        case 1:
+            keyTable = &(this->newGameKeyTable);
+            break;
+    }
+    return keyTable;
+}
+
+void KeyBinder::setKeyAction(int table, EventKeyboard::KeyCode key, std::string action)
+{
+    std::map<cocos2d::EventKeyboard::KeyCode, std::string> *keyTable;
+    keyTable = getTable(table);
+    if( !keyTable )
+        return;
+    
     bool check = false;
     EventKeyboard::KeyCode tempKey;
-    for(auto pair : gameKeyTable){
+    for(auto pair : *keyTable){
         if(!pair.second.compare(action)){
             tempKey = pair.first;
             check = true;
@@ -23,31 +49,66 @@ void KeyBinder::setGameKeyAction(EventKeyboard::KeyCode key, std::string action)
         }
     }
     if( check )
-        gameKeyTable.erase(tempKey);
-    gameKeyTable[key] = action;
+        (*keyTable).erase(tempKey);
+    (*keyTable)[key] = action;
 }
 
-std::string KeyBinder::findGameKeyAction(EventKeyboard::KeyCode key)
+std::string KeyBinder::findAction(int table, EventKeyboard::KeyCode key)
 {
-    if( gameKeyTable.find(key) == gameKeyTable.end() )
+    std::map<cocos2d::EventKeyboard::KeyCode, std::string> *keyTable;
+    keyTable = getTable(table);
+    if( !keyTable )
         return "None";
-    return gameKeyTable.find(key)->second;
+    if( (*keyTable).find(key) == (*keyTable).end() )
+        return "None";
+    return (*keyTable).find(key)->second;
 }
 
-void KeyBinder::loadGameKeyActions()
+
+bool KeyBinder::checkGameKeyAction(EventKeyboard::KeyCode key, std::string action)
+{
+    if( !findAction(0, key).compare(action) )
+        return true;
+    else
+        return false;  
+}
+
+void KeyBinder::getNewGameKeyTable()
+{
+    newGameKeyTable.clear();
+    for( auto pair : gameKeyTable ){
+        newGameKeyTable.insert(pair);
+    }
+}
+
+std::string KeyBinder::findNewGameKeyAction(cocos2d::EventKeyboard::KeyCode key)
+{
+    return findAction(1, key);
+}
+
+void KeyBinder::setNewGameKeyAction(cocos2d::EventKeyboard::KeyCode key, std::string action)
+{
+    setKeyAction(1, key, action);
+}
+
+bool KeyBinder::applyNewGameKey()
+{
+    gameKeyTable.clear();
+    for( auto pair : newGameKeyTable ){
+        gameKeyTable.insert(pair);
+    }
+}
+
+
+void KeyBinder::initGameKeyActions()
 {
     gameKeyTable[EventKeyboard::KeyCode::KEY_W] = "Up";
     gameKeyTable[EventKeyboard::KeyCode::KEY_D] = "Right";
     gameKeyTable[EventKeyboard::KeyCode::KEY_A] = "Left";
     gameKeyTable[EventKeyboard::KeyCode::KEY_S] = "Down";
-}
-
-bool KeyBinder::checkGameKeyAction(EventKeyboard::KeyCode key, std::string action)
-{
-    if( !findGameKeyAction(key).compare(action) )
-        return true;
-    else
-        return false;  
+    gameKeyTable[EventKeyboard::KeyCode::KEY_Z] = "Collect";
+    gameKeyTable[EventKeyboard::KeyCode::KEY_SPACE] = "Use";
+    gameKeyTable[EventKeyboard::KeyCode::KEY_F] = "Interact";
 }
 
 std::string KeyBinder::getKeyName(EventKeyboard::KeyCode key)

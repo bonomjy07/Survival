@@ -2,8 +2,8 @@
 #include "Item.h"
 
 // def item class
-Item::Item(char const * _des, char const * _img,
-     char const * _thumb, int _weight)
+Item::Item(const char * _des, const char * _img,
+     const char * _thumb, const int _weight)
     :description(_des), imageFileName(_img),
      thumbnailFileName(_thumb), weight(_weight)
 {
@@ -36,7 +36,10 @@ const char * Item::getThumbnailFileName()
 // def ItemSprite class
 ItemSprite::ItemSprite(){}
 
-ItemSprite::~ItemSprite(){}
+ItemSprite::~ItemSprite()
+{
+    item->release();
+}
 
 bool ItemSprite::init()
 {

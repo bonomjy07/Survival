@@ -6,8 +6,8 @@
 class Food : public Item
 {
 public:
-    Food( char const * _des,  char const * _img,
-     char const * _thumb, int _weight);
+    Food(const char * _des,  const char  * _img,
+     const char * _thumb, const int _weight);
     ~Food();
 
     virtual bool use()=0;
@@ -23,17 +23,15 @@ class DeerMeat : public Food
 {
 public:
     DeerMeat();
-    DeerMeat(char const * _des, char const * _img,
-     const char * _thumb, int _weight);
     ~DeerMeat();
 
     virtual bool use() override;
     virtual bool isMaterial() override;
 
 private:
-    static const char *DEER_MEAT_DESCRIPTION;
-    static const char *DEER_MEAT_IMAGE_FILE_NAME;
-    static const char *DEER_MEAT_THUMBNAIL_FILE_NAME;
+    static const char * const DEER_MEAT_DESCRIPTION;
+    static const char * const DEER_MEAT_IMAGE_FILE_NAME;
+    static const char * const DEER_MEAT_THUMBNAIL_FILE_NAME;
     static const int DEER_MEAT_WEIGHT;
 };
 
