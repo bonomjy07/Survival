@@ -36,7 +36,7 @@ public:
 private:
     Stat _stat;
     float _drainDelay;
-     // cocos2d::Vector<class Item*> inventory;
+    cocos2d::Vector<class Item*> inventory;
     // class ItemSprite* _collectable;
     
 private:
