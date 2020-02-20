@@ -33,6 +33,9 @@ DeerMeat::~DeerMeat()
 {
     log("DeerMeat deleted");
 }
+bool DeerMeat::init(){
+    return true;
+}
 
 bool DeerMeat::use(){
     return false;
