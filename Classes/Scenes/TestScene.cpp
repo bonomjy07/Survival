@@ -32,15 +32,15 @@ Scene* TestScene::createScene()
 
 bool TestScene::init()
 {
-    if (!Layer::init())
+    if (!GameLayer::init())
     {
         return false;
     }
     
     // Create tile map and layer in tile map
     _tiledMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx");
-    _meta = _tiledMap->getLayer("BlockLayer");
-    _meta->setVisible(false);
+    _block = _tiledMap->getLayer("BlockLayer");
+    _block->setVisible(false);
     this->addChild(_tiledMap);
     
     // Get SpawnPoint location
@@ -116,103 +116,6 @@ void TestScene::update(float deltaTime)
     {
         setViewPointCenter(_player->getPosition());
     }
-}
-
-TestScene* TestScene::getGameLayer()
-{
-    if (auto currentScene = Director::getInstance()->getRunningScene())
-    {
-        if (auto gameLayer = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
-        {
-            return gameLayer;
-        }
-    }
-    return nullptr;
-}
-
-bool TestScene::isCollidableTileForPosition(const cocos2d::Vec2& position)
-{
-    Point tileCoord = getTileCoorForPosition(position);
-    int tileGid = _meta->getTileGIDAt(tileCoord);
-    // Get the tile properties
-    Value properties = _tiledMap->getPropertiesForGID(tileGid);
-    if (!properties.isNull())
-    {
-        ValueMap propsMap = properties.asValueMap();
-        auto collidable = propsMap.find("collision");
-        if (collidable != propsMap.end() && collidable->second.asBool())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool TestScene::isPositionWithinWorld(const Vec2 &position)
-{
-    if ((0.f <= position.x && position.x <= _tiledMap->getTileSize().width*_tiledMap->getMapSize().width) &&
-        (0.f <= position.y && position.y <= _tiledMap->getTileSize().height*_tiledMap->getMapSize().height))
-    {
-       return true;
-   }
-    return false;
-}
-
-Node* TestScene::checkNodeAtPosition(const Vec2& position)
-{
-    Node* node = nullptr;
-    if (auto testScene = static_cast<Scene*>(getParent()))
-    {
-        if (auto pWorld = testScene->getPhysicsWorld())
-        {
-            Vec2 actualPosition = position + this->getPosition();
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNode, this), actualPosition, (void*)&node);
-        }
-    }
-    return node;
-}
-
-Node* TestScene::checkNodeAtPosition(const Vec2& position, const Vec2& frontVec)
-{
-    Node* node = nullptr;
-    if (auto testScene = static_cast<Scene*>(getParent()))
-    {
-        if (auto pWorld = testScene->getPhysicsWorld())
-        {
-            Vec2 actualPosition = position + this->getPosition() + _tiledMap->getTileSize().width*frontVec;
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNode, this), actualPosition, (void*)&node);
-        }
-    }
-    return node;
-}
-
-void TestScene::checkNodesAtPosition(const Vec2& position, Vector<Node*>* nodes)
-{
-    if (auto testScene = static_cast<Scene*>(getParent()))
-    {
-        if (auto pWorld = testScene->getPhysicsWorld())
-        {
-            Vec2 actualPosition = position + this->getPosition();
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNodes, this), actualPosition, (void*)nodes);
-        }
-    }
-}
-
-void TestScene::setViewPointCenter(const cocos2d::Vec2 position)
-{
-    Size WinSize = Director::getInstance()->getWinSize();
-    
-    float x = MAX(position.x, WinSize.width/2);
-    float y = MAX(position.y, WinSize.height/2);
-    
-    x = MIN(x, (_tiledMap->getMapSize().width*_tiledMap->getTileSize().width) - WinSize.width/2);
-    y = MIN(y, (_tiledMap->getMapSize().height*_tiledMap->getTileSize().height) - WinSize.height/2);
-    
-    Vec2 actualPosition(x, y);
-    Vec2 centerOfView(WinSize.width/2, WinSize.height/2);
-    Vec2 viewPoint = centerOfView - actualPosition;
-    
-    this->setPosition(viewPoint);
 }
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
@@ -311,34 +214,4 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     {
         _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
     }
-}
-
-Point TestScene::getTileCoorForPosition(const cocos2d::Vec2& position)
-{
-    int x = position.x / _tiledMap->getTileSize().width;
-    // TileMap::'y' and cocos2d::'y' are opposite
-    int y = ((_tiledMap->getMapSize().height*_tiledMap->getTileSize().height) - position.y) / _tiledMap->getTileSize().height;
-    
-    return Point(x, y);
-}
-
-bool TestScene::onQueryPointNode(PhysicsWorld &world, PhysicsShape &shape, void *node)
-{
-    PhysicsBody* pBody;
-    if (node && (pBody = shape.getBody()))
-    {
-        *static_cast<Node**>(node) = pBody->getNode();
-    }
-    return true;
-}
-
-bool TestScene::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void* nodes)
-{
-    PhysicsBody* pBody;
-    if (nodes && (pBody = shape.getBody()))
-    {
-        Vector<Node*>* tmpNodes = static_cast<Vector<Node*>*>(nodes);
-        tmpNodes->pushBack(pBody->getNode());
-    }
-    return true;
 }
