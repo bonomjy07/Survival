@@ -14,6 +14,7 @@ USING_NS_CC;
 SurvivorSprite* SurvivorSprite::create(const std::string &filename, float maxHealth)
 {
     SurvivorSprite* sprite = new (std::nothrow) SurvivorSprite(maxHealth);
+    // if (sprite && sprite->initWithFile(filename) && sprite->initPhysicsBody())
     if (sprite && sprite->initWithFile(filename) && sprite->initPhysicsBody())
     {
         sprite->autorelease();
@@ -83,8 +84,8 @@ void SurvivorSprite::collect()
 
 void SurvivorSprite::drainStats(float dt)
 {
-    _stat.updateCurrentThirsty(-1.f);
-    _stat.updateCurrentHunger(-1.f);
-    _stat.updateCurrentThirsty(-1.f);
     _stat.updateCurrentStamina(-1.f);
+    _stat.updateCurrentThirsty(-2.f);
+    _stat.updateCurrentHunger(-3.f);
+    _stat.updateCurrentSleep(-4.f);
 }

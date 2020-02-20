@@ -11,6 +11,7 @@
 #define UnitSprite_h
 
 #include "MySprite.h"
+#include "ui/CocosGUI.h"
 
 #define MAX_HEALTH 100.f
 
@@ -42,6 +43,7 @@ public:
 protected:
     float _currentHealth;
     float _maxHealth;
+    cocos2d::ui::LoadingBar* _healthBar;
     
 protected:
     virtual void onDeath();

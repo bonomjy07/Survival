@@ -18,6 +18,24 @@ Stat::Stat(float stamina, float thirsty, float hunger, float sleep)
 
 Stat::~Stat() {}
 
+float Stat::getMaxStamina() const
+{
+    return _maxStamina;
+}
+
+float Stat::getMaxThirsty() const
+{
+    return _maxThirsty;
+}
+float Stat::getMaxHunger() const
+{
+    return _maxHunger;
+}
+float Stat::getMaxSleep() const
+{
+    return _maxSleep;
+}
+
 float Stat::getCurrentStamina() const
 {
     return _currentStamina;

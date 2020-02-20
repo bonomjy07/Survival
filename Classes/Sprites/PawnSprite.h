@@ -56,6 +56,17 @@ public:
      */
     void addDeltaPosition(float x, float y);
     
+    /**
+     @brief Inserts new direction at begin of _directionList
+     */
+    void insertDirection(Direction newDirection);
+    
+    /**
+     @brief Erases released direction in _directionList
+     @details If multi key were pressed, get recent direction in _list
+     */
+    void eraseDirection(Direction releasedDirection);
+    
 protected:
     /**
      @brief Delta position is amount of movement
@@ -80,6 +91,16 @@ protected:
      @warning CanPawnMove function must be called before call this function
      */
     void moveThePawn(const cocos2d::Vec2& newPosition);
+    
+private:
+    /**
+     @brief New direction has to be insert at begin(first)
+     */
+    std::list<Direction> _directionList;
+    
+public:
+    void myInit();
+    void onKeyEvent(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 };
 
 #endif /* Pawn_h */

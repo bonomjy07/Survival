@@ -16,6 +16,8 @@ public:
     Stat(float stamina = 100.f, float thirsty = 100.f, float hunger = 100.f, float sleep = 100.f);
     virtual ~Stat();
     
+    enum class StatName {Stamina = 0, Thirsty, Hunger, Sleep};
+    
 public:
     float getMaxStamina() const;
     float getMaxThirsty() const;

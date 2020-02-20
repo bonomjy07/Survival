@@ -32,7 +32,7 @@ SpawnManager::SpawnManager(const cocos2d::ValueMap &spawnArea,
                            : _spawnArea(spawnArea), _whatToSpawn(whatToSpawn), _filename(filename)
 {
     log("Spawn Manager for %s created", whatToSpawn.c_str());
-    _maxSpawnNumber = 10;
+    _maxSpawnNumber = 20;
     _currentSpawnNumber = 0;
     _spawnDelay = 0.5f;
 }

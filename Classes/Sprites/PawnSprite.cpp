@@ -68,11 +68,11 @@ Vec2 PawnSprite::getDeltaPositionOnDirection() const
     // If it's not diagnal, just return delta position
     return _deltaPosition;
 }
-
+/*
 const Vec2& PawnSprite::getDeltaPosition() const
 {
     return _deltaPosition;
-}
+} */
 
 Vec2 PawnSprite::getFrontVec2() const
 {
@@ -99,6 +99,23 @@ void PawnSprite::addDeltaPosition(float x, float y)
 {
     _deltaPosition.x += x;
     _deltaPosition.y += y;
+}
+
+void PawnSprite::insertDirection(Direction newDirection)
+{
+    setCurrentDirection(newDirection);
+    // Recently pressed direction is at 'Begin'
+    _directionList.push_front(newDirection);
+}
+
+void PawnSprite::eraseDirection(Direction releasedDirection)
+{
+    _directionList.remove(releasedDirection);
+    // If multiple key pressed, use recent direction
+    if (_directionList.size() > 0)
+    {
+        setCurrentDirection(*_directionList.begin());
+    }
 }
 
 bool PawnSprite::canPawnMove(const Vec2& newPosition)
@@ -135,4 +152,17 @@ void PawnSprite::moveThePawn(const Vec2 &newPosition)
     float duration = 0.125f; // Less duration, More speed
     auto moveTo = MoveTo::create(duration, newPosition);
     this->runAction(moveTo);
+}
+
+void PawnSprite::myInit()
+{
+    auto listener = EventListenerKeyboard::create();
+    listener->onKeyPressed = CC_CALLBACK_2(PawnSprite::onKeyEvent, this);
+     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+    //_eventDispatcher->addEventListenerWithFixedPriority(listener, 100);
+}
+
+void PawnSprite::onKeyEvent(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
+{
+    log("keyCode : %d", (int)keyCode);
 }
