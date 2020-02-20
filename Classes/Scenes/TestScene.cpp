@@ -75,9 +75,9 @@ bool TestScene::init()
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
     {
-        deerMeatSprite2->setItem(new DeerMeat());
+        auto item = DeerMeat::create();
+        deerMeatSprite2->setItem(item);
         deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
-        deerMeatSprite2->setContentSize(Size(32,32));
         deerMeatSprite2->initPhysicsBody();
         this->addChild(deerMeatSprite2);
     }
