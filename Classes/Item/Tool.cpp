@@ -6,6 +6,7 @@ USING_NS_CC;
 
 Tool::Tool(const char * _des,  const char  * _img,
      const char * _thumb, const int _weight)
+    : Item(_des, _img, _thumb, _weight)
 {
 
 }
