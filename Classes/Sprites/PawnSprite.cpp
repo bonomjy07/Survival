@@ -107,7 +107,7 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
     if (getNumberOfRunningActions() < 1)
     {
         // 2. Pawn needs gameLayer for tiled Map information
-        if (auto gameLayer = TestScene::getGameLayer())
+        if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
         {
             // 3. New position must be within the world
             Vec2 newPosition = getPosition() + getDeltaPositionOnDirection();

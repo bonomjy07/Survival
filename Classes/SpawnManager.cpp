@@ -67,7 +67,7 @@ void SpawnManager::spawnTheSprite(float dt) // dt is not used
     }
     
     // 1. SpawnManager needs gameLayer
-    if (auto gameLayer = TestScene::getGameLayer())
+    if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
     {
         // 2. Get valid random poisition
         auto randomPosition = getRandomPointInArea();

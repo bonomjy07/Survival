@@ -6,7 +6,7 @@
 #include "PauseLayer.h"
 #include "StatLayer.h"
 
-#include "Item.h"
+#include "ItemSprite.h"
 #include "Food.h"
 #include "KeyBinder.h"
 
@@ -32,15 +32,15 @@ Scene* TestScene::createScene()
 
 bool TestScene::init()
 {
-    if (!Layer::init())
+    if (!GameLayer::init())
     {
         return false;
     }
     
     // Create tile map and layer in tile map
     _tiledMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx");
-    _meta = _tiledMap->getLayer("BlockLayer");
-    _meta->setVisible(false);
+    _block = _tiledMap->getLayer("BlockLayer");
+    _block->setVisible(false);
     this->addChild(_tiledMap);
     
     // Get SpawnPoint location
@@ -70,24 +70,12 @@ bool TestScene::init()
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
         this->addChild(_player);
     }
-    
-    /*
-     DeerMeat* deerMeat = new DeerMeat();
-     log(deerMeat->getDescription());
-     auto deerMeatSprite = Sprite::create(deerMeat->getImageFileName());
-     if (deerMeatSprite)
-     {
-     deerMeatSprite->setScale(0.25);
-     deerMeatSprite->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-     this->addChild(deerMeatSprite);
-     //this->setViewPointCenter(deerMeatSprite->getPosition());
-     }
-     */
-    
+
+    // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
     {
-        deerMeatSprite2->setTexture("res/TestResource/items/RawMeat.png");
+        deerMeatSprite2->setItem(new DeerMeat());
         deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
         deerMeatSprite2->setContentSize(Size(32,32));
         deerMeatSprite2->initPhysicsBody();
@@ -130,103 +118,6 @@ void TestScene::update(float deltaTime)
     }
 }
 
-TestScene* TestScene::getGameLayer()
-{
-    if (auto currentScene = Director::getInstance()->getRunningScene())
-    {
-        if (auto gameLayer = static_cast<TestScene*>(currentScene->getChildByName("GameLayer")))
-        {
-            return gameLayer;
-        }
-    }
-    return nullptr;
-}
-
-bool TestScene::isCollidableTileForPosition(const cocos2d::Vec2& position)
-{
-    Point tileCoord = getTileCoorForPosition(position);
-    int tileGid = _meta->getTileGIDAt(tileCoord);
-    // Get the tile properties
-    Value properties = _tiledMap->getPropertiesForGID(tileGid);
-    if (!properties.isNull())
-    {
-        ValueMap propsMap = properties.asValueMap();
-        auto collidable = propsMap.find("collision");
-        if (collidable != propsMap.end() && collidable->second.asBool())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool TestScene::isPositionWithinWorld(const Vec2 &position)
-{
-    if ((0.f <= position.x && position.x <= _tiledMap->getTileSize().width*_tiledMap->getMapSize().width) &&
-        (0.f <= position.y && position.y <= _tiledMap->getTileSize().height*_tiledMap->getMapSize().height))
-    {
-       return true;
-   }
-    return false;
-}
-
-Node* TestScene::checkNodeAtPosition(const Vec2& position)
-{
-    Node* node = nullptr;
-    if (auto testScene = static_cast<Scene*>(getParent()))
-    {
-        if (auto pWorld = testScene->getPhysicsWorld())
-        {
-            Vec2 actualPosition = position + this->getPosition();
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNode, this), actualPosition, (void*)&node);
-        }
-    }
-    return node;
-}
-
-Node* TestScene::checkNodeAtPosition(const Vec2& position, const Vec2& frontVec)
-{
-    Node* node = nullptr;
-    if (auto testScene = static_cast<Scene*>(getParent()))
-    {
-        if (auto pWorld = testScene->getPhysicsWorld())
-        {
-            Vec2 actualPosition = position + this->getPosition() + _tiledMap->getTileSize().width*frontVec;
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNode, this), actualPosition, (void*)&node);
-        }
-    }
-    return node;
-}
-
-void TestScene::checkNodesAtPosition(const Vec2& position, Vector<Node*>* nodes)
-{
-    if (auto testScene = static_cast<Scene*>(getParent()))
-    {
-        if (auto pWorld = testScene->getPhysicsWorld())
-        {
-            Vec2 actualPosition = position + this->getPosition();
-            pWorld->queryPoint(CC_CALLBACK_3(TestScene::onQueryPointNodes, this), actualPosition, (void*)nodes);
-        }
-    }
-}
-
-void TestScene::setViewPointCenter(const cocos2d::Vec2 position)
-{
-    Size WinSize = Director::getInstance()->getWinSize();
-    
-    float x = MAX(position.x, WinSize.width/2);
-    float y = MAX(position.y, WinSize.height/2);
-    
-    x = MIN(x, (_tiledMap->getMapSize().width*_tiledMap->getTileSize().width) - WinSize.width/2);
-    y = MIN(y, (_tiledMap->getMapSize().height*_tiledMap->getTileSize().height) - WinSize.height/2);
-    
-    Vec2 actualPosition(x, y);
-    Vec2 centerOfView(WinSize.width/2, WinSize.height/2);
-    Vec2 viewPoint = centerOfView - actualPosition;
-    
-    this->setPosition(viewPoint);
-}
-
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
     if (!_player) return;
@@ -253,7 +144,11 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
         _player->setCurrentDirection(PawnSprite::Direction::Left);
     }
-    
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
+    {
+        _player->collect();
+    }
+
     // ESC action
     if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
     {
@@ -295,11 +190,6 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         }
     }
     
-    // Collect
-    if (keyCode == EventKeyboard::KeyCode::KEY_F)
-    {
-        _player->collect();
-    }
 }
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
@@ -325,34 +215,3 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
     }
 }
-
-Point TestScene::getTileCoorForPosition(const cocos2d::Vec2& position)
-{
-    int x = position.x / _tiledMap->getTileSize().width;
-    // TileMap::'y' and cocos2d::'y' are opposite
-    int y = ((_tiledMap->getMapSize().height*_tiledMap->getTileSize().height) - position.y) / _tiledMap->getTileSize().height;
-    
-    return Point(x, y);
-}
-
-bool TestScene::onQueryPointNode(PhysicsWorld &world, PhysicsShape &shape, void *node)
-{
-    PhysicsBody* pBody;
-    if (node && (pBody = shape.getBody()))
-    {
-        *static_cast<Node**>(node) = pBody->getNode();
-    }
-    return true;
-}
-
-bool TestScene::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void* nodes)
-{
-    PhysicsBody* pBody;
-    if (nodes && (pBody = shape.getBody()))
-    {
-        Vector<Node*>* tmpNodes = static_cast<Vector<Node*>*>(nodes);
-        tmpNodes->pushBack(pBody->getNode());
-    }
-    return true;
-}
-

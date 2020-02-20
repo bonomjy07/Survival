@@ -32,25 +32,6 @@ protected:
     const int weight;
 };
 
-// class ItemSprite : public cocos2d::Sprite
-class ItemSprite : public MySprite
-{
-public:
-    ItemSprite();
-    virtual ~ItemSprite();
-
-    virtual bool init();
-
-    Item * getItem();
-    void setItem(Item *_item);
-
-    void setItemTexture();
-
-    CREATE_FUNC(ItemSprite);
-protected:
-    Item *item;
-};
-
 // craft item interface
 class Craftable
 {
