@@ -6,7 +6,7 @@
 USING_NS_CC;
 
 Food::Food(char const* _des,  char const* _img,
-      char const* _thumb, int _weight)
+      char const* _thumb, const int _weight)
     : Item(_des, _img, _thumb, _weight)
 {
 
