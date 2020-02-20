@@ -7,7 +7,6 @@
 
 #include "StatLayer.h"
 #include "Stat.h"
-#include "ui/CocosGUI.h"
 
 USING_NS_CC;
 
@@ -42,65 +41,42 @@ bool StatLayer::init()
     statList->setDirection(ui::ListView::Direction::VERTICAL);
     statList->setItemsMargin(0);
 
-    if (auto list = ui::ListView::create())
+    std::string texts[4] = {"Stmina", "Thirsty", "Hunger", "Sleep"};
+    for (int i = 0; i < 4; ++i)
     {
-        auto text = ui::Text::create("stamina", "fonts/arial.ttf", 16);
-        text->setContentSize(Size(60, 20));
-        text->ignoreContentAdaptWithSize(false);
-        auto bar = ui::LoadingBar::create("res/TestResource/TileImage/img_block.png");
-        bar->setDirection(ui::LoadingBar::Direction::RIGHT);
-        bar->setPercent(100);
-        list->setContentSize(Size(bar->getContentSize().width + text->getContentSize().width, bar->getContentSize().height));
-        list->setDirection(ui::ListView::Direction::HORIZONTAL);
-        list->pushBackCustomItem(text);
-        list->pushBackCustomItem(bar);
-        statList->pushBackCustomItem(list);
-    }
-    if (auto list = ui::ListView::create())
-    {
-        auto text = ui::Text::create("Thirsty", "fonts/arial.ttf", 16);
-        text->setContentSize(Size(60, 20));
-        text->ignoreContentAdaptWithSize(false);
-        auto bar = ui::LoadingBar::create("res/TestResource/TileImage/img_block.png");
-        bar->setDirection(ui::LoadingBar::Direction::RIGHT);
-        bar->setPercent(100);
-        list->setContentSize(Size(bar->getContentSize().width + text->getContentSize().width, bar->getContentSize().height));
-        list->setDirection(ui::ListView::Direction::HORIZONTAL);
-        list->pushBackCustomItem(text);
-        list->pushBackCustomItem(bar);
-        statList->pushBackCustomItem(list);
-    }
-    if (auto list = ui::ListView::create())
-    {
-        auto text = ui::Text::create("Hunger", "fonts/arial.ttf", 16);
-        text->setContentSize(Size(60, 20));
-        text->ignoreContentAdaptWithSize(false);
-        auto bar = ui::LoadingBar::create("res/TestResource/TileImage/img_block.png");
-        bar->setDirection(ui::LoadingBar::Direction::RIGHT);
-        bar->setPercent(100);
-        list->setContentSize(Size(bar->getContentSize().width + text->getContentSize().width, bar->getContentSize().height));
-        list->setDirection(ui::ListView::Direction::HORIZONTAL);
-        list->pushBackCustomItem(text);
-        list->pushBackCustomItem(bar);
-        statList->pushBackCustomItem(list);
-    }
-    if (auto list = ui::ListView::create())
-    {
-        auto text = ui::Text::create("Sleep", "fonts/arial.ttf", 16);
-        text->setContentSize(Size(60, 20));
-        text->ignoreContentAdaptWithSize(false);
-        auto bar = ui::LoadingBar::create("res/TestResource/TileImage/img_block.png");
-        bar->setDirection(ui::LoadingBar::Direction::RIGHT);
-        bar->setPercent(100);
-        list->setContentSize(Size(bar->getContentSize().width + text->getContentSize().width, bar->getContentSize().height));
-        list->setDirection(ui::ListView::Direction::HORIZONTAL);
-        list->pushBackCustomItem(text);
-        list->pushBackCustomItem(bar);
-        statList->pushBackCustomItem(list);
+        if (auto list = ui::ListView::create())
+        {
+            if ((_texts[i] = ui::Text::create(texts[i], "fonts'arial.ttf", 16)))
+            {
+                _texts[i]->setContentSize(Size(60, 20));
+                _texts[i]->ignoreContentAdaptWithSize(false);
+                list->pushBackCustomItem(_texts[i]);
+            }
+            if ((_bars[i] = ui::LoadingBar::create("res/TestResource/TileImage/img_block.png")))
+            {
+                _bars[i]->setDirection(ui::LoadingBar::Direction::LEFT);
+                _bars[i]->setPercent(100);
+                list->pushBackCustomItem(_bars[i]);
+            }
+            if (list->getItems().size() == 2)
+            {
+                list->setContentSize(Size(_bars[i]->getContentSize().width + _texts[i]->getContentSize().width, _bars[i]->getContentSize().height));
+                list->setDirection(ui::ListView::Direction::HORIZONTAL);
+                statList->pushBackCustomItem(list);
+            }
+        }
     }
     
     this->addChild(statList);
     return true;
+}
+
+void StatLayer::update(float dt)
+{
+    _bars[static_cast<int>(Stat::StatName::Stamina)]->setPercent(_stat.getCurrentStamina()/                _stat.getMaxStamina()*100.f);
+    _bars[static_cast<int>(Stat::StatName::Thirsty)]->setPercent(_stat.getCurrentThirsty()/                _stat.getMaxThirsty()*100.f);
+    _bars[static_cast<int>(Stat::StatName::Hunger)]->setPercent(_stat.getCurrentHunger()/                _stat.getMaxHunger()*100.f);
+    _bars[static_cast<int>(Stat::StatName::Sleep)]->setPercent(_stat.getCurrentSleep()/                _stat.getMaxSleep()*100.f);
 }
 
 StatLayer::StatLayer(const Stat& stat) : _stat(stat)

@@ -68,6 +68,7 @@ bool TestScene::init()
     if (_player)
     {
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+        _player->startDrainStats();
         this->addChild(_player);
     }
 
@@ -127,22 +128,22 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
     {
         _player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
-        _player->setCurrentDirection(PawnSprite::Direction::Up);
+        _player->insertDirection(PawnSprite::Direction::Up);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
     {
         _player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
-        _player->setCurrentDirection(PawnSprite::Direction::Down);
+        _player->insertDirection(PawnSprite::Direction::Down);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
     {
         _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
-        _player->setCurrentDirection(PawnSprite::Direction::Right);
+        _player->insertDirection(PawnSprite::Direction::Right);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
     {
         _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
-        _player->setCurrentDirection(PawnSprite::Direction::Left);
+        _player->insertDirection(PawnSprite::Direction::Left);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
     {
@@ -170,6 +171,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         }
     }
     
+    // Stat layer
     if (EventKeyboard::KeyCode::KEY_TAB == keyCode)
     {
         if (Scene* parent = static_cast<Scene*>(getParent()))
@@ -185,6 +187,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
                 if (auto statLayer = StatLayer::create(_player->getStat()))
                 {
                     parent->addChild(statLayer);
+                    statLayer->scheduleUpdate();
                 }
             }
         }
@@ -201,17 +204,21 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
     {
         _player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
+        _player->eraseDirection(PawnSprite::Direction::Up);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
     {
         _player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
+        _player->eraseDirection(PawnSprite::Direction::Down);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
     {
         _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
+        _player->eraseDirection(PawnSprite::Direction::Right);
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
     {
         _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
+        _player->eraseDirection(PawnSprite::Direction::Left);
     }
 }

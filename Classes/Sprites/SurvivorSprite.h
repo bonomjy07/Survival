@@ -19,7 +19,7 @@ class SurvivorSprite : public PawnSprite
 public:
     static SurvivorSprite* create(const std::string& filename, float initialHealth);
     void update(float dt) override;
-    
+
 public:
     SurvivorSprite(float health);
     virtual ~SurvivorSprite();
@@ -31,11 +31,12 @@ public:
     void stopDrainStats();
     
     void collect();
-    void use();
+    //void useItemOnHand();
     
 private:
     Stat _stat;
     float _drainDelay;
+    class Item* _itemOnHand;
      // cocos2d::Vector<class Item*> inventory;
     // class ItemSprite* _collectable;
     

@@ -7,6 +7,8 @@
 
 #include "UnitSprite.h"
 
+USING_NS_CC;
+
 UnitSprite* UnitSprite::create(const std::string& filename, float maxHealth)
 {
     UnitSprite* sprite = new(std::nothrow) UnitSprite(maxHealth);
@@ -19,7 +21,10 @@ UnitSprite* UnitSprite::create(const std::string& filename, float maxHealth)
     return nullptr;
 }
 
-UnitSprite::UnitSprite(float maxHealth) : _maxHealth(maxHealth) {_currentHealth = _maxHealth;}
+UnitSprite::UnitSprite(float maxHealth) : _maxHealth(maxHealth)
+{
+    _currentHealth = _maxHealth;
+}
 
 UnitSprite::~UnitSprite() {}
 
