@@ -38,6 +38,7 @@ void ItemSprite::setItemTexture()
 {
     if(this->item){
         this->setTexture(this->item->getImageFileName());
+        setContentSize(Size(32,32));
     }
 }
 
