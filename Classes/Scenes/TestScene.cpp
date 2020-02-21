@@ -5,6 +5,7 @@
 #include "SpawnManager.h"
 #include "PauseLayer.h"
 #include "StatLayer.h"
+#include "InventoryLayer.h"
 
 #include "ItemSprite.h"
 #include "Food.h"
@@ -59,19 +60,14 @@ bool TestScene::init()
         this->addChild(pawnManager);
         pawnManager->startSpawn();
     }
-    
-    // Create player character
+
+
     ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
-    _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-    if (_player)
-    {
-        _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-        this->addChild(_player);
-    }
 
-    // Create item sprite
+    
+     // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
     {
@@ -81,6 +77,15 @@ bool TestScene::init()
         deerMeatSprite2->initPhysicsBody();
         this->addChild(deerMeatSprite2);
     }
+
+    // Create player character
+    _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+    if (_player)
+    {
+        _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+        this->addChild(_player);
+    }
+
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -147,6 +152,20 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
     {
         _player->collect();
+    }
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Inventory") )
+    {
+        auto parent = static_cast<Scene*>(getParent());
+        if (auto inventoryLayer = parent->getChildByName("InventoryLayer"))
+        {
+            parent->removeChild(inventoryLayer);
+        }
+        // Create inventory layer if it doens't exist
+        else if (auto inventoryLayer = InventoryLayer::create())
+        {
+            inventoryLayer->setInventory((_player->getInventory()));
+            parent->addChild(inventoryLayer);
+        }
     }
 
     // ESC action
