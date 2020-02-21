@@ -8,9 +8,11 @@
 // Below code is default code.
 //#include "InventoryLayer.hpp"
 
+#include "ui/CocosGUI.h"
+
 #include "InventoryLayer.h"
 #include "GridView.h"
-#include "ui/CocosGUI.h"
+#include "ItemSprite.h"
 
 USING_NS_CC;
 
@@ -39,7 +41,7 @@ bool InventoryLayer::init()
         gridView->addChild(layout);
     }
     gridView->setAnchorPoint(Point(0.5f,0.5f));
-    gridView->setPosition(Point(visibleSize.width/2, visibleSize.height*2/3));
+    gridView->setPosition(Point(visibleSize.width/2, visibleSize.height/2));
     gridView->arrange();
     this->addChild(gridView);
     // moveCenter();
@@ -55,4 +57,23 @@ void InventoryLayer::moveCenter()
     setContentSize(visibleSize);
     auto gridSize = gridView->getContentSize();
     // this->setPosition(visibleSize.width/2 - gridSize.width/2, visibleSize.height/2);
+}
+
+void InventoryLayer::setInventory(cocos2d::Vector<class Item*> *inven)
+{
+    inventory = inven;
+    int idx = 0;
+    for (auto child : gridView->getChildren())
+    {
+        if ( inventory->size() > idx ){
+            auto itemSprite = ItemSprite::create();
+            itemSprite->setItem(inventory->at(idx));
+            auto size = child->getContentSize();
+            itemSprite->setContentSize(size);
+            auto position = child->getPosition() + Vec2(size.width/2, size.height/2);
+            itemSprite->setPosition(position);
+            gridView->addChild(itemSprite);
+        }
+        idx++;
+    }
 }

@@ -30,7 +30,7 @@ public:
     
     float getWeight() const;
     void setWeight(float deltaWeight);
-
+    void setInventory(cocos2d::Vector<class Item*> *inven);
 private:
     void moveCenter();
     
@@ -38,4 +38,5 @@ private:
     //cocos2d::Vector<class Item> inventoryItems;
     float weight;
     GridView *gridView;
+    cocos2d::Vector<class Item*> *inventory;
 };
