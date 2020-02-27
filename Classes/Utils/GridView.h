@@ -33,4 +33,4 @@ protected:
 
 };
 
-#endif GRID_VIEW_H__
+#endif //GRID_VIEW_H__
