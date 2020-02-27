@@ -7,6 +7,7 @@
 #include "StatLayer.h"
 #include "InventoryLayer.h"
 
+#include "Multi.h"
 #include "ItemSprite.h"
 #include "Food.h"
 #include "KeyBinder.h"
@@ -66,7 +67,7 @@ bool TestScene::init()
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
 
-    
+
      // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
@@ -108,6 +109,9 @@ bool TestScene::init()
     listener->onKeyReleased = CC_CALLBACK_2(TestScene::onKeyReleased, this);
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
+    multi = new Multi();
+
+
     // Allow update(float dt) to be called so that pawns move
     this->scheduleUpdate();
     
@@ -125,6 +129,8 @@ void TestScene::update(float deltaTime)
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
+
+    multi->sendText();
     if (!_player) return;
     
     // PawnSprite movement
