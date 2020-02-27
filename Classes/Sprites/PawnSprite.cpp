@@ -24,12 +24,27 @@ PawnSprite* PawnSprite::create(const std::string& filename, const float maxHealt
 
 void PawnSprite::update(float dt)
 {
-    if (!_deltaPosition.equals(Vec2::ZERO))
+    if (!_deltaPosition.equals(Vec2::ZERO)) // &&  !_waiting
     {
         Vec2 newPosition = getPosition()+getDeltaPositionOnDirection();
         if (canPawnMove(newPosition))
         {
-            moveThePawn(newPosition);
+            if (auto gameLayer = dynamic_cast<GameLayer*>(_parent))
+            {
+                if (gameLayer->_role == GameLayer::Role::Host)
+                {
+                    moveThePawn(newPosition);
+                    
+                    if (gameLayer->getClient())
+                    {
+                        std::string ID, X, Y;
+                        ID = ID+"\"ID\""+":"+"\""+_ID+"\"";
+                        X = X+"\"x\""+":"+std::to_string(newPosition.x);
+                        Y = Y+"\"y\""+":"+std::to_string(newPosition.y);
+                        gameLayer->getClient()->emit("pawnMove", "{" + ID + ","+X+","+Y+"}");
+                    }
+                }
+            }
         }
     }
 }
@@ -68,11 +83,6 @@ Vec2 PawnSprite::getDeltaPositionOnDirection() const
     // If it's not diagnal, just return delta position
     return _deltaPosition;
 }
-/*
-const Vec2& PawnSprite::getDeltaPosition() const
-{
-    return _deltaPosition;
-} */
 
 Vec2 PawnSprite::getFrontVec2() const
 {
@@ -104,8 +114,7 @@ void PawnSprite::addDeltaPosition(float x, float y)
 void PawnSprite::insertDirection(Direction newDirection)
 {
     setCurrentDirection(newDirection);
-    // Recently pressed direction is at 'Begin'
-    _directionList.push_front(newDirection);
+    _directionList.push_front(newDirection); // Recenlty pressed direction is at 'Begin'
 }
 
 void PawnSprite::eraseDirection(Direction releasedDirection)
@@ -127,7 +136,6 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
         if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
         {
             // 3. New position must be within the world
-            Vec2 newPosition = getPosition() + getDeltaPositionOnDirection();
             if (gameLayer->isPositionWithinWorld(newPosition))
             {
                 // 4. New position mustn't be collidable tile
@@ -152,17 +160,4 @@ void PawnSprite::moveThePawn(const Vec2 &newPosition)
     float duration = 0.125f; // Less duration, More speed
     auto moveTo = MoveTo::create(duration, newPosition);
     this->runAction(moveTo);
-}
-
-void PawnSprite::myInit()
-{
-    auto listener = EventListenerKeyboard::create();
-    listener->onKeyPressed = CC_CALLBACK_2(PawnSprite::onKeyEvent, this);
-     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-    //_eventDispatcher->addEventListenerWithFixedPriority(listener, 100);
-}
-
-void PawnSprite::onKeyEvent(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
-{
-    log("keyCode : %d", (int)keyCode);
 }

@@ -51,5 +51,6 @@ void UnitSprite::takeDamage(float deltaDamage)
 void UnitSprite::onDeath()
 {
     // TODO: Show visual effect and ....
+    getParent()->removeChild(this);
 }
 

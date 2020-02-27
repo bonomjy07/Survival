@@ -10,6 +10,8 @@
 #ifndef MySprite_h
 #define MySprite_h
 
+#include "GameLayer.h"
+
 class MySprite : public cocos2d::Sprite
 {
 public:

@@ -26,6 +26,9 @@ private:
      */
     void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) override;
     
+    void togglePauseUI();
+    
+    void toggleStatUI();
 };
 
 #endif // TEST_SCENE_H__

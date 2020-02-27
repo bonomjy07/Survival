@@ -10,6 +10,7 @@
 #define MainScene_h
 
 #include "cocos2d.h"
+#include "ui/CocosGUI.h"
 
 class MainScene : public cocos2d::Layer
 {
@@ -20,7 +21,14 @@ public:
     
 private:
     void onStartGame();
+    void onHostGame();
+    void onEnterGame();
     void onKeyBinding();
     void onExitGame();
+    
+    // 테스트
+public:
+    cocos2d::ui::TextField* _uriTextField;
 };
+
 #endif /* MainScene_h */

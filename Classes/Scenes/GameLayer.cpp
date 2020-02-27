@@ -1,7 +1,9 @@
 
 #include "GameLayer.h"
+#include "SurvivorSprite.h"
 
-#include <string>
+#include "json/rapidjson.h"
+#include "json/document.h"
 
 USING_NS_CC;
 
@@ -14,7 +16,6 @@ bool GameLayer::init()
     
     return true;
 }
-
 
 bool GameLayer::isCollidableTileForPosition(const cocos2d::Vec2& position)
 {
@@ -47,7 +48,7 @@ bool GameLayer::isPositionWithinWorld(const Vec2 &position)
 Node* GameLayer::checkNodeAtPosition(const Vec2& position)
 {
     Node* node = nullptr;
-    if (auto testScene = static_cast<Scene*>(getParent()))
+    if (auto testScene = dynamic_cast<Scene*>(getParent()))
     {
         if (auto pWorld = testScene->getPhysicsWorld())
         {
@@ -61,7 +62,7 @@ Node* GameLayer::checkNodeAtPosition(const Vec2& position)
 Node* GameLayer::checkNodeAtPosition(const Vec2& position, const Vec2& frontVec)
 {
     Node* node = nullptr;
-    if (auto testScene = static_cast<Scene*>(getParent()))
+    if (auto testScene = dynamic_cast<Scene*>(getParent()))
     {
         if (auto pWorld = testScene->getPhysicsWorld())
         {
@@ -74,7 +75,7 @@ Node* GameLayer::checkNodeAtPosition(const Vec2& position, const Vec2& frontVec)
 
 void GameLayer::checkNodesAtPosition(const Vec2& position, Vector<Node*>* nodes)
 {
-    if (auto testScene = static_cast<Scene*>(getParent()))
+    if (auto testScene = dynamic_cast<Scene*>(getParent()))
     {
         if (auto pWorld = testScene->getPhysicsWorld())
         {
@@ -129,4 +130,192 @@ bool GameLayer::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void
         tmpNodes->pushBack(pBody->getNode());
     }
     return true;
+}
+
+void GameLayer::setClient(cocos2d::network::SIOClient* client)
+{
+    _client = client;
+}
+
+void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
+{
+    if (auto player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f))
+    {
+        player->_ID = ID;
+        // TODO: Make it simple...
+        TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
+        if (objectGroup)
+        {
+            ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
+            float x = spawnPoint["x"].asFloat();
+            float y = spawnPoint["y"].asFloat();
+            player->setPosition({x, y});
+            addChild(player);
+            _playersManager.insert({ID, player});
+        }
+    }
+}
+
+void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& position)
+{
+    if (auto player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f))
+    {
+        player->_ID = ID;
+        player->setPosition(position);
+        addChild(player);
+        _playersManager.insert({ID, player});
+    }
+}
+
+void GameLayer::onRequestPlayerID(cocos2d::network::SIOClient* client, const std::string& data)
+{
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        _myID = document["MyID"].GetString();
+        if (_myID.compare(document["HostID"].GetString()) == 0)
+        {
+            _role = Role::Host;
+        }
+        else
+        {
+            _role = Role::Client;
+        }
+        
+        auto playerList = document["PlayerList"].GetArray();
+        for (auto it = playerList.begin(); it != playerList.end(); ++it)
+        {
+            std::string ID = it->GetString();
+            addPlayerSpriteInWorld(ID, {336, 368});
+        }
+    }
+}
+
+void GameLayer::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& data)
+{
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        std::string ID = document["ID"].GetString();
+        addPlayerSpriteInWorld(ID, {336, 368});
+    }
+}
+
+void GameLayer::onPawnMove(cocos2d::network::SIOClient* client, const std::string& data)
+{
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        std::string ID = document["ID"].GetString();
+        Vec2 newPosition(document["x"].GetFloat(), document["y"].GetFloat());
+        auto playerSprite = getPlayerSprite(ID);
+        playerSprite->moveThePawn(newPosition);
+    }
+}
+
+void GameLayer::onMovePressed(cocos2d::network::SIOClient *client, const std::string &data)
+{
+    // get direction
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        std::string ID = document["ID"].GetString();
+        std::string direction = document["direction"].GetString();
+        if (auto playerSprite = getPlayerSprite(ID))
+        {
+            if (!direction.compare("up"))
+            {
+                playerSprite->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
+                playerSprite->insertDirection(PawnSprite::Direction::Up);
+            }
+            else if (!direction.compare("down"))
+            {
+                playerSprite->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
+                playerSprite->insertDirection(PawnSprite::Direction::Down);
+            }
+            else if (!direction.compare("right"))
+            {
+                playerSprite->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
+                playerSprite->insertDirection(PawnSprite::Direction::Right);
+            }
+            else if (!direction.compare("left"))
+            {
+                playerSprite->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
+                playerSprite->insertDirection(PawnSprite::Direction::Left);
+            }
+        }
+    }
+}
+
+void GameLayer::onMoveReleased(cocos2d::network::SIOClient* client, const std::string& data)
+{
+    // get direction
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        auto ID = document["ID"].GetString();
+        std::string direction = document["direction"].GetString();
+        if (auto playerSprite = getPlayerSprite(ID))
+        {
+            if (!direction.compare("up"))
+            {
+                playerSprite->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
+                playerSprite->eraseDirection(PawnSprite::Direction::Up);
+            }
+            else if (!direction.compare("down"))
+            {
+                playerSprite->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
+                playerSprite->eraseDirection(PawnSprite::Direction::Down);
+            }
+            else if (!direction.compare("right"))
+            {
+                playerSprite->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
+                playerSprite->eraseDirection(PawnSprite::Direction::Right);
+            }
+            else if (!direction.compare("left"))
+            {
+                playerSprite->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
+                playerSprite->eraseDirection(PawnSprite::Direction::Left);
+            }
+        }
+    }
+}
+
+class SurvivorSprite* GameLayer::getPlayerSprite(const std::string &ID) const
+{
+    if (_playersManager.find(ID) == _playersManager.end())
+        return nullptr;
+    return _playersManager.at(ID);
+}
+
+class SurvivorSprite* GameLayer::getPlayerSprite() const
+{
+    if (_playersManager.find(_myID) == _playersManager.end())
+        return nullptr;
+    return _playersManager.at(_myID);
+}
+
+std::string& GameLayer::getMyID()
+{
+    return _myID;
+}
+
+void GameLayer::setMyID(const std::string& newID)
+{
+    _myID = newID;
+}
+
+cocos2d::network::SIOClient* GameLayer::getClient()
+{
+    return _client;
+}
+
+void GameLayer::setClient(cocos2d::network::SIOClient* client)
+{
+    _client = client;
 }

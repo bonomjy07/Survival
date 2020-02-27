@@ -4,14 +4,14 @@
 //
 //  Created by jy_maeng on 2020/02/06.
 //
+#include <unistd.h>
 
 #include "MainScene.h"
 #include "TestScene.h"
 #include "KeyTableScene.h"
+#include "network/SocketIO.h"
 
-#include "StatLayer.h" // Remove it later/.//
 #include "Stat.h"
-#include "ui/CocosGUI.h"
 
 USING_NS_CC;
 
@@ -42,6 +42,30 @@ bool MainScene::init()
             menuItems.pushBack(menuStartLabel);
         }
     }
+    // Create Host label
+    if (auto hostLabel = Label::createWithSystemFont("Host", "arial", 16))
+    {
+        if (auto menuHostLabel = MenuItemLabel::create(hostLabel, CC_CALLBACK_0(MainScene::onHostGame, this)))
+        {
+            menuItems.pushBack(menuHostLabel);
+        }
+    }
+    // Create textField
+    _uriTextField = cocos2d::ui::TextField::create("Enter URI", "arial", 16);
+    if (_uriTextField)
+    {
+        _uriTextField->setMaxLength(20);
+        _uriTextField->setPosition(Vec2(200, 100));
+        addChild(_uriTextField);
+    }
+    // Create Enter label
+    if (auto enterLabel = Label::createWithSystemFont("Enter", "arial", 16))
+    {
+        if (auto menuEnterLabel = MenuItemLabel::create(enterLabel, CC_CALLBACK_0(MainScene::onEnterGame, this)))
+        {
+            menuItems.pushBack(menuEnterLabel);
+        }
+    }
     // Create menu key binding label
     if (auto keyBindinglabel = Label::createWithSystemFont("Key Setting", "fonts/arial", 16))
     {
@@ -69,13 +93,20 @@ bool MainScene::init()
     return true;
 }
 
-void MainScene::onStartGame()
+void MainScene::onStartGame() // Single....
 {
-    log("Gane start!");
+    log("Game start!");
     
-    auto director = Director::getInstance();
     if (auto tiledMapScene = TestScene::createScene())
     {
+        if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
+        {
+            gameLayer->_myID="";
+            gameLayer->_role = GameLayer::Role::Host;
+            gameLayer->addPlayerSpriteInWorld("");
+        }
+        
+        auto director = Director::getInstance();
         director->pushScene(director->getRunningScene());
         director->replaceScene(tiledMapScene);
     }
@@ -83,9 +114,9 @@ void MainScene::onStartGame()
 
 void MainScene::onKeyBinding()
 {
-    auto director = Director::getInstance();
     if (auto keyTableScene = KeyTableScene::createScene())
     {
+        auto director = Director::getInstance();
         director->pushScene(director->getRunningScene());
         director->replaceScene(keyTableScene);
     }
@@ -94,4 +125,38 @@ void MainScene::onKeyBinding()
 void MainScene::onExitGame()
 {
     Director::getInstance()->end();
+}
+
+void MainScene::onHostGame()
+{
+}
+
+void MainScene::onEnterGame()
+{
+    // Reads URI
+    std::string uri = _uriTextField->getString();
+    //uri = "172.30.1.46:8080";
+    uri = "192.168.219.101:8080";
+    
+    // Create gamelayer first, cuz gameLayer has delegate for client
+    if (auto testScene = TestScene::createScene())
+    {
+        if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))
+        {
+            // Connect to server
+            if (auto client = network::SocketIO::connect(uri, *gameLayer))
+            {
+                client->on("requestPlayerID", CC_CALLBACK_2(GameLayer::onRequestPlayerID, gameLayer));
+                client->on("newPlayer", CC_CALLBACK_2(GameLayer::onNewPlayer, gameLayer));
+                client->on("pawnMove", CC_CALLBACK_2(GameLayer::onPawnMove, gameLayer));
+                client->on("movePressed", CC_CALLBACK_2(GameLayer::onMovePressed, gameLayer));
+                client->on("moveReleased", CC_CALLBACK_2(GameLayer::onMoveReleased, gameLayer));
+                gameLayer->setClient(client);
+                
+                auto director = Director::getInstance();
+                director->pushScene(director->getRunningScene());
+                director->replaceScene(testScene);
+            }
+        }
+    }
 }

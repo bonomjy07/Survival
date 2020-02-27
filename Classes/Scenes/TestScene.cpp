@@ -2,6 +2,7 @@
 #include "TestScene.h"
 #include "SurvivorSprite.h"
 #include "KeyTableScene.h"
+#include "MainScene.h"
 #include "SpawnManager.h"
 #include "PauseLayer.h"
 #include "StatLayer.h"
@@ -38,6 +39,7 @@ bool TestScene::init()
     }
     
     // Create tile map and layer in tile map
+    // TODO: if statement for nullptr
     _tiledMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx");
     _block = _tiledMap->getLayer("BlockLayer");
     _block->setVisible(false);
@@ -51,26 +53,9 @@ bool TestScene::init()
         return false;
     }
 
-    // Create spawn manager for tree
-    ValueMap spawnArea = objectGroup->getObject("SpawnArea");
-    SpawnManager* pawnManager = SpawnManager::create(spawnArea, "TreeSprite", "res/tileset/qubodup-bush_berries_0.png");
-    if (pawnManager)
-    {
-        this->addChild(pawnManager);
-        pawnManager->startSpawn();
-    }
-    
-    // Create player character
     ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
-    _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-    if (_player)
-    {
-        _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-        _player->startDrainStats();
-        this->addChild(_player);
-    }
 
     // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
@@ -86,14 +71,11 @@ bool TestScene::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto label = Label::createWithTTF("Test World", "fonts/Marker Felt.ttf", 24);
-    
     // position the label on the center of the screen
     label->setPosition(Vec2(origin.x + visibleSize.width/2,
                             origin.y + visibleSize.height - label->getContentSize().height));
-    
     // add the label as a child to this layer
     this->addChild(label, 1);
-    
     // create key binder
     //KeyBinder::loadGameKeyActions();
     gameKeyBinder = new KeyBinder();
@@ -112,113 +94,149 @@ bool TestScene::init()
 
 void TestScene::update(float deltaTime)
 {
-    // Keep the player on center of view
-    if (_player)
+    if (auto player = getPlayerSprite(_myID))
     {
-        setViewPointCenter(_player->getPosition());
+        setViewPointCenter(player->getPosition());
     }
 }
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    if (!_player) return;
-    
-    // PawnSprite movement
-    // Plus delta position to move
-    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+    // Pawn's movement
+    if (_role == GameLayer::Role::Host)
     {
-        _player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
-        _player->insertDirection(PawnSprite::Direction::Up);
-    }
-    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-    {
-        _player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
-        _player->insertDirection(PawnSprite::Direction::Down);
-    }
-    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-    {
-        _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
-        _player->insertDirection(PawnSprite::Direction::Right);
-    }
-    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-    {
-        _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
-        _player->insertDirection(PawnSprite::Direction::Left);
-    }
-    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
-    {
-        _player->collect();
-    }
-
-    // ESC action
-    if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
-    {
-        if (Scene* parent = static_cast<Scene*>(getParent()))
+        if (auto player = getPlayerSprite(_myID))
         {
-            // Remove pause scene if it exists already
-            if (auto pauseLayer = parent->getChildByName("PauseLayer"))
+            if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
             {
-                parent->removeChild(pauseLayer);
+                player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
+                player->insertDirection(PawnSprite::Direction::Up);
             }
-            // Create pause scene if it doens't exist
-            else
+            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
             {
-                if (auto pauseLayer = PauseLayer::create())
-                {
-                    parent->addChild(pauseLayer);
-                }
+                player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
+                player->insertDirection(PawnSprite::Direction::Down);
+            }
+            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+            {
+                player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
+                player->insertDirection(PawnSprite::Direction::Right);
+            }
+            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+            {
+                player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
+                player->insertDirection(PawnSprite::Direction::Left);
             }
         }
+    }
+    else if (_role == GameLayer::Role::Client)
+    {
+        if (EventKeyboard::KeyCode::KEY_W == keyCode)
+            _client->emit("movePressed", "{\"ID\":\"" + _myID + "\", \"direction\":\"up\"}");
+        else if (EventKeyboard::KeyCode::KEY_S == keyCode)
+            _client->emit("movePressed", "{\"ID\":\"" + _myID + "\", \"direction\":\"down\"}");
+        else if (EventKeyboard::KeyCode::KEY_D == keyCode)
+            _client->emit("movePressed", "{\"ID\":\"" + _myID + "\", \"direction\":\"right\"}");
+        else if (EventKeyboard::KeyCode::KEY_A == keyCode)
+            _client->emit("movePressed", "{\"ID\":\"" + _myID + "\", \"direction\":\"left\"}");
+    }
+    
+    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
+    {
+        getPlayerSprite()->collect();
+    }
+    
+    // ESC action
+    if (EventKeyboard::KeyCode::KEY_ESCAPE == keyCode)
+    {
+        togglePauseUI();
     }
     
     // Stat layer
     if (EventKeyboard::KeyCode::KEY_TAB == keyCode)
     {
-        if (Scene* parent = static_cast<Scene*>(getParent()))
-        {
-            // Remove pause scene if it exists already
-            if (auto statLayer = parent->getChildByName("StatLayer"))
-            {
-                parent->removeChild(statLayer);
-            }
-            // Create pause scene if it doens't exist
-            else
-            {
-                if (auto statLayer = StatLayer::create(_player->getStat()))
-                {
-                    parent->addChild(statLayer);
-                    statLayer->scheduleUpdate();
-                }
-            }
-        }
+        toggleStatUI();
     }
-    
 }
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    
-    if (!_player) return;
-    // PawnSprite movement
-    // Works as opposite onKeyPressed but no work for direction which is not concern on this function
-    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+    if (_role == GameLayer::Role::Host)
     {
-        _player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
-        _player->eraseDirection(PawnSprite::Direction::Up);
+        if (auto player = getPlayerSprite(_myID))
+        {
+            if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+            {
+                player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
+                player->eraseDirection(PawnSprite::Direction::Up);
+            }
+            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
+            {
+                player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
+                player->eraseDirection(PawnSprite::Direction::Down);
+            }
+            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+            {
+                player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
+                player->eraseDirection(PawnSprite::Direction::Right);
+            }
+            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+            {
+                player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
+                player->eraseDirection(PawnSprite::Direction::Left);
+            }
+        }
     }
-    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
+    else if (_role == GameLayer::Role::Client)
     {
-        _player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
-        _player->eraseDirection(PawnSprite::Direction::Down);
+        if (EventKeyboard::KeyCode::KEY_W == keyCode)
+            _client->emit("moveReleased", "{\"ID\":\"" + _myID + "\", \"direction\":\"up\"}");
+        else if (EventKeyboard::KeyCode::KEY_S == keyCode)
+            _client->emit("moveReleased", "{\"ID\":\"" + _myID + "\", \"direction\":\"down\"}");
+        else if (EventKeyboard::KeyCode::KEY_D == keyCode)
+            _client->emit("moveReleased", "{\"ID\":\"" + _myID + "\", \"direction\":\"right\"}");
+        else if (EventKeyboard::KeyCode::KEY_A == keyCode)
+            _client->emit("moveReleased", "{\"ID\":\"" + _myID + "\", \"direction\":\"left\"}");
     }
-    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+}
+
+void TestScene::togglePauseUI()
+{
+    if (Scene* parent = static_cast<Scene*>(getParent()))
     {
-        _player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
-        _player->eraseDirection(PawnSprite::Direction::Right);
+        // Remove pause scene if it exists already
+        if (auto pauseLayer = parent->getChildByName("PauseLayer"))
+        {
+            parent->removeChild(pauseLayer);
+        }
+        // Create pause scene if it doens't exist
+        else
+        {
+            if (auto pauseLayer = PauseLayer::create())
+            {
+                parent->addChild(pauseLayer);
+            }
+        }
     }
-    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+}
+
+void TestScene::toggleStatUI()
+{
+    if (Scene* parent = static_cast<Scene*>(getParent()))
     {
-        _player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
-        _player->eraseDirection(PawnSprite::Direction::Left);
+        // Remove pause scene if it exists already
+        if (auto statLayer = parent->getChildByName("StatLayer"))
+        {
+            parent->removeChild(statLayer);
+        }
+        // Create pause scene if it doens't exist
+        else
+        {
+            if (auto statLayer = StatLayer::create(getPlayerSprite()->getStat()))
+            {
+                parent->addChild(statLayer);
+                statLayer->scheduleUpdate();
+            }
+        }
     }
 }

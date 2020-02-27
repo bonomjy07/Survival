@@ -2,8 +2,9 @@
 #define GAME_LAYER_H__
 
 #include "cocos2d.h"
+#include "network/SocketIO.h"
 
-class GameLayer : public cocos2d::Layer
+class GameLayer : public cocos2d::Layer, public cocos2d::network::SocketIO::SIODelegate
 {
 public:
     virtual bool init() override;
@@ -64,6 +65,40 @@ protected:
      @return true As always
      */
     bool onQueryPointNodes(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* nodes);
-};
+    
+    /* 테스트용 */
+    
+public:
+    enum class Role {Host=0, Client};
+    Role _role;
+    
+protected:
+    std::string _myID;
+    std::map<std::string, class SurvivorSprite*> _playersManager;
+    cocos2d::network::SIOClient* _client;
+    
+public:
+    // ㅇㅇ아ㄴ필요한데ㅓ
+    std::string& getMyID();
+    void setMyID(const std::string& newID);
+    
+    cocos2d::network::SIOClient* getClient();
+    void setClient(cocos2d::network::SIOClient* client);
+    
+    void addPlayerSpriteInWorld(const std::string& ID);
+    void addPlayerSpriteInWorld(const std::string& ID, const cocos2d::Vec2& position);
+    
+    class SurvivorSprite* getPlayerSprite(const std::string& ID) const;
+    class SurvivorSprite* getPlayerSprite() const;
 
+private:
+    void onRequestPlayerID(cocos2d::network::SIOClient* client, const std::string& data);
+    void onNewPlayer(cocos2d::network::SIOClient* client, const std::string& data);
+    void onPawnMove(cocos2d::network::SIOClient* client, const std::string& data);
+    void onMovePressed(cocos2d::network::SIOClient* client, const std::string& data);
+    void onMoveReleased(cocos2d::network::SIOClient* client, const std::string& data);
+
+    void onClose(cocos2d::network::SIOClient* client) override {cocos2d::log("onClose()");}
+    void onError(cocos2d::network::SIOClient* client, const std::string& data) override { cocos2d::log("onError : %s", data.c_str());}
+};
 #endif // GAME_LAYER_H__

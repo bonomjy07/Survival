@@ -55,7 +55,7 @@ public:
      @brief Adds delta position
      */
     void addDeltaPosition(float x, float y);
-    
+
     /**
      @brief Inserts new direction at begin of _directionList
      */
@@ -85,6 +85,7 @@ protected:
      */
     bool canPawnMove(const cocos2d::Vec2& newPosition);
     
+public:
     /**
      @brief Called every frame if delta position is not zero.
      Moves the pawn to new position
@@ -99,8 +100,11 @@ private:
     std::list<Direction> _directionList;
     
 public:
-    void myInit();
-    void onKeyEvent(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+    std::string _ID;
+    
+public:
+    //void add
+    void moveThePawn(const PawnSprite* const pawn, const cocos2d::Vec2& position);
 };
 
 #endif /* Pawn_h */
