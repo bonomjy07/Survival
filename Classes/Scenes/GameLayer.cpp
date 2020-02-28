@@ -141,7 +141,7 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
 {
     if (auto player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f))
     {
-        player->_ID = ID;
+        player->setID(ID);
         // TODO: Make it simple...
         TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
         if (objectGroup)
@@ -149,7 +149,7 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
             ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
             float x = spawnPoint["x"].asFloat();
             float y = spawnPoint["y"].asFloat();
-            player->setPosition({x, y});
+            player->setPosition({x+_tiledMap->getTileSize().width/2, y+_tiledMap->getTileSize().height/2});
             addChild(player);
             _playersManager.insert({ID, player});
         }
@@ -160,10 +160,11 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& positi
 {
     if (auto player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f))
     {
-        player->_ID = ID;
+        player->setID(ID);
         player->setPosition(position);
-        addChild(player);
+        _occupied.insert(position);
         _playersManager.insert({ID, player});
+        addChild(player);
     }
 }
 
@@ -173,6 +174,7 @@ void GameLayer::onRequestPlayerID(cocos2d::network::SIOClient* client, const std
     document.Parse(data.c_str());
     if (!document.GetParseError())
     {
+        // Get ID and check if i'm the host
         _myID = document["MyID"].GetString();
         if (_myID.compare(document["HostID"].GetString()) == 0)
         {
@@ -182,24 +184,48 @@ void GameLayer::onRequestPlayerID(cocos2d::network::SIOClient* client, const std
         {
             _role = Role::Client;
         }
-        
-        auto playerList = document["PlayerList"].GetArray();
-        for (auto it = playerList.begin(); it != playerList.end(); ++it)
-        {
-            std::string ID = it->GetString();
-            addPlayerSpriteInWorld(ID, {336, 368});
-        }
     }
 }
 
 void GameLayer::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& data)
 {
+    // Get my ID
     rapidjson::Document document;
     document.Parse(data.c_str());
     if (!document.GetParseError())
     {
         std::string ID = document["ID"].GetString();
         addPlayerSpriteInWorld(ID, {336, 368});
+    }
+    // Broadcasts player list
+    std::string playerList = "[";
+    for (auto player : _playersManager)
+    {
+        std::string ID, x, y, data;
+        ID = ID+"\"ID\":"+"\""+player.first+"\"";
+        x = x+"\"x\":"+std::to_string(player.second->getPositionX());
+        y = y+"\"y\":"+std::to_string(player.second->getPositionY());
+        data = data+"{"+ID+","+x+","+y+"}";
+        playerList += data + ",";
+    }
+    playerList.erase(playerList.length()-1);
+    playerList += "]";
+    _client->emit("playerList", playerList);
+}
+
+void GameLayer::onPlayerList(cocos2d::network::SIOClient *client, const std::string &data)
+{
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        for (const auto& ele : document.GetArray())
+        {
+            std::string ID = ele["ID"].GetString();
+            float x = ele["x"].GetFloat();
+            float y = ele["y"].GetFloat();
+            addPlayerSpriteInWorld(ID, {x,y});
+        }
     }
 }
 
@@ -315,7 +341,7 @@ cocos2d::network::SIOClient* GameLayer::getClient()
     return _client;
 }
 
-void GameLayer::setClient(cocos2d::network::SIOClient* client)
+std::set<Vec2>& GameLayer::getOccupied()
 {
-    _client = client;
+    return _occupied;
 }

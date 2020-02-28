@@ -42,16 +42,14 @@ public:
      */
     void spawnTheSprite(float dt);
 
-    /** Setter & Getter*******/
-    float getSpawnDelay() const;
-    void setSpawnDelay(float newSpawnDelay);
-    
+    /* Getter && Setter */
     uint32_t getMaxSpawnNumber() const;
-    void setMaxSpawnNumber(uint32_t newMaxSpawnNumber) const;
-    
+    float getSpawnDelay() const;
     uint32_t getCurrentSpawnNumber() const;
-    
     const std::string& getWhatToSpawn() const;
+    
+    void setSpawnDelay(float newSpawnDelay);
+    void setMaxSpawnNumber(uint32_t newMaxSpawnNumber) const;
     void setWhatToSpawn(std::string newSpriteToSpawn);
     
 private:
@@ -89,7 +87,7 @@ private:
     cocos2d::Vec2 getRandomPointInArea() const;
     
     /**
-    @brief Returns a sprite on whatToSpawn.
+     @brief Returns a sprite on whatToSpawn.
      If whatToSpawn is not class, returns nullptr.
      */
     cocos2d::Sprite* createSpriteToSpawn() const;

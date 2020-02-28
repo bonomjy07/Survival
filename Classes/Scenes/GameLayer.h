@@ -76,9 +76,11 @@ protected:
     std::string _myID;
     std::map<std::string, class SurvivorSprite*> _playersManager;
     cocos2d::network::SIOClient* _client;
+    std::set<cocos2d::Vec2> _occupied;
     
 public:
-    // ㅇㅇ아ㄴ필요한데ㅓ
+    std::set<cocos2d::Vec2>& getOccupied();
+    
     std::string& getMyID();
     void setMyID(const std::string& newID);
     
@@ -91,14 +93,22 @@ public:
     class SurvivorSprite* getPlayerSprite(const std::string& ID) const;
     class SurvivorSprite* getPlayerSprite() const;
 
-private:
+public:
+    /* Gets ID and Checks what role is */
     void onRequestPlayerID(cocos2d::network::SIOClient* client, const std::string& data);
+    /* Adds new player to player list and braodcasts player list */
     void onNewPlayer(cocos2d::network::SIOClient* client, const std::string& data);
+    /* Receives player list and create pawn about player list */
+    void onPlayerList(cocos2d::network::SIOClient* client, const std::string& data);
+    /* Broadcasts pawn's movement */
     void onPawnMove(cocos2d::network::SIOClient* client, const std::string& data);
+    /* Send movement to host */
     void onMovePressed(cocos2d::network::SIOClient* client, const std::string& data);
+    /* Send movement to host */
     void onMoveReleased(cocos2d::network::SIOClient* client, const std::string& data);
 
     void onClose(cocos2d::network::SIOClient* client) override {cocos2d::log("onClose()");}
     void onError(cocos2d::network::SIOClient* client, const std::string& data) override { cocos2d::log("onError : %s", data.c_str());}
+    
 };
 #endif // GAME_LAYER_H__

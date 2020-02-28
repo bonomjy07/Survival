@@ -50,7 +50,16 @@ void UnitSprite::takeDamage(float deltaDamage)
 
 void UnitSprite::onDeath()
 {
-    // TODO: Show visual effect and ....
-    getParent()->removeChild(this);
+    if (auto gameLayer = dynamic_cast<GameLayer*>(getParent()))
+    {
+        if (GameLayer::Role::Client ==  gameLayer->_role)
+        {
+            // TODO: Show visual effect and ....
+            std::string data;
+            gameLayer->getClient()->emit("", data);
+            getParent()->removeChild(this);
+            log("UnitSprite deleted");
+        }
+    }
 }
 

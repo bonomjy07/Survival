@@ -30,6 +30,9 @@ public:
      */
     void setCurrentDirection(const PawnSprite::Direction& newDirection);
     
+    /* Setter for ID */
+    void setID(const std::string& ID);
+    
     /**
      @brief Returns pawn's current direction
      */
@@ -45,6 +48,9 @@ public:
      @brief Returns pawn's delta position as it is
      */
     const cocos2d::Vec2& getDeltaPosition() const;
+    
+    /* Getter for ID*/
+    std::string getID() const;
     
     /**
      @brief Retruns front vector for pawn
@@ -79,6 +85,8 @@ protected:
      */
     Direction _currentDirection;
     
+    std::string _ID;
+    
 protected:
     /**
      @brief Returns true if new position is valid position to move
@@ -98,13 +106,6 @@ private:
      @brief New direction has to be insert at begin(first)
      */
     std::list<Direction> _directionList;
-    
-public:
-    std::string _ID;
-    
-public:
-    //void add
-    void moveThePawn(const PawnSprite* const pawn, const cocos2d::Vec2& position);
 };
 
 #endif /* Pawn_h */

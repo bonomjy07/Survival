@@ -33,15 +33,17 @@ void PawnSprite::update(float dt)
             {
                 if (gameLayer->_role == GameLayer::Role::Host)
                 {
+                    gameLayer->getOccupied().erase(getPosition());
+                    gameLayer->getOccupied().insert(newPosition);
                     moveThePawn(newPosition);
                     
-                    if (gameLayer->getClient())
+                    if (auto client = gameLayer->getClient())
                     {
-                        std::string ID, X, Y;
+                        std::string ID, x, y;
                         ID = ID+"\"ID\""+":"+"\""+_ID+"\"";
-                        X = X+"\"x\""+":"+std::to_string(newPosition.x);
-                        Y = Y+"\"y\""+":"+std::to_string(newPosition.y);
-                        gameLayer->getClient()->emit("pawnMove", "{" + ID + ","+X+","+Y+"}");
+                        x = x+"\"x\""+":"+std::to_string(newPosition.x);
+                        y = y+"\"y\""+":"+std::to_string(newPosition.y);
+                        client->emit("pawnMove", "{" + ID + ","+x+","+y+"}");
                     }
                 }
             }
@@ -56,6 +58,11 @@ PawnSprite::~PawnSprite() {}
 void PawnSprite::setCurrentDirection(const Direction& newDirection)
 {
     _currentDirection = newDirection;
+}
+
+void PawnSprite::setID(const std::string &ID)
+{
+    _ID = ID;
 }
 
 const PawnSprite::Direction& PawnSprite::getCurrentDirection() const
@@ -82,6 +89,11 @@ Vec2 PawnSprite::getDeltaPositionOnDirection() const
     
     // If it's not diagnal, just return delta position
     return _deltaPosition;
+}
+
+std::string PawnSprite::getID() const
+{
+    return _ID;
 }
 
 Vec2 PawnSprite::getFrontVec2() const
@@ -141,10 +153,11 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
                 // 4. New position mustn't be collidable tile
                 if (!gameLayer->isCollidableTileForPosition(newPosition))
                 {
-                    // 5. A sprite ahead of player mustn't be unit-sprite
+                    // 5. No any unit at front && not occupied position(network sync)
                     Node* node = gameLayer->checkNodeAtPosition(getPosition(), getFrontVec2());
                     UnitSprite* unit = dynamic_cast<UnitSprite*>(node);
-                    if (!unit)
+                    const auto occupied = gameLayer->getOccupied();
+                    if (!unit && occupied.find(newPosition) == occupied.end())
                     {
                         return true;
                     }

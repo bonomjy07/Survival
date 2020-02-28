@@ -101,7 +101,7 @@ void MainScene::onStartGame() // Single....
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
         {
-            gameLayer->_myID="";
+            gameLayer->setMyID("");
             gameLayer->_role = GameLayer::Role::Host;
             gameLayer->addPlayerSpriteInWorld("");
         }
@@ -148,11 +148,12 @@ void MainScene::onEnterGame()
             {
                 client->on("requestPlayerID", CC_CALLBACK_2(GameLayer::onRequestPlayerID, gameLayer));
                 client->on("newPlayer", CC_CALLBACK_2(GameLayer::onNewPlayer, gameLayer));
+                client->on("playerList", CC_CALLBACK_2(GameLayer::onPlayerList, gameLayer));
                 client->on("pawnMove", CC_CALLBACK_2(GameLayer::onPawnMove, gameLayer));
                 client->on("movePressed", CC_CALLBACK_2(GameLayer::onMovePressed, gameLayer));
                 client->on("moveReleased", CC_CALLBACK_2(GameLayer::onMoveReleased, gameLayer));
                 gameLayer->setClient(client);
-                
+
                 auto director = Director::getInstance();
                 director->pushScene(director->getRunningScene());
                 director->replaceScene(testScene);
