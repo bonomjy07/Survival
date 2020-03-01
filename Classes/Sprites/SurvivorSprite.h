@@ -42,5 +42,10 @@ private:
     
 private:
     void drainStats(float dt);
+    
+    class InputController* _inputCtrler;
+
 };
 #endif /* SurvivorSprite_h */
+
+

@@ -9,6 +9,7 @@
 #include "TestScene.h"
 #include "Item.h"
 #include "ItemSprite.h"
+#include "InputController.h"
 
 USING_NS_CC;
 
@@ -33,6 +34,7 @@ void SurvivorSprite::update(float dt)
 SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
 {
     _drainDelay = 1.f;
+    _inputCtrler = new InputController();
 }
 
 SurvivorSprite::~SurvivorSprite() {}
