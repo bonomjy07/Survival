@@ -18,3 +18,7 @@ proj.win32/
 XVim2
 
 .vscode/
+
+#node.js
+node_modules/
+package-lock.json

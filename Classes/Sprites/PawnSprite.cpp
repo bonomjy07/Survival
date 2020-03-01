@@ -29,7 +29,12 @@ void PawnSprite::update(float dt)
         Vec2 newPosition = getPosition()+getDeltaPositionOnDirection();
         if (canPawnMove(newPosition))
         {
-            moveThePawn(newPosition);
+            if (auto gameLayer = dynamic_cast<GameLayer*>(_parent))
+            {
+                gameLayer->getOccupied().erase(getPosition());
+                gameLayer->getOccupied().insert(newPosition);
+                moveThePawn(newPosition);
+            }
         }
     }
 }
@@ -69,11 +74,6 @@ Vec2 PawnSprite::getDeltaPositionOnDirection() const
     return _deltaPosition;
 }
 
-const Vec2& PawnSprite::getDeltaPosition() const
-{
-    return _deltaPosition;
-}
-
 Vec2 PawnSprite::getFrontVec2() const
 {
     if (Direction::Up == _currentDirection)
@@ -101,25 +101,42 @@ void PawnSprite::addDeltaPosition(float x, float y)
     _deltaPosition.y += y;
 }
 
+void PawnSprite::insertDirection(Direction newDirection)
+{
+    setCurrentDirection(newDirection);
+    _directionList.push_front(newDirection); // Recenlty pressed direction is at 'Begin'
+}
+
+void PawnSprite::eraseDirection(Direction releasedDirection)
+{
+    _directionList.remove(releasedDirection);
+    // If multiple key pressed, use recent direction
+    if (_directionList.size() > 0)
+    {
+        setCurrentDirection(*_directionList.begin());
+    }
+}
+
 bool PawnSprite::canPawnMove(const Vec2& newPosition)
 {
     // 1. Only one action is allowed at a time
     if (getNumberOfRunningActions() < 1)
     {
-        // 2. Pawn needs gameLayer for tiled Map information
+        // 2. Pawn needs gameLayer for world map information
         if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
         {
             // 3. New position must be within the world
-            Vec2 newPosition = getPosition() + getDeltaPositionOnDirection();
             if (gameLayer->isPositionWithinWorld(newPosition))
             {
                 // 4. New position mustn't be collidable tile
                 if (!gameLayer->isCollidableTileForPosition(newPosition))
                 {
-                    // 5. A sprite ahead of player mustn't be unit-sprite
+                    // 5. No any unit at front && not occupied position(network sync)
                     Node* node = gameLayer->checkNodeAtPosition(getPosition(), getFrontVec2());
                     UnitSprite* unit = dynamic_cast<UnitSprite*>(node);
-                    if (!unit)
+                    //auto occupied = gameLayer->getOccupied();
+                   // if (!unit && occupied.find(newPosition) == occupied.end())
+                    if (!unit )
                     {
                         return true;
                     }
@@ -132,7 +149,20 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
 
 void PawnSprite::moveThePawn(const Vec2 &newPosition)
 {
-    float duration = 0.125f; // Less duration, More speed
-    auto moveTo = MoveTo::create(duration, newPosition);
-    this->runAction(moveTo);
+    if (auto gameLayer = dynamic_cast<GameLayer*>(getParent()))
+    {
+        float duration = 0.125f; // Less duration, More speed
+        auto moveTo = MoveTo::create(duration, newPosition);
+        runAction(moveTo);
+        
+        // If multiplayer game, broadcasts pawn's movement to clients
+        if (auto client = gameLayer->getClient())
+        {
+            std::string ID, x, y;
+            ID = ID+"\"ID\""+":"+"\""+getName()+"\"";
+            x = x+"\"x\""+":"+std::to_string(newPosition.x);
+            y = y+"\"y\""+":"+std::to_string(newPosition.y);
+            client->emit("pawnMove", "{" + ID + ","+x+","+y+"}");
+        }
+    }
 }

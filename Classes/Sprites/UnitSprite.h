@@ -11,6 +11,7 @@
 #define UnitSprite_h
 
 #include "MySprite.h"
+#include "ui/CocosGUI.h"
 
 #define MAX_HEALTH 100.f
 
