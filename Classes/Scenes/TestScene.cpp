@@ -87,6 +87,13 @@ bool TestScene::init()
         this->addChild(_player);
     }
 
+    _player2 = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+    if (_player2)
+    {
+        _player2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
+        _player2->setName("player2");
+        this->addChild(_player2);
+    }
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
