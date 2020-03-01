@@ -21,11 +21,13 @@ public:
     virtual void onError(SIOClient* client, const std::string& data);
 
     void onReceiveEvent(SIOClient* client , const std::string& data);
+    void onReceiveEvent2(SIOClient* client , const std::string& data);
     void sendText();
 
 private:
     int player_number;
     SIOClient* _client;
+    class SurvivorSprite* player2;
 };
 
 #endif // MULTI_H__
