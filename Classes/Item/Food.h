@@ -24,7 +24,9 @@ class DeerMeat : public Food
 public:
     DeerMeat();
     ~DeerMeat();
-
+    virtual bool init();
+    CREATE_FUNC(DeerMeat);
+    
     virtual bool use() override;
     virtual bool isMaterial() override;
 

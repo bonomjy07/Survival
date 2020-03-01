@@ -26,7 +26,7 @@ public:
     
 public:
     const Stat& getStat() const;
-    
+    cocos2d::Vector<class Item*> *getInventory(){ return &inventory; };
     void startDrainStats();
     void stopDrainStats();
     
@@ -37,8 +37,7 @@ private:
     Stat _stat;
     float _drainDelay;
     class Item* _itemOnHand;
-     // cocos2d::Vector<class Item*> inventory;
-    // class ItemSprite* _collectable;
+    cocos2d::Vector<class Item*> inventory;
     
 private:
     void drainStats(float dt);

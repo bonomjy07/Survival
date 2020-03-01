@@ -35,7 +35,10 @@ SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
     _drainDelay = 1.f;
 }
 
-SurvivorSprite::~SurvivorSprite() {}
+SurvivorSprite::~SurvivorSprite()
+{
+    inventory.clear();
+}
 
 const Stat& SurvivorSprite::getStat() const
 {
@@ -71,12 +74,16 @@ void SurvivorSprite::collect()
         {
            if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node))
            {
+               gameLayer->removeChild(itemSprite);
+               Item *item = itemSprite->getItem();
+               inventory.pushBack(item);
                // TODO: Implement inventory member variable.....
                
                // TODO: inventory.pushback(itemSprite->getItem());
                itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
                // TODO: log("Item %s was collected", itemSprite->getName());
                log("item...");
+               
                // TODO: break; ??????
            }
         }

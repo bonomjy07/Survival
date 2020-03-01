@@ -27,8 +27,10 @@ Item * ItemSprite::getItem()
 
 void ItemSprite::setItem(Item *_item)
 {
+    if( this->item )
+        this->item->release();
+    _item->retain();
     this->item = _item;
-    this->item->retain();
     this->setItemTexture();
 }
 
@@ -36,6 +38,7 @@ void ItemSprite::setItemTexture()
 {
     if(this->item){
         this->setTexture(this->item->getImageFileName());
+        setContentSize(Size(32,32));
     }
 }
 

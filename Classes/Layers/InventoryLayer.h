@@ -14,11 +14,14 @@
 
 #include "cocos2d.h"
 
+#include "GridView.h"
+
 #endif /* InventoryLayer_h */
 
 class InventoryLayer : public cocos2d::Layer
 {
 public:
+    virtual ~InventoryLayer();
     virtual bool init() override;
     CREATE_FUNC(InventoryLayer);
     
@@ -27,8 +30,13 @@ public:
     
     float getWeight() const;
     void setWeight(float deltaWeight);
+    void setInventory(cocos2d::Vector<class Item*> *inven);
+private:
+    void moveCenter();
     
 private:
     //cocos2d::Vector<class Item> inventoryItems;
     float weight;
+    GridView *gridView;
+    cocos2d::Vector<class Item*> *inventory;
 };

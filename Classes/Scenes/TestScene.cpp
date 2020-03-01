@@ -6,7 +6,9 @@
 #include "SpawnManager.h"
 #include "PauseLayer.h"
 #include "StatLayer.h"
+#include "InventoryLayer.h"
 
+#include "Multi.h"
 #include "ItemSprite.h"
 #include "Food.h"
 #include "KeyBinder.h"
@@ -60,19 +62,37 @@ bool TestScene::init()
         _treeManager->startSpawn();
     }
 
+
     ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
 
-    // Create item sprite
+
+     // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
     {
-        deerMeatSprite2->setItem(new DeerMeat());
+        auto item = DeerMeat::create();
+        deerMeatSprite2->setItem(item);
         deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
-        deerMeatSprite2->setContentSize(Size(32,32));
         deerMeatSprite2->initPhysicsBody();
         this->addChild(deerMeatSprite2);
+    }
+
+    // Create player character
+    _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+    if (_player)
+    {
+        _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+        this->addChild(_player);
+    }
+
+    _player2 = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+    if (_player2)
+    {
+        _player2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
+        _player2->setName("player2");
+        this->addChild(_player2);
     }
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -93,6 +113,9 @@ bool TestScene::init()
     listener->onKeyReleased = CC_CALLBACK_2(TestScene::onKeyReleased, this);
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
+    multi = new Multi();
+
+
     // Allow update(float dt) to be called so that pawns move
     this->scheduleUpdate();
     
@@ -109,6 +132,9 @@ void TestScene::update(float deltaTime)
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
+
+    multi->sendText();
+    if (!_player) return;
     // Pawn's movement
     if (_role == GameLayer::Role::Host)
     {
@@ -163,6 +189,20 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     if (EventKeyboard::KeyCode::KEY_TAB == keyCode)
     {
         toggleStatUI();
+    }
+    else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Inventory") )
+    {
+        auto parent = static_cast<Scene*>(getParent());
+        if (auto inventoryLayer = parent->getChildByName("InventoryLayer"))
+        {
+            parent->removeChild(inventoryLayer);
+        }
+        // Create inventory layer if it doens't exist
+        else if (auto inventoryLayer = InventoryLayer::create())
+        {
+            inventoryLayer->setInventory((_player->getInventory()));
+            parent->addChild(inventoryLayer);
+        }
     }
 }
 
