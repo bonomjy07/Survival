@@ -17,7 +17,6 @@ class MySprite : public cocos2d::Sprite
 public:
     virtual ~MySprite();
     
-protected:
 public:
     /**
      @brief Creates physics body and adds it to sprite
@@ -25,5 +24,6 @@ public:
      @warning If this fucntion is finished without error, it'll activate update(float dt) automatically.....
      */
     virtual bool initPhysicsBody();
+    
 };
 #endif /* MySprite_h */

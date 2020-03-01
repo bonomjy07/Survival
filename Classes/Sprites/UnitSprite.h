@@ -43,7 +43,6 @@ public:
 protected:
     float _currentHealth;
     float _maxHealth;
-    cocos2d::ui::LoadingBar* _healthBar;
     
 protected:
     virtual void onDeath();

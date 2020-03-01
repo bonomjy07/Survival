@@ -11,6 +11,8 @@
 #include "KeyTableScene.h"
 #include "network/SocketIO.h"
 
+#include "SpawnManager.h"
+
 #include "Stat.h"
 
 USING_NS_CC;
@@ -99,13 +101,15 @@ void MainScene::onStartGame() // Single....
     
     if (auto tiledMapScene = TestScene::createScene())
     {
-        if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
+        //if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
+        auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer"));
         {
-            gameLayer->setMyID("");
+            gameLayer->setName("");
             gameLayer->_role = GameLayer::Role::Host;
             gameLayer->addPlayerSpriteInWorld("");
+            // gameLayer->_treeManager->spawnTheSprite(10);
         }
-        
+
         auto director = Director::getInstance();
         director->pushScene(director->getRunningScene());
         director->replaceScene(tiledMapScene);
@@ -153,7 +157,7 @@ void MainScene::onEnterGame()
                 client->on("movePressed", CC_CALLBACK_2(GameLayer::onMovePressed, gameLayer));
                 client->on("moveReleased", CC_CALLBACK_2(GameLayer::onMoveReleased, gameLayer));
                 gameLayer->setClient(client);
-
+                
                 auto director = Director::getInstance();
                 director->pushScene(director->getRunningScene());
                 director->replaceScene(testScene);

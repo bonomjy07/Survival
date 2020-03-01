@@ -24,28 +24,16 @@ PawnSprite* PawnSprite::create(const std::string& filename, const float maxHealt
 
 void PawnSprite::update(float dt)
 {
-    if (!_deltaPosition.equals(Vec2::ZERO)) // &&  !_waiting
+    if (!_deltaPosition.equals(Vec2::ZERO))
     {
         Vec2 newPosition = getPosition()+getDeltaPositionOnDirection();
         if (canPawnMove(newPosition))
         {
             if (auto gameLayer = dynamic_cast<GameLayer*>(_parent))
             {
-                if (gameLayer->_role == GameLayer::Role::Host)
-                {
-                    gameLayer->getOccupied().erase(getPosition());
-                    gameLayer->getOccupied().insert(newPosition);
-                    moveThePawn(newPosition);
-                    
-                    if (auto client = gameLayer->getClient())
-                    {
-                        std::string ID, x, y;
-                        ID = ID+"\"ID\""+":"+"\""+_ID+"\"";
-                        x = x+"\"x\""+":"+std::to_string(newPosition.x);
-                        y = y+"\"y\""+":"+std::to_string(newPosition.y);
-                        client->emit("pawnMove", "{" + ID + ","+x+","+y+"}");
-                    }
-                }
+                gameLayer->getOccupied().erase(getPosition());
+                gameLayer->getOccupied().insert(newPosition);
+                moveThePawn(newPosition);
             }
         }
     }
@@ -58,11 +46,6 @@ PawnSprite::~PawnSprite() {}
 void PawnSprite::setCurrentDirection(const Direction& newDirection)
 {
     _currentDirection = newDirection;
-}
-
-void PawnSprite::setID(const std::string &ID)
-{
-    _ID = ID;
 }
 
 const PawnSprite::Direction& PawnSprite::getCurrentDirection() const
@@ -89,11 +72,6 @@ Vec2 PawnSprite::getDeltaPositionOnDirection() const
     
     // If it's not diagnal, just return delta position
     return _deltaPosition;
-}
-
-std::string PawnSprite::getID() const
-{
-    return _ID;
 }
 
 Vec2 PawnSprite::getFrontVec2() const
@@ -144,7 +122,7 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
     // 1. Only one action is allowed at a time
     if (getNumberOfRunningActions() < 1)
     {
-        // 2. Pawn needs gameLayer for tiled Map information
+        // 2. Pawn needs gameLayer for world map information
         if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
         {
             // 3. New position must be within the world
@@ -156,8 +134,9 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
                     // 5. No any unit at front && not occupied position(network sync)
                     Node* node = gameLayer->checkNodeAtPosition(getPosition(), getFrontVec2());
                     UnitSprite* unit = dynamic_cast<UnitSprite*>(node);
-                    const auto occupied = gameLayer->getOccupied();
-                    if (!unit && occupied.find(newPosition) == occupied.end())
+                    //auto occupied = gameLayer->getOccupied();
+                   // if (!unit && occupied.find(newPosition) == occupied.end())
+                    if (!unit )
                     {
                         return true;
                     }
@@ -170,7 +149,20 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
 
 void PawnSprite::moveThePawn(const Vec2 &newPosition)
 {
-    float duration = 0.125f; // Less duration, More speed
-    auto moveTo = MoveTo::create(duration, newPosition);
-    this->runAction(moveTo);
+    if (auto gameLayer = dynamic_cast<GameLayer*>(getParent()))
+    {
+        float duration = 0.125f; // Less duration, More speed
+        auto moveTo = MoveTo::create(duration, newPosition);
+        runAction(moveTo);
+        
+        // If multiplayer game, broadcasts pawn's movement to clients
+        if (auto client = gameLayer->getClient())
+        {
+            std::string ID, x, y;
+            ID = ID+"\"ID\""+":"+"\""+getName()+"\"";
+            x = x+"\"x\""+":"+std::to_string(newPosition.x);
+            y = y+"\"y\""+":"+std::to_string(newPosition.y);
+            client->emit("pawnMove", "{" + ID + ","+x+","+y+"}");
+        }
+    }
 }

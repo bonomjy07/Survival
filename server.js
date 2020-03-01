@@ -1,44 +1,50 @@
 console.log('Hello, Im Server');
-gameState =  { 
-  player : {
-  }
-}
-
+ 
 server = require('http').Server();
 var socketIO = require('socket.io');
 var io = socketIO.listen(server);
 var host = '';
-
+var playerList = [];
 //io.sockets.on('connection', function (socket) {
 io.on('connection', function (socket) {
-  console.log("connected", socket.id);
-
-  gameState.player[socket.id] = {};
-
-  if (host == '')
-    host = socket.id;
-
-  socket.emit('requestPlayerID', { ID: socket.id, host: host });
-  socket.broadcast.emit('newPlayer', { ID: socket.id });
-
-  socket.on('movePressed', function (player) {
-    console.log("movePressed:", socket.id);
-    io.to(host).emit('movePressed', player);
-  });
-  /*
-  socket.on('moveReleased', function (player) {
-    io.to('${host}').emit('moveReleased', player);
-  });
-
-  socket.on('panwMove', function (player) {
-    const obj = JSON.parse(player);
-    io.to('${obj.ID}').emit('pawnMove', player);
-  });
-  */
-
-  socket.on('disconnect', function () {
-    console.log("disconnect");
-  });
+    console.log("connected : ", socket.id);
+    playerList.push(socket.id);
+ 
+    if (host == '') 
+        host = socket.id;
+ 
+    // Sends IDs to new clinet
+    socket.emit('requestPlayerID', { HostID: host, MyID: socket.id });
+    // Informs host that new client is connected
+    io.to(host).emit('newPlayer', { ID: socket.id });
+    // Host sends player list to new client
+    socket.on('playerList', function (data) {
+        data = JSON.parse(data);
+        socket.broadcast.emit('playerList', data);
+    });
+ 
+ /*
+    // Client pressed movemet input
+    socket.on('movePressed', function (data) {
+        data = JSON.parse(data);
+        io.to(host).emit('movePressed', data);
+    });
+ 
+    // Client released movement input
+    socket.on('moveReleased', function (data) {
+        data = JSON.parse(data);
+        io.to(host).emit('moveReleased', data);
+    });
+    */
+ 
+    // Host sends to all clients which pawn moves
+    socket.on('pawnMove', function (data) {
+        data = JSON.parse(data);
+        socket.broadcast.emit('pawnMove', data);
+    });
+ 
+    socket.on('disconnect', function () {
+        console.log("disconnect");
+    });
 });
-
 server.listen(8080);

@@ -42,11 +42,13 @@ protected:
     class KeyBinder *gameKeyBinder;
     
 protected:
+public:
     /**
      @brief This function is Called every frame and set view-point on center
      */
     void setViewPointCenter(const cocos2d::Vec2 position);
 
+protected:
     /**
      @brief Return tile-location on position
      */
@@ -67,22 +69,17 @@ protected:
     bool onQueryPointNodes(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* nodes);
     
     /* 테스트용 */
-    
 public:
     enum class Role {Host=0, Client};
     Role _role;
     
 protected:
-    std::string _myID;
     std::map<std::string, class SurvivorSprite*> _playersManager;
     cocos2d::network::SIOClient* _client;
     std::set<cocos2d::Vec2> _occupied;
     
 public:
     std::set<cocos2d::Vec2>& getOccupied();
-    
-    std::string& getMyID();
-    void setMyID(const std::string& newID);
     
     cocos2d::network::SIOClient* getClient();
     void setClient(cocos2d::network::SIOClient* client);
@@ -96,19 +93,28 @@ public:
 public:
     /* Gets ID and Checks what role is */
     void onRequestPlayerID(cocos2d::network::SIOClient* client, const std::string& data);
+    
     /* Adds new player to player list and braodcasts player list */
     void onNewPlayer(cocos2d::network::SIOClient* client, const std::string& data);
+    
     /* Receives player list and create pawn about player list */
     void onPlayerList(cocos2d::network::SIOClient* client, const std::string& data);
+    
     /* Broadcasts pawn's movement */
     void onPawnMove(cocos2d::network::SIOClient* client, const std::string& data);
+    
     /* Send movement to host */
     void onMovePressed(cocos2d::network::SIOClient* client, const std::string& data);
+    
     /* Send movement to host */
     void onMoveReleased(cocos2d::network::SIOClient* client, const std::string& data);
 
     void onClose(cocos2d::network::SIOClient* client) override {cocos2d::log("onClose()");}
     void onError(cocos2d::network::SIOClient* client, const std::string& data) override { cocos2d::log("onError : %s", data.c_str());}
     
+public:
+    class SpawnManager* _treeManager;
+    
+    void addManager();
 };
 #endif // GAME_LAYER_H__

@@ -7,6 +7,8 @@
 
 #include "SpawnManager.h"
 #include "TestScene.h"
+#include "MySprite.h"
+#include "UnitSprite.h"
 #include "PawnSprite.h"
 
 USING_NS_CC;
@@ -32,9 +34,27 @@ SpawnManager::SpawnManager(const cocos2d::ValueMap &spawnArea,
                            : _spawnArea(spawnArea), _whatToSpawn(whatToSpawn), _filename(filename)
 {
     log("Spawn Manager for %s created", whatToSpawn.c_str());
-    _maxSpawnNumber = 20;
+    _maxSpawnNumber = 10;
     _currentSpawnNumber = 0;
-    _spawnDelay = 0.5f;
+    _spawnDelay = 0.1f;
+}
+
+std::string SpawnManager::getJSON_UnitsList() const
+{
+    std::string JSONList = "[";
+    for (const auto sprite : _spriteList)
+    {
+        std::string ID, x, y, data;
+        ID = ID+"\"ID\":"+"\""+sprite->getName()+"\"";
+        x = x+"\"x\":"+"\""+std::to_string(sprite->getPositionX())+"\"";
+        y = y+"\"y\":"+"\""+std::to_string(sprite->getPositionY())+"\"";
+        data = "{"+ID+","+x+","+y+"}";
+        JSONList += data + ",";
+    }
+    JSONList.erase(JSONList.length()-1);
+    JSONList += "]";
+    
+    return JSONList;
 }
 
 void SpawnManager::startSpawn()
@@ -59,7 +79,6 @@ void SpawnManager::stopSpawn()
 
 void SpawnManager::spawnTheSprite(float dt) // dt is not used
 {
-    // Don't spawn if current spawned sprite is more than max
     if (_currentSpawnNumber >= _maxSpawnNumber)
     {
         stopSpawn();
@@ -98,9 +117,9 @@ Vec2 SpawnManager::getRandomPointInArea() const
     return Vec2(randX, randY);
 }
 
-Sprite* SpawnManager::createSpriteToSpawn() const
+MySprite* SpawnManager::createSpriteToSpawn() const
 {
-    Sprite* sprite = nullptr;
+    MySprite* sprite = nullptr;
     if (!_whatToSpawn.compare(""))
     {
         return sprite;
@@ -109,7 +128,7 @@ Sprite* SpawnManager::createSpriteToSpawn() const
     {
         sprite = PawnSprite::create(_filename, 100.f);
     }
-    else if (!_whatToSpawn.compare("TreeSprite"))
+    else if (!_whatToSpawn.compare("UnitSprite"))
     {
         sprite = UnitSprite::create(_filename);
     }

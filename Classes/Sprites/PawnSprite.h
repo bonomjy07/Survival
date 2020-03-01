@@ -25,17 +25,10 @@ public:
     virtual ~PawnSprite();
     
 public:
-    /**
-     @brief Updates direction on new direction
-     */
+    /* Updates direction on new direction */
     void setCurrentDirection(const PawnSprite::Direction& newDirection);
     
-    /* Setter for ID */
-    void setID(const std::string& ID);
-    
-    /**
-     @brief Returns pawn's current direction
-     */
+    /* Returns pawn's current direction */
     const Direction& getCurrentDirection() const;
     
     /**
@@ -49,9 +42,6 @@ public:
      */
     const cocos2d::Vec2& getDeltaPosition() const;
     
-    /* Getter for ID*/
-    std::string getID() const;
-    
     /**
      @brief Retruns front vector for pawn
      */
@@ -61,7 +51,7 @@ public:
      @brief Adds delta position
      */
     void addDeltaPosition(float x, float y);
-
+    
     /**
      @brief Inserts new direction at begin of _directionList
      */
@@ -84,8 +74,6 @@ protected:
      @brief current direction is used not to allow diagnal movement
      */
     Direction _currentDirection;
-    
-    std::string _ID;
     
 protected:
     /**

@@ -52,6 +52,13 @@ bool TestScene::init()
         log("No object group naemd : Objects");
         return false;
     }
+    
+    ValueMap spawnArea = objectGroup->getObject("SpawnArea");
+    if ((_treeManager = SpawnManager::create(spawnArea, "UnitSprite", "res/tileSet/qubodup-bush_berries_0.png")))
+    {
+        this->addChild(_treeManager);
+        _treeManager->startSpawn();
+    }
 
     ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
     float x = spawnPoint["x"].asFloat();
@@ -94,7 +101,7 @@ bool TestScene::init()
 
 void TestScene::update(float deltaTime)
 {
-    if (auto player = getPlayerSprite(_myID))
+    if (auto player = getPlayerSprite(getName()))
     {
         setViewPointCenter(player->getPosition());
     }
@@ -105,7 +112,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     // Pawn's movement
     if (_role == GameLayer::Role::Host)
     {
-        if (auto player = getPlayerSprite(_myID))
+        if (auto player = getPlayerSprite(getName()))
         {
             if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
             {
@@ -132,13 +139,13 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     else if (_role == GameLayer::Role::Client)
     {
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + _myID + "\", \"direction\":\"up\"}");
+            _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"up\"}");
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + _myID + "\", \"direction\":\"down\"}");
+            _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"down\"}");
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + _myID + "\", \"direction\":\"right\"}");
+            _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"right\"}");
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + _myID + "\", \"direction\":\"left\"}");
+            _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"left\"}");
     }
     
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
@@ -163,7 +170,7 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
 {
     if (_role == GameLayer::Role::Host)
     {
-        if (auto player = getPlayerSprite(_myID))
+        if (auto player = getPlayerSprite(getName()))
         {
             if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
             {
@@ -190,13 +197,13 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     else if (_role == GameLayer::Role::Client)
     {
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + _myID + "\", \"direction\":\"up\"}");
+            _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"up\"}");
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + _myID + "\", \"direction\":\"down\"}");
+            _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"down\"}");
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + _myID + "\", \"direction\":\"right\"}");
+            _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"right\"}");
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + _myID + "\", \"direction\":\"left\"}");
+            _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"left\"}");
     }
 }
 

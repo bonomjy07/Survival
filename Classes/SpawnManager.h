@@ -19,7 +19,12 @@ public:
                                 const std::string& whatToSpawn,
                                 const std::string& filename
                                 );
+public:
+    std::vector<class MySprite*> _spriteList;
     
+public:
+    std::string getJSON_UnitsList() const;
+
 public:
     /**
     @brief Gets information on spawnArea as ValueMap,  sprite to spawn and sprite image
@@ -57,10 +62,12 @@ private:
      @brief Information about spawnArea as ValueMap
      */
     cocos2d::ValueMap _spawnArea;
+    
     /**
      @brief A string retains what to spawn a sprite
      */
     std::string _whatToSpawn;
+    
     /**
      @brief A string retains sprite's image file name
      */
@@ -70,10 +77,12 @@ private:
      @brief Delay time for spawning an sprite
      */
     float _spawnDelay;
+    
     /**
      @brief Number of maximum spawn sprite
      */
     uint32_t _maxSpawnNumber;
+    
     /**
      @brief Number of currently spawned sprite
      */
@@ -90,7 +99,8 @@ private:
      @brief Returns a sprite on whatToSpawn.
      If whatToSpawn is not class, returns nullptr.
      */
-    cocos2d::Sprite* createSpriteToSpawn() const;
+    //cocos2d::Sprite* createSpriteToSpawn() const;
+    class MySprite* createSpriteToSpawn() const;
     
 };
 #endif /* SpawnManager_h */
