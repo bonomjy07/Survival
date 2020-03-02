@@ -113,10 +113,11 @@ std::string Multi::parseData(const Value &data){
         }
         ret += "}";
     }
-    else if ( type == Value::Type::STRING ) {
+    else if ( type == Value::Type::STRING )
         ret += "\"" + data.asString() + "\"";
-    }
-
+    else if ( type == Value::Type::FLOAT )
+        ret += std::to_string(data.asFloat());
+    // TODO : if data is other type, write code like above (float type)
     return ret;
 }
 
