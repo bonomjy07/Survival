@@ -30,7 +30,6 @@ private:
     
     void toggleStatUI();
 
-    class Multi* multi;
     class SurvivorSprite* _player2;
 };
 
