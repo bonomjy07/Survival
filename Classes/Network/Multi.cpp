@@ -152,20 +152,20 @@ void Multi::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& 
         std::string ID = document["ID"].GetString();
         layer->addPlayerSpriteInWorld(ID, {336, 368});
     }
+
     // Broadcasts player list to all clients
-    std::string playerList = "[";
+    auto dataVector = ValueVector();
+
     for (auto player : layer->getPlayersManager())
     {
-        std::string ID, x, y, data;
-        ID = ID+"\"ID\":"+"\""+player.first+"\"";
-        x = x+"\"x\":"+std::to_string(player.second->getPositionX());
-        y = y+"\"y\":"+std::to_string(player.second->getPositionY());
-        data = data+"{"+ID+","+x+","+y+"}";
-        playerList += data + ",";
+        auto data = ValueMap();
+        data["ID"] = player.first;
+        data["x"] = player.second->getPositionX();
+        data["y"] = player.second->getPositionY();
+
+        dataVector.push_back(Value(data));
     }
-    playerList.erase(playerList.length()-1);
-    playerList += "]";
-    _client->emit("playerList", playerList);
+    emit("playerList", dataVector);
 }
 
 void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string &data)

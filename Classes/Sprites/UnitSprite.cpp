@@ -55,8 +55,8 @@ void UnitSprite::onDeath()
         if (Multi::Role::Client ==  Multi::ROLE_STATUS)
         {
             // TODO: Show visual effect and ....
-            std::string data;
-            gameLayer->getMulti()->getClient()->emit("", data);
+            std::string data = "";
+            gameLayer->getMulti()->emit("", Value(data));
             getParent()->removeChild(this);
             log("UnitSprite deleted");
         }

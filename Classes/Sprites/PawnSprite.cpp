@@ -157,16 +157,14 @@ void PawnSprite::moveThePawn(const Vec2 &newPosition)
         runAction(moveTo);
         
         // If multiplayer game, broadcasts pawn's movement to clients
-        if (Multi::ROLE_STATUS != Multi::Role::None){
+        if (Multi::ROLE_STATUS == Multi::Role::Host){
             auto multi = dynamic_cast<Multi*>(gameLayer->getChildByName("MultiGame"));
-            if (auto client = multi->getClient())
-            {
-                std::string ID, x, y;
-                ID = ID+"\"ID\""+":"+"\""+getName()+"\"";
-                x = x+"\"x\""+":"+std::to_string(newPosition.x);
-                y = y+"\"y\""+":"+std::to_string(newPosition.y);
-                client->emit("pawnMove", "{" + ID + ","+x+","+y+"}");
-            }
+            ValueMap data = ValueMap();
+            data["ID"] = getName();
+            data["x"] = newPosition.x;
+            data["y"] = newPosition.y;
+
+            multi->emit("pawnMove", data);
         }
     }
 }

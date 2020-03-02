@@ -150,15 +150,21 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     }
     else if (Multi::ROLE_STATUS == Multi::Role::Client)
     {
-        auto _client = getMulti()->getClient();
+        auto multi = getMulti();
+        ValueMap data = ValueMap();
+        data["ID"] = Multi::SOCKET_ID;
+        data["type"] = "keyPressed";
+
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"up\", \"type\":\"keyPressed\"}");
+            data["action"] = "up";
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"down\", \"type\":\"keyPressed\"}");
+            data["action"] = "down";
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"right\", \"type\":\"keyPressed\"}");
+            data["action"] = "right";
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"left\", \"type\":\"keyPressed\"}");
+            data["action"] = "left";
+            
+        multi->emit("action", data);
     }
     
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
@@ -223,15 +229,21 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     }
     else if (Multi::ROLE_STATUS == Multi::Role::Client)
     {
-        auto _client = getMulti()->getClient();
+        auto multi = getMulti();
+        ValueMap data = ValueMap();
+        data["ID"] = Multi::SOCKET_ID;
+        data["type"] = "keyReleased";
+
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"up\", \"type\":\"keyReleased\"}");
+            data["action"] = "up";
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"down\", \"type\":\"keyReleased\"}");
+            data["action"] = "down";
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"right\", \"type\":\"keyReleased\"}");
+            data["action"] = "right";
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"left\", \"type\":\"keyReleased\"}");
+            data["action"] = "left";
+            
+        multi->emit("action", data);
     }
 }
 
