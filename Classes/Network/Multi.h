@@ -43,7 +43,11 @@ public:
     /* Broadcasts pawn's movement */
     void onPawnMove(cocos2d::network::SIOClient* client, const std::string& data);
     
-    /* Emit to server */
+    /** 
+        Emit to server
+        @param eventname It is the same variable as the emit() parameter of the client.
+        @param data Use parseData() to stringify it and ten pass it as emit() parameter of the client.
+    */
     void emit(const std::string &eventname, const cocos2d::Value &data);
     void emit(const std::string &eventname, const cocos2d::ValueMap &data);
     void emit(const std::string &eventname, const cocos2d::ValueVector &data);
