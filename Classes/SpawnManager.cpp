@@ -37,8 +37,10 @@ SpawnManager::SpawnManager(const cocos2d::ValueMap &spawnArea,
     _maxSpawnNumber = 10;
     _currentSpawnNumber = 0;
     _spawnDelay = 0.1f;
+    _spawnedID = 0;
 }
 
+/*
 std::string SpawnManager::getJSON_UnitsList() const
 {
     std::string JSONList = "[";
@@ -56,6 +58,7 @@ std::string SpawnManager::getJSON_UnitsList() const
     
     return JSONList;
 }
+ */
 
 void SpawnManager::startSpawn()
 {
@@ -94,8 +97,15 @@ void SpawnManager::spawnTheSprite(float dt) // dt is not used
         {
             if (auto sprite = createSpriteToSpawn())
             {
+                // Set sprtie base information
                 sprite->setPosition(randomPosition);
+                sprite->setName(std::to_string(++_spawnedID));
+                
+                // Attach it to game layer
                 gameLayer->addChild(sprite);
+                
+                // Store spawned sprite and increment number of spawned sprite
+                _spawnedList.pushBack(sprite);
                 ++_currentSpawnNumber;
             }
         }

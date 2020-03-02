@@ -19,11 +19,12 @@ public:
                                 const std::string& whatToSpawn,
                                 const std::string& filename
                                 );
-public:
-    std::vector<class MySprite*> _spriteList;
+private:
+    /* Vector that stores spawned sprite */
+    cocos2d::Vector<class MySprite*> _spawnedList;
     
-public:
-    std::string getJSON_UnitsList() const;
+    /* Spawned sprite ID which'll increment whenvere a sprtie is spawned */
+    int _spawnedID;
 
 public:
     /* Set base information where and what to spawn */
@@ -41,10 +42,13 @@ public:
     void stopSpawn();
     
     /**
-    @brief Called per spawnDelay and spawn a sprite
+     @brief Called per spawnDelay and spawn a sprite
      */
     void spawnTheSprite(float dt);
-
+    
+    /* Accessor function for vector which stores spawned sprite */
+    cocos2d::Vector<class MySprite*> getSpawnedList() const;
+    
     /* Accessor function for max spawn number */
     uint32_t getMaxSpawnNumber() const;
     
