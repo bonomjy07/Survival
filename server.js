@@ -23,7 +23,7 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('playerList', data);
     });
  
- /*
+ 
     // Client pressed movemet input
     socket.on('movePressed', function (data) {
         data = JSON.parse(data);
@@ -35,7 +35,7 @@ io.on('connection', function (socket) {
         data = JSON.parse(data);
         io.to(host).emit('moveReleased', data);
     });
-    */
+    
  
     // Host sends to all clients which pawn moves
     socket.on('pawnMove', function (data) {
