@@ -176,7 +176,7 @@ void GameLayer::onRequestPlayerID(cocos2d::network::SIOClient* client, const std
     if (!document.GetParseError())
     {
         // Get ID and check if i'm the host
-        setName(document["MyID"].GetString());
+        setName(document["MyID"].GetString()); // TODO: Shoud it be 'GameLayer'?
         if (getName().compare(document["HostID"].GetString()) == 0)
         {
             _role = Role::Host;
@@ -190,7 +190,7 @@ void GameLayer::onRequestPlayerID(cocos2d::network::SIOClient* client, const std
 
 void GameLayer::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& data)
 {
-    // Get my ID
+    // Create new player in host-machine
     rapidjson::Document document;
     document.Parse(data.c_str());
     if (!document.GetParseError())
@@ -198,6 +198,7 @@ void GameLayer::onNewPlayer(cocos2d::network::SIOClient* client, const std::stri
         std::string ID = document["ID"].GetString();
         addPlayerSpriteInWorld(ID, {336, 368});
     }
+    
     // Broadcasts player list to all clients
     std::string playerList = "[";
     for (auto player : _playersManager)

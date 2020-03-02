@@ -12,6 +12,7 @@ void InputController::bindAction(const std::string &action, InputController::Inp
     inputBinder.insert({{action, inputEvent}, func});
 }
 
+#include <iostream>
 void InputController::takeAction(const std::string &action, InputEvent inputEvent)
 {
     auto it = inputBinder.find({action, inputEvent});

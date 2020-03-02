@@ -43,7 +43,9 @@ private:
 private:
     void drainStats(float dt);
     
-    // Test Test Test
+    /* Test Test Test
+     * Test Test Test
+     */
 public:
     class InputController* getInputController() const;
     

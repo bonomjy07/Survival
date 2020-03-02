@@ -16,7 +16,6 @@ USING_NS_CC;
 SurvivorSprite* SurvivorSprite::create(const std::string &filename, float maxHealth)
 {
     SurvivorSprite* sprite = new (std::nothrow) SurvivorSprite(maxHealth);
-    // if (sprite && sprite->initWithFile(filename) && sprite->initPhysicsBody())
     if (sprite && sprite->initWithFile(filename) && sprite->initPhysicsBody())
     {
         sprite->autorelease();
@@ -38,6 +37,8 @@ SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
     
     // Create input controller
     _inputController = new InputController();
+    // Set input-action up
+    setupInputAction();
 }
 
 SurvivorSprite::~SurvivorSprite()
@@ -122,6 +123,7 @@ void SurvivorSprite::setupInputAction()
     }
 }
 
+// //////////////////////////////////////////
 void SurvivorSprite::movePressedUp(void *arg)
 {
     addDeltaPosition(0.f, +32.f);
@@ -136,6 +138,8 @@ void SurvivorSprite::movePressedDown(void *arg)
 
 void SurvivorSprite::movePressedRight(void *arg)
 {
+    static int cnt = 0;
+    log("hi %d", cnt++);
     addDeltaPosition(+32.f, 0.f);
     insertDirection(Direction::Right);
 }
@@ -146,26 +150,27 @@ void SurvivorSprite::movePressedLeft(void *arg)
     insertDirection(Direction::Left);
 }
 
+// //////////////////////////////////////////
 void SurvivorSprite::moveReleasedUp(void *arg)
 {
-    addDeltaPosition(0.f, +32.f);
+    addDeltaPosition(0.f, -32.f);
     eraseDirection(Direction::Up);
 }
 
 void SurvivorSprite::moveReleasedDown(void *arg)
 {
-    addDeltaPosition(0.f, -32.f);
+    addDeltaPosition(0.f, +32.f);
     eraseDirection(Direction::Down);
 }
 
 void SurvivorSprite::moveReleasedRight(void *arg)
 {
-    addDeltaPosition(+32.f, 0.f);
+    addDeltaPosition(-32.f, 0.f);
     eraseDirection(Direction::Right);
 }
 
 void SurvivorSprite::moveReleasedLeft(void *arg)
 {
-    addDeltaPosition(-32.f, 0.f);
+    addDeltaPosition(+32.f, 0.f);
     eraseDirection(Direction::Left);
 }

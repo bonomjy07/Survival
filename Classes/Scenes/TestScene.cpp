@@ -3,13 +3,18 @@
 #include "SurvivorSprite.h"
 #include "KeyTableScene.h"
 #include "MainScene.h"
+
 #include "SpawnManager.h"
+
 #include "PauseLayer.h"
+#include "StatLayer.h"
 #include "StatLayer.h"
 
 #include "ItemSprite.h"
 #include "Food.h"
 #include "KeyBinder.h"
+
+#include "InputController.h"
 
 #include <string>
 
@@ -109,6 +114,30 @@ void TestScene::update(float deltaTime)
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
+    if (auto player = getPlayerSprite(getName()))
+    {
+        auto controller = player->getInputController();
+        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+        {
+            controller->takeAction("Up", InputController::InputEvent::KeyPressed);
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
+        {
+            controller->takeAction("Down", InputController::InputEvent::KeyPressed);
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+        {
+            controller->takeAction("Right", InputController::InputEvent::KeyPressed);
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+        {
+            controller->takeAction("Left", InputController::InputEvent::KeyPressed);
+        }
+    }
+    return;
+    // above is test...
+    
+    
     // Pawn's movement
     if (_role == GameLayer::Role::Host)
     {
@@ -150,7 +179,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
     {
-        //getPlayerSprite()->collect();
+        getPlayerSprite()->collect();
     }
     
     // ESC action
@@ -168,6 +197,28 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
+    if (auto player = getPlayerSprite(getName()))
+    {
+        auto controller = player->getInputController();
+        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+        {
+            controller->takeAction("Up", InputController::InputEvent::KeyReleased);
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
+        {
+            controller->takeAction("Down", InputController::InputEvent::KeyReleased);
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+        {
+            controller->takeAction("Right", InputController::InputEvent::KeyReleased);
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+        {
+            controller->takeAction("Left", InputController::InputEvent::KeyReleased);
+        }
+    }
+    return;
+    
     if (_role == GameLayer::Role::Host)
     {
         if (auto player = getPlayerSprite(getName()))
