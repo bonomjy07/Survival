@@ -22,8 +22,6 @@ public:
     CREATE_FUNC(Multi);
     static Multi* create(std::string uri);
 
-    void onReceiveEvent(SIOClient* client , const std::string& data);
-    void onReceiveEvent2(SIOClient* client , const std::string& data);
     void sendText();
 
 public:
@@ -35,16 +33,13 @@ public:
     
     /* Receives player list and create pawn about player list */
     void onPlayerList(cocos2d::network::SIOClient* client, const std::string& data);
-    
+
+    /* Receive action from guest */
+    void onAction(cocos2d::network::SIOClient* client, const std::string& data);
+
     /* Broadcasts pawn's movement */
     void onPawnMove(cocos2d::network::SIOClient* client, const std::string& data);
     
-    /* Send movement to host */
-    void onMovePressed(cocos2d::network::SIOClient* client, const std::string& data);
-    
-    /* Send movement to host */
-    void onMoveReleased(cocos2d::network::SIOClient* client, const std::string& data);
-
     virtual void onConnect(SIOClient* client);
     virtual void onMessage(SIOClient* client, const std::string& data);
     void onClose(cocos2d::network::SIOClient* client) override;
@@ -57,9 +52,7 @@ private:
     class GameLayer* getParentLayer();
 
 private:
-    int _player_number;
     SIOClient* _client;
-    class SurvivorSprite* _player2;
 };
 
 #endif // MULTI_H__

@@ -30,16 +30,13 @@ bool Multi::init(){
     if ( !(_client = SocketIO::connect("localhost:8080", *this)) ){
         return false;
     }
-    _client->on("hello", CC_CALLBACK_2(Multi::onReceiveEvent, this));
-    _client->on("action", CC_CALLBACK_2(Multi::onReceiveEvent2, this));
 
     _client->on("requestPlayerID", CC_CALLBACK_2(Multi::onRequestPlayerID, this));
     _client->on("newPlayer", CC_CALLBACK_2(Multi::onNewPlayer, this));
     _client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
     _client->on("pawnMove", CC_CALLBACK_2(Multi::onPawnMove, this));
-    _client->on("movePressed", CC_CALLBACK_2(Multi::onMovePressed, this));
-    _client->on("moveReleased", CC_CALLBACK_2(Multi::onMoveReleased, this));
-    _player2 = nullptr;
+    _client->on("action", CC_CALLBACK_2(Multi::onAction, this));
+
     return true;
 }
 
@@ -47,16 +44,13 @@ bool Multi::init(std::string uri){
     if ( !(_client = SocketIO::connect(uri, *this)) ){
         return false;
     }
-    _client->on("hello", CC_CALLBACK_2(Multi::onReceiveEvent, this));
-    _client->on("action", CC_CALLBACK_2(Multi::onReceiveEvent2, this));
 
     _client->on("requestPlayerID", CC_CALLBACK_2(Multi::onRequestPlayerID, this));
     _client->on("newPlayer", CC_CALLBACK_2(Multi::onNewPlayer, this));
     _client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
     _client->on("pawnMove", CC_CALLBACK_2(Multi::onPawnMove, this));
-    _client->on("movePressed", CC_CALLBACK_2(Multi::onMovePressed, this));
-    _client->on("moveReleased", CC_CALLBACK_2(Multi::onMoveReleased, this));
-    _player2 = nullptr;
+    _client->on("action", CC_CALLBACK_2(Multi::onAction, this));
+
     return true;
 }
 
@@ -76,37 +70,8 @@ void Multi::onError(SIOClient* client, const std::string& data){
     cocos2d::log("onError : %s", data.c_str());
 }
 
-void Multi::onReceiveEvent(SIOClient* client , const std::string& data){
-    static bool isMine = true;
-
-    rapidjson::Document doc;
-    doc.Parse(data.c_str());
-    if ( isMine ) {
-        _player_number = doc["value"].GetInt64();
-        log(_player_number);
-        isMine = false;
-    }
-    else{
-        auto director = Director::getInstance();
-        TestScene* testscene = static_cast<TestScene*>(director->getRunningScene()->getChildByName("GameLayer"));
-        _player2 = static_cast<SurvivorSprite*>(testscene->getChildByName("player2"));
-    }
-    log("onReceiveEvent");
-}
-
-void Multi::onReceiveEvent2(SIOClient* client , const std::string& data){
-
-    rapidjson::Document doc;
-    doc.Parse(data.c_str());
-    if ( !std::string("2").compare(doc["player"].GetString()) ) {
-        if ( _player2 )
-            _player2->collect();
-    }
-    log("onReceiveEvent2");
-}
-
 void Multi::sendText(){
-    _client->emit("action", "[{\"player\": \"" + std::to_string(_player_number) + "\",\"value\":\"hihihihih\"}]");
+    //_client->emit("action", "[{\"player\": \"" + std::to_string(_player_number) + "\",\"value\":\"hihihihih\"}]");
     log("sendText");
 }
 
@@ -193,8 +158,7 @@ void Multi::onPawnMove(cocos2d::network::SIOClient* client, const std::string& d
     }
 }
 
-void Multi::onMovePressed(cocos2d::network::SIOClient *client, const std::string &data)
-{
+void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& data){
     auto layer = getParentLayer();
 
     // get direction
@@ -203,23 +167,13 @@ void Multi::onMovePressed(cocos2d::network::SIOClient *client, const std::string
     if (!document.GetParseError())
     {
         auto id = document["ID"].GetString();
-        auto direction = document["direction"].GetString();
-        layer->onMovePressed(id, direction);
-    }
-}
-
-void Multi::onMoveReleased(cocos2d::network::SIOClient* client, const std::string& data)
-{
-    auto layer = getParentLayer();
-
-    // get direction
-    rapidjson::Document document;
-    document.Parse(data.c_str());
-    if (!document.GetParseError())
-    {
-        auto id = document["ID"].GetString();
-        auto direction = document["direction"].GetString();
-        layer->onMoveReleased(id, direction);
+        auto action = document["action"].GetString();
+        std::string type = document["type"].GetString();
+        if ( !type.compare("keyPressed") )
+            layer->onMovePressed(id, action);
+        else if ( !type.compare("keyReleased") )
+            layer->onMoveReleased(id, action);
+        
     }
 }
 
