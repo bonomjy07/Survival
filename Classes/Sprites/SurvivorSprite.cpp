@@ -33,11 +33,17 @@ void SurvivorSprite::update(float dt)
 
 SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
 {
+    // Set base value for drain delay
     _drainDelay = 1.f;
-    _inputCtrler = new InputController();
+    
+    // Create input controller
+    _inputController = new InputController();
 }
 
-SurvivorSprite::~SurvivorSprite() {}
+SurvivorSprite::~SurvivorSprite()
+{
+    delete _inputController;
+}
 
 const Stat& SurvivorSprite::getStat() const
 {
@@ -91,4 +97,75 @@ void SurvivorSprite::drainStats(float dt)
     _stat.updateCurrentThirsty(-2.f);
     _stat.updateCurrentHunger(-3.f);
     _stat.updateCurrentSleep(-4.f);
+}
+
+InputController* SurvivorSprite::getInputController() const
+{
+    return _inputController;
+}
+
+void SurvivorSprite::setupInputAction()
+{
+    void* arg = nullptr;
+    
+    if (_inputController)
+    {
+        _inputController->bindAction("Up", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::movePressedUp, this, arg));
+        _inputController->bindAction("Down", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::movePressedDown, this, arg));
+        _inputController->bindAction("Right", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::movePressedRight, this, arg));
+        _inputController->bindAction("Left", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::movePressedLeft, this, arg));
+        
+        _inputController->bindAction("Up", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedUp, this, arg));
+        _inputController->bindAction("Down", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedDown, this, arg));
+        _inputController->bindAction("Right", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedRight, this, arg));
+        _inputController->bindAction("Left", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedLeft, this, arg));
+    }
+}
+
+void SurvivorSprite::movePressedUp(void *arg)
+{
+    addDeltaPosition(0.f, +32.f);
+    insertDirection(Direction::Up);
+}
+
+void SurvivorSprite::movePressedDown(void *arg)
+{
+    addDeltaPosition(0.f, -32.f);
+    insertDirection(Direction::Down);
+}
+
+void SurvivorSprite::movePressedRight(void *arg)
+{
+    addDeltaPosition(+32.f, 0.f);
+    insertDirection(Direction::Right);
+}
+
+void SurvivorSprite::movePressedLeft(void *arg)
+{
+    addDeltaPosition(-32.f, 0.f);
+    insertDirection(Direction::Left);
+}
+
+void SurvivorSprite::moveReleasedUp(void *arg)
+{
+    addDeltaPosition(0.f, +32.f);
+    eraseDirection(Direction::Up);
+}
+
+void SurvivorSprite::moveReleasedDown(void *arg)
+{
+    addDeltaPosition(0.f, -32.f);
+    eraseDirection(Direction::Down);
+}
+
+void SurvivorSprite::moveReleasedRight(void *arg)
+{
+    addDeltaPosition(+32.f, 0.f);
+    eraseDirection(Direction::Right);
+}
+
+void SurvivorSprite::moveReleasedLeft(void *arg)
+{
+    addDeltaPosition(-32.f, 0.f);
+    eraseDirection(Direction::Left);
 }

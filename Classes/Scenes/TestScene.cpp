@@ -150,7 +150,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
     {
-        getPlayerSprite()->collect();
+        //getPlayerSprite()->collect();
     }
     
     // ESC action

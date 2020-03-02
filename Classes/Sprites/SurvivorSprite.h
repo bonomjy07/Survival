@@ -43,9 +43,25 @@ private:
 private:
     void drainStats(float dt);
     
-    class InputController* _inputCtrler;
-
+    // Test Test Test
+public:
+    class InputController* getInputController() const;
+    
+private:
+    class InputController* _inputController;
+    
+protected:
+    void setupInputAction();
+    
+private:
+    void movePressedUp(void* arg);
+    void movePressedDown(void* arg);
+    void movePressedRight(void* arg);
+    void movePressedLeft(void* arg);
+    
+    void moveReleasedUp(void* arg);
+    void moveReleasedDown(void* arg);
+    void moveReleasedRight(void* arg);
+    void moveReleasedLeft(void* arg);
 };
 #endif /* SurvivorSprite_h */
-
-

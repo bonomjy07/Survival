@@ -21,7 +21,7 @@ private:
     {
         T1 comm;
         T2 ie;
-        bool operator<(const MyPair& p)
+        bool operator<(const MyPair& p) const
         {
             return this->comm < p.comm;
         }
@@ -30,8 +30,6 @@ private:
 
 public:
     void bindAction(const std::string& action, InputEvent inputEvent, std::function<void(void*)> func);
-    
-private:
     void takeAction(const std::string& action, InputEvent inputEvent);
 };
 
