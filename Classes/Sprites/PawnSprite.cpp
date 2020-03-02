@@ -7,6 +7,7 @@
 
 #include "PawnSprite.h"
 #include "TestScene.h"
+#include "Multi.h"
 
 USING_NS_CC;
 
@@ -156,13 +157,16 @@ void PawnSprite::moveThePawn(const Vec2 &newPosition)
         runAction(moveTo);
         
         // If multiplayer game, broadcasts pawn's movement to clients
-        if (auto client = gameLayer->getClient())
-        {
-            std::string ID, x, y;
-            ID = ID+"\"ID\""+":"+"\""+getName()+"\"";
-            x = x+"\"x\""+":"+std::to_string(newPosition.x);
-            y = y+"\"y\""+":"+std::to_string(newPosition.y);
-            client->emit("pawnMove", "{" + ID + ","+x+","+y+"}");
+        if (Multi::ROLE_STATUS != Multi::Role::None){
+            auto multi = dynamic_cast<Multi*>(gameLayer->getChildByName("MultiGame"));
+            if (auto client = multi->getClient())
+            {
+                std::string ID, x, y;
+                ID = ID+"\"ID\""+":"+"\""+getName()+"\"";
+                x = x+"\"x\""+":"+std::to_string(newPosition.x);
+                y = y+"\"y\""+":"+std::to_string(newPosition.y);
+                client->emit("pawnMove", "{" + ID + ","+x+","+y+"}");
+            }
         }
     }
 }
