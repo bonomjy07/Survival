@@ -5,7 +5,8 @@ var socketIO = require('socket.io');
 var io = socketIO.listen(server);
 var host = '';
 var playerList = [];
-//io.sockets.on('connection', function (socket) {
+
+// connection
 io.on('connection', function (socket) {
     console.log("connected : ", socket.id);
     playerList.push(socket.id);
@@ -23,20 +24,12 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('playerList', data);
     });
  
- 
-    // Client pressed movemet input
-    socket.on('movePressed', function (data) {
+    // Send guest action data to host
+    socket.on('action', function(data) {
         data = JSON.parse(data);
-        io.to(host).emit('movePressed', data);
+        io.to(host).emit('action', data);
     });
- 
-    // Client released movement input
-    socket.on('moveReleased', function (data) {
-        data = JSON.parse(data);
-        io.to(host).emit('moveReleased', data);
-    });
-    
- 
+
     // Host sends to all clients which pawn moves
     socket.on('pawnMove', function (data) {
         data = JSON.parse(data);
@@ -45,6 +38,10 @@ io.on('connection', function (socket) {
  
     socket.on('disconnect', function () {
         console.log("disconnect");
+        if ( socket.id === host ) {
+            socket.disconnect();
+            host = '';
+        }
     });
 });
 server.listen(8080);
