@@ -114,72 +114,48 @@ void TestScene::update(float deltaTime)
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    if (auto player = getPlayerSprite(getName()))
-    {
-        auto controller = player->getInputController();
-        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-        {
-            controller->takeAction("Up", InputController::InputEvent::KeyPressed);
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-        {
-            controller->takeAction("Down", InputController::InputEvent::KeyPressed);
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-        {
-            controller->takeAction("Right", InputController::InputEvent::KeyPressed);
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-        {
-            controller->takeAction("Left", InputController::InputEvent::KeyPressed);
-        }
-    }
-    return;
-    // above is test...
-    
-    
-    // Pawn's movement
     if (_role == GameLayer::Role::Host)
     {
-        if (auto player = getPlayerSprite(getName()))
+        SurvivorSprite* player = getPlayerSprite(getName());
+        InputController* controller = nullptr;
+        if (player && (controller = player->getInputController()))
         {
             if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
             {
-                player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
-                player->insertDirection(PawnSprite::Direction::Up);
+                controller->takeAction("Up", InputController::InputEvent::KeyPressed);
             }
             else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
             {
-                player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
-                player->insertDirection(PawnSprite::Direction::Down);
+                controller->takeAction("Down", InputController::InputEvent::KeyPressed);
             }
             else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
             {
-                player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
-                player->insertDirection(PawnSprite::Direction::Right);
+                controller->takeAction("Right", InputController::InputEvent::KeyPressed);
             }
             else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
             {
-                player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
-                player->insertDirection(PawnSprite::Direction::Left);
+                controller->takeAction("Left", InputController::InputEvent::KeyPressed);
             }
         }
     }
     else if (_role == GameLayer::Role::Client)
     {
-        if (EventKeyboard::KeyCode::KEY_W == keyCode)
+        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+        {
             _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"up\"}");
-        else if (EventKeyboard::KeyCode::KEY_S == keyCode)
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
+        {
             _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"down\"}");
-        else if (EventKeyboard::KeyCode::KEY_D == keyCode)
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+        {
             _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"right\"}");
-        else if (EventKeyboard::KeyCode::KEY_A == keyCode)
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+        {
             _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"left\"}");
-    }
-    
-    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
-    {
-        getPlayerSprite()->collect();
+        }
     }
     
     // ESC action
@@ -197,64 +173,48 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    if (auto player = getPlayerSprite(getName()))
-    {
-        auto controller = player->getInputController();
-        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-        {
-            controller->takeAction("Up", InputController::InputEvent::KeyReleased);
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-        {
-            controller->takeAction("Down", InputController::InputEvent::KeyReleased);
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-        {
-            controller->takeAction("Right", InputController::InputEvent::KeyReleased);
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-        {
-            controller->takeAction("Left", InputController::InputEvent::KeyReleased);
-        }
-    }
-    return;
-    
     if (_role == GameLayer::Role::Host)
     {
-        if (auto player = getPlayerSprite(getName()))
+        SurvivorSprite* player = getPlayerSprite(getName());
+        InputController* controller = nullptr;
+        if (player && (controller = player->getInputController()))
         {
             if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
             {
-                player->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
-                player->eraseDirection(PawnSprite::Direction::Up);
+                controller->takeAction("Up", InputController::InputEvent::KeyReleased);
             }
             else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
             {
-                player->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
-                player->eraseDirection(PawnSprite::Direction::Down);
+                controller->takeAction("Down", InputController::InputEvent::KeyReleased);
             }
             else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
             {
-                player->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
-                player->eraseDirection(PawnSprite::Direction::Right);
+                controller->takeAction("Right", InputController::InputEvent::KeyReleased);
             }
             else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
             {
-                player->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
-                player->eraseDirection(PawnSprite::Direction::Left);
+                controller->takeAction("Left", InputController::InputEvent::KeyReleased);
             }
         }
     }
     else if (_role == GameLayer::Role::Client)
     {
-        if (EventKeyboard::KeyCode::KEY_W == keyCode)
+        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+        {
             _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"up\"}");
-        else if (EventKeyboard::KeyCode::KEY_S == keyCode)
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
+        {
             _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"down\"}");
-        else if (EventKeyboard::KeyCode::KEY_D == keyCode)
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+        {
             _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"right\"}");
-        else if (EventKeyboard::KeyCode::KEY_A == keyCode)
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+        {
             _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"left\"}");
+        }
     }
 }
 

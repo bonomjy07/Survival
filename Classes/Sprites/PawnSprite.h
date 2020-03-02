@@ -87,7 +87,6 @@ public:
 private:
     /* New direction has to be insert at begin(first) */
     std::list<Direction> _directionList;
-    
 };
 
 #endif /* Pawn_h */

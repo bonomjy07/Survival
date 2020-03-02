@@ -138,8 +138,6 @@ void SurvivorSprite::movePressedDown(void *arg)
 
 void SurvivorSprite::movePressedRight(void *arg)
 {
-    static int cnt = 0;
-    log("hi %d", cnt++);
     addDeltaPosition(+32.f, 0.f);
     insertDirection(Direction::Right);
 }

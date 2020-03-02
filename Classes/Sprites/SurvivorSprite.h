@@ -28,6 +28,7 @@ public:
     const Stat& getStat() const;
     
     void startDrainStats();
+    
     void stopDrainStats();
     
     void collect();
@@ -52,7 +53,7 @@ public:
 private:
     class InputController* _inputController;
     
-protected:
+private:
     void setupInputAction();
     
 private:
@@ -65,5 +66,6 @@ private:
     void moveReleasedDown(void* arg);
     void moveReleasedRight(void* arg);
     void moveReleasedLeft(void* arg);
+    
 };
 #endif /* SurvivorSprite_h */
