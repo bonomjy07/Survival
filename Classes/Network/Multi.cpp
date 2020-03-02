@@ -70,9 +70,54 @@ void Multi::onError(SIOClient* client, const std::string& data){
     cocos2d::log("onError : %s", data.c_str());
 }
 
-void Multi::sendText(){
-    //_client->emit("action", "[{\"player\": \"" + std::to_string(_player_number) + "\",\"value\":\"hihihihih\"}]");
-    log("sendText");
+void Multi::emit(const std::string &eventname, const Value &data){
+    std::string args = parseData(data);
+    log(args.c_str());
+
+    _client->emit(eventname, args);
+}
+
+void Multi::emit(const std::string &eventname, const ValueMap &data){
+    emit(eventname, Value(data));
+}
+
+void Multi::emit(const std::string &eventname, const ValueVector &data){
+    emit(eventname, Value(data));
+}
+
+std::string Multi::parseData(const Value &data){
+    std::string ret = "";
+    auto type = data.getType();
+    if ( type == Value::Type::VECTOR ) {
+        ret += "[";
+        auto dataVector = data.asValueVector();
+        for ( auto iter=dataVector.begin(); iter<dataVector.end(); iter++ ) {
+            if ( iter != dataVector.begin() )
+                ret += ",";
+            ret += parseData(*iter);
+        }
+        ret += "]";
+    }
+    else if ( type == Value::Type::MAP ) {
+        ret += "{";
+        auto dataMap = data.asValueMap();
+        for ( auto iter=dataMap.begin(); iter!=dataMap.end(); iter++ ) {
+            auto pair = (*iter);
+            std::string key = pair.first;
+            
+            if ( iter != dataMap.begin() )
+                ret += ",";
+            ret += "\"" + key + "\"";
+            ret += ":";
+            ret += parseData(pair.second);
+        }
+        ret += "}";
+    }
+    else if ( type == Value::Type::STRING ) {
+        ret += "\"" + data.asString() + "\"";
+    }
+
+    return ret;
 }
 
 void Multi::onRequestPlayerID(cocos2d::network::SIOClient* client, const std::string& data)
@@ -169,8 +214,11 @@ void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& dat
         auto id = document["ID"].GetString();
         auto action = document["action"].GetString();
         std::string type = document["type"].GetString();
+
+        // key pressed action
         if ( !type.compare("keyPressed") )
             layer->onMovePressed(id, action);
+        // key released action
         else if ( !type.compare("keyReleased") )
             layer->onMoveReleased(id, action);
         

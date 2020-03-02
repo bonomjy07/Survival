@@ -22,9 +22,12 @@ public:
     CREATE_FUNC(Multi);
     static Multi* create(std::string uri);
 
-    void sendText();
-
 public:
+    virtual void onConnect(SIOClient* client);
+    virtual void onMessage(SIOClient* client, const std::string& data);
+    void onClose(cocos2d::network::SIOClient* client) override;
+    void onError(cocos2d::network::SIOClient* client, const std::string& data) override;
+
     /* Gets ID and Checks what role is */
     void onRequestPlayerID(cocos2d::network::SIOClient* client, const std::string& data);
     
@@ -40,16 +43,19 @@ public:
     /* Broadcasts pawn's movement */
     void onPawnMove(cocos2d::network::SIOClient* client, const std::string& data);
     
-    virtual void onConnect(SIOClient* client);
-    virtual void onMessage(SIOClient* client, const std::string& data);
-    void onClose(cocos2d::network::SIOClient* client) override;
-    void onError(cocos2d::network::SIOClient* client, const std::string& data) override;
+    /* Emit to server */
+    void emit(const std::string &eventname, const cocos2d::Value &data);
+    void emit(const std::string &eventname, const cocos2d::ValueMap &data);
+    void emit(const std::string &eventname, const cocos2d::ValueVector &data);
 
     cocos2d::network::SIOClient* getClient(){ return _client; }
     void setClient(cocos2d::network::SIOClient* client){ _client = client; }
 
 private:
     class GameLayer* getParentLayer();
+
+    /* parse Value to string */
+    std::string parseData(const cocos2d::Value &data);
 
 private:
     SIOClient* _client;
