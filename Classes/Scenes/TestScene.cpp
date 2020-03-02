@@ -160,13 +160,13 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     {
         auto _client = getMulti()->getClient();
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"direction\":\"up\"}");
+            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"up\", \"type\":\"keyPressed\"}");
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"direction\":\"down\"}");
+            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"down\", \"type\":\"keyPressed\"}");
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"direction\":\"right\"}");
+            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"right\", \"type\":\"keyPressed\"}");
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"direction\":\"left\"}");
+            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"left\", \"type\":\"keyPressed\"}");
     }
     
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
@@ -233,13 +233,13 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     {
         auto _client = getMulti()->getClient();
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"direction\":\"up\"}");
+            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"up\", \"type\":\"keyReleased\"}");
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"direction\":\"down\"}");
+            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"down\", \"type\":\"keyReleased\"}");
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"direction\":\"right\"}");
+            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"right\", \"type\":\"keyReleased\"}");
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"direction\":\"left\"}");
+            _client->emit("action", "{\"ID\":\"" + Multi::SOCKET_ID + "\", \"action\":\"left\", \"type\":\"keyReleased\"}");
     }
 }
 
