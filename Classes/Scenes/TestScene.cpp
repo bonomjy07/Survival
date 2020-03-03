@@ -86,14 +86,6 @@ bool TestScene::init()
         _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
         this->addChild(_player);
     }
-
-    _player2 = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-    if (_player2)
-    {
-        _player2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
-        _player2->setName("player2");
-        this->addChild(_player2);
-    }
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -112,9 +104,6 @@ bool TestScene::init()
     listener->onKeyPressed = CC_CALLBACK_2(TestScene::onKeyPressed, this);
     listener->onKeyReleased = CC_CALLBACK_2(TestScene::onKeyReleased, this);
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-    
-    multi = new Multi();
-
 
     // Allow update(float dt) to be called so that pawns move
     this->scheduleUpdate();
@@ -124,7 +113,7 @@ bool TestScene::init()
 
 void TestScene::update(float deltaTime)
 {
-    if (auto player = getPlayerSprite(getName()))
+    if (auto player = getPlayerSprite(Multi::SOCKET_ID))
     {
         setViewPointCenter(player->getPosition());
     }
@@ -132,13 +121,10 @@ void TestScene::update(float deltaTime)
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-
-    multi->sendText();
-    if (!_player) return;
     // Pawn's movement
-    if (_role == GameLayer::Role::Host)
+    if (Multi::ROLE_STATUS == Multi::Role::None || Multi::ROLE_STATUS == Multi::Role::Host)
     {
-        if (auto player = getPlayerSprite(getName()))
+        if (auto player = getPlayerSprite(Multi::SOCKET_ID))
         {
             if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
             {
@@ -162,16 +148,23 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
             }
         }
     }
-    else if (_role == GameLayer::Role::Client)
+    else if (Multi::ROLE_STATUS == Multi::Role::Client)
     {
+        auto multi = getMulti();
+        ValueMap data = ValueMap();
+        data["ID"] = Multi::SOCKET_ID;
+        data["type"] = "keyPressed";
+
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"up\"}");
+            data["action"] = "Up";
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"down\"}");
+            data["action"] = "Down";
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"right\"}");
+            data["action"] = "Right";
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            _client->emit("movePressed", "{\"ID\":\"" + getName() + "\", \"direction\":\"left\"}");
+            data["action"] = "Left";
+            
+        multi->emit("action", data);
     }
     
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
@@ -208,9 +201,9 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 
 void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    if (_role == GameLayer::Role::Host)
+    if (Multi::ROLE_STATUS == Multi::Role::None || Multi::ROLE_STATUS == Multi::Role::Host)
     {
-        if (auto player = getPlayerSprite(getName()))
+        if (auto player = getPlayerSprite(Multi::SOCKET_ID))
         {
             if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
             {
@@ -234,16 +227,23 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             }
         }
     }
-    else if (_role == GameLayer::Role::Client)
+    else if (Multi::ROLE_STATUS == Multi::Role::Client)
     {
+        auto multi = getMulti();
+        ValueMap data = ValueMap();
+        data["ID"] = Multi::SOCKET_ID;
+        data["type"] = "keyReleased";
+
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"up\"}");
+            data["action"] = "Up";
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"down\"}");
+            data["action"] = "Down";
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"right\"}");
+            data["action"] = "Right";
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            _client->emit("moveReleased", "{\"ID\":\"" + getName() + "\", \"direction\":\"left\"}");
+            data["action"] = "Left";
+            
+        multi->emit("action", data);
     }
 }
 

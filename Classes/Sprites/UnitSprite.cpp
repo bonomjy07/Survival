@@ -52,11 +52,11 @@ void UnitSprite::onDeath()
 {
     if (auto gameLayer = dynamic_cast<GameLayer*>(getParent()))
     {
-        if (GameLayer::Role::Client ==  gameLayer->_role)
+        if (Multi::Role::Client ==  Multi::ROLE_STATUS)
         {
             // TODO: Show visual effect and ....
-            std::string data;
-            gameLayer->getClient()->emit("", data);
+            std::string data = "";
+            gameLayer->getMulti()->emit("", Value(data));
             getParent()->removeChild(this);
             log("UnitSprite deleted");
         }

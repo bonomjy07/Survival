@@ -11,6 +11,7 @@
 #include "KeyTableScene.h"
 #include "network/SocketIO.h"
 
+#include "Multi.h"
 #include "SpawnManager.h"
 
 #include "Stat.h"
@@ -105,7 +106,7 @@ void MainScene::onStartGame() // Single....
         auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer"));
         {
             gameLayer->setName("");
-            gameLayer->_role = GameLayer::Role::Host;
+            Multi::ROLE_STATUS = Multi::Role::None;
             gameLayer->addPlayerSpriteInWorld("");
             // gameLayer->_treeManager->spawnTheSprite(10);
         }
@@ -147,16 +148,11 @@ void MainScene::onEnterGame()
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))
         {
-            // Connect to server
-            if (auto client = network::SocketIO::connect(uri, *gameLayer))
-            {
-                client->on("requestPlayerID", CC_CALLBACK_2(GameLayer::onRequestPlayerID, gameLayer));
-                client->on("newPlayer", CC_CALLBACK_2(GameLayer::onNewPlayer, gameLayer));
-                client->on("playerList", CC_CALLBACK_2(GameLayer::onPlayerList, gameLayer));
-                client->on("pawnMove", CC_CALLBACK_2(GameLayer::onPawnMove, gameLayer));
-                client->on("movePressed", CC_CALLBACK_2(GameLayer::onMovePressed, gameLayer));
-                client->on("moveReleased", CC_CALLBACK_2(GameLayer::onMoveReleased, gameLayer));
-                gameLayer->setClient(client);
+            //auto multi = Multi::create(uri);
+            auto multi = Multi::create();
+            if ( multi ){
+                multi->setName("MultiGame");
+                gameLayer->addChild(multi);
                 
                 auto director = Director::getInstance();
                 director->pushScene(director->getRunningScene());

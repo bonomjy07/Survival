@@ -30,8 +30,6 @@ private:
     
     void toggleStatUI();
 
-    class Multi* multi;
-    class SurvivorSprite* _player2;
 };
 
 #endif // TEST_SCENE_H__
