@@ -5,6 +5,8 @@
 #include "TestScene.h"
 #include "SurvivorSprite.h"
 
+#include "InputController.h"
+
 USING_NS_CC;
 
 Multi::Role Multi::ROLE_STATUS = Multi::Role::None;
@@ -27,7 +29,8 @@ static Multi* create(std::string uri) {
 }
 
 bool Multi::init(){
-    if ( !(_client = SocketIO::connect("localhost:8080", *this)) ){
+    //if ( !(_client = SocketIO::connect("localhost:8080", *this)) ){
+    if ( !(_client = SocketIO::connect("192.168.219.102:8080", *this)) ){
         return false;
     }
 
@@ -207,7 +210,6 @@ void Multi::onPawnMove(cocos2d::network::SIOClient* client, const std::string& d
 void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& data){
     auto layer = getParentLayer();
 
-    // get direction
     rapidjson::Document document;
     document.Parse(data.c_str());
     if (!document.GetParseError())
@@ -216,13 +218,43 @@ void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& dat
         auto action = document["action"].GetString();
         std::string type = document["type"].GetString();
 
+        /*
+         if (type == 'input') {
+            ctrl->takeAction(action, KeyPressed);
+         }
+         else if (type == 'prorperty') {
+            sprite = getSprite(ID);
+            sprite->updateNewProps(list);
+         }
+         else if (type == 'movement') {
+            sprite = getSprite(ID);
+            sprite->moveThePawn();
+         }
+         */
+        
+        // key pressed action
+        if ( !type.compare("keyPressed") )
+        {
+            auto player = layer->getPlayerSprite(id);
+            auto ctrl = player->getInputController();
+            ctrl->takeAction(action, InputController::InputEvent::KeyPressed);
+        }
+        // key released action
+        else if ( !type.compare("keyReleased") )
+        {
+            auto player = layer->getPlayerSprite(id);
+            auto ctrl = player->getInputController();
+            ctrl->takeAction(action, InputController::InputEvent::KeyReleased);
+        }
+        
+        /*
         // key pressed action
         if ( !type.compare("keyPressed") )
             layer->onMovePressed(id, action);
         // key released action
         else if ( !type.compare("keyReleased") )
             layer->onMoveReleased(id, action);
-        
+         */
     }
 }
 
