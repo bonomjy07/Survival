@@ -11,6 +11,7 @@
 #include "Multi.h"
 #include "ItemSprite.h"
 #include "Food.h"
+#include "Tool.h"
 #include "KeyBinder.h"
 
 #include <string>
@@ -79,12 +80,13 @@ bool TestScene::init()
         this->addChild(deerMeatSprite2);
     }
 
-    // Create player character
-    _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-    if (_player)
-    {
-        _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-        this->addChild(_player);
+    auto sword = ItemSprite::create();
+    if ( sword ){
+        auto item = Sword::create();
+        sword->setItem(item);
+        sword->setPosition(x - 48.f, y + 16.f);
+        sword->initPhysicsBody();
+        this->addChild(sword);
     }
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
