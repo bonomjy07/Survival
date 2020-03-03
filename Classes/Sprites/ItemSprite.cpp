@@ -44,5 +44,5 @@ void ItemSprite::setItemTexture()
 
 void ItemSprite::wasCollected()
 {
-    log("ItemSprite: wasCollected()");
+    log("ItemSprite: Item %s was collected", item->getName());
 }
