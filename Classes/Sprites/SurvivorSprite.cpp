@@ -9,6 +9,7 @@
 #include "TestScene.h"
 #include "Item.h"
 #include "ItemSprite.h"
+#include "Tool.h"
 
 USING_NS_CC;
 
@@ -84,7 +85,9 @@ void SurvivorSprite::collect()
                // TODO: inventory.pushback(itemSprite->getItem());
                itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
                // TODO: log("Item %s was collected", itemSprite->getName());
-               log("item...");
+               if ( dynamic_cast<Sword*>(item) ) {
+                   setItemOnHand(itemSprite);
+               }
                
                // TODO: break; ??????
            }
