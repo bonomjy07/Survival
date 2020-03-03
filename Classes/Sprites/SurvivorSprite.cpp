@@ -28,11 +28,13 @@ SurvivorSprite* SurvivorSprite::create(const std::string &filename, float maxHea
 void SurvivorSprite::update(float dt)
 {
     PawnSprite::update(dt);
+    setPositionItemOnHand();
 }
 
 SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
 {
     _drainDelay = 1.f;
+    _itemOnHand = nullptr;
 }
 
 SurvivorSprite::~SurvivorSprite()
@@ -96,4 +98,18 @@ void SurvivorSprite::drainStats(float dt)
     _stat.updateCurrentThirsty(-2.f);
     _stat.updateCurrentHunger(-3.f);
     _stat.updateCurrentSleep(-4.f);
+}
+
+void SurvivorSprite::setPositionItemOnHand(){
+    if ( !_itemOnHand )
+        return;
+    
+    Vec2 position = this->getPosition();
+    _itemOnHand->setPosition(position.x+16.f, position.y+16.f);
+}
+
+void SurvivorSprite::setItemOnHand(ItemSprite* itemSprite){
+    _itemOnHand = itemSprite;
+    _parent->addChild(_itemOnHand);
+    setPositionItemOnHand();
 }
