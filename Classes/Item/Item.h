@@ -8,28 +8,32 @@ class Item : public cocos2d::Ref
 {
 public:
     Item();
-    Item(const char * _des, const char * _img,
-     const char * _thumb, const int _weight);
+    Item(const char *name, const char *des, const char * img,
+    const char * thumb, const int weight);
     virtual ~Item();
 
-    const char * getDescription();
-
-    const char * getImageFileName();
-    const char * getThumbnailFileName();
+    const char * getName(){ return _name; }
+    const char * getDescription(){ return _description; }
+    const char * getImageFileName(){return _imageFileName; }
+    const char * getThumbnailFileName(){ return _thumbnailFileName; }
+    const int getWeight(){ return _weight; }
 
     virtual bool isMaterial()=0;
     virtual bool use()=0;
 
 protected:
+    // name of item
+    const char * const _name;
+
     // description of item
-    const char * const description;
+    const char * const _description;
 
     // item image on tile
-    const char * const imageFileName;
+    const char * const _imageFileName;
     // item image on ui
-    const char * const thumbnailFileName;
+    const char * const _thumbnailFileName;
 
-    const int weight;
+    const int _weight;
 };
 
 // craft item interface
