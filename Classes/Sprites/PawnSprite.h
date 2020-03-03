@@ -18,6 +18,7 @@ public:
     static PawnSprite* create(const std::string& filename, const float maxHealth);
     void update(float dt) override;
     
+public:
     enum class Direction { Up = 0, Down, Right, Left };
 
 public:
@@ -37,14 +38,10 @@ public:
      */
     cocos2d::Vec2 getDeltaPositionOnDirection() const;
     
-    /**
-     @brief Returns pawn's delta position as it is
-     */
+     /* Returns pawn's delta position as it is */
     const cocos2d::Vec2& getDeltaPosition() const;
     
-    /**
-     @brief Retruns front vector for pawn
-     */
+     /* Retruns front vector for pawn */
     cocos2d::Vec2 getFrontVec2() const;
     
     /**
@@ -76,9 +73,7 @@ protected:
     Direction _currentDirection;
     
 protected:
-    /**
-     @brief Returns true if new position is valid position to move
-     */
+    /* Returns true if new position is valid position to move */
     bool canPawnMove(const cocos2d::Vec2& newPosition);
     
 public:
@@ -90,9 +85,7 @@ public:
     void moveThePawn(const cocos2d::Vec2& newPosition);
     
 private:
-    /**
-     @brief New direction has to be insert at begin(first)
-     */
+    /* New direction has to be insert at begin(first) */
     std::list<Direction> _directionList;
 };
 

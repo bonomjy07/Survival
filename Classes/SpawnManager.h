@@ -19,16 +19,15 @@ public:
                                 const std::string& whatToSpawn,
                                 const std::string& filename
                                 );
-public:
-    std::vector<class MySprite*> _spriteList;
+private:
+    /* Vector that stores spawned sprite */
+    cocos2d::Vector<class MySprite*> _spawnedList;
     
-public:
-    std::string getJSON_UnitsList() const;
+    /* Spawned sprite ID which'll increment whenvere a sprtie is spawned */
+    int _spawnedID;
 
 public:
-    /**
-    @brief Gets information on spawnArea as ValueMap,  sprite to spawn and sprite image
-     */
+    /* Set base information where and what to spawn */
     SpawnManager(const cocos2d::ValueMap& spawnArea, const std::string& whatToSpawn, const std::string& filename);
     
     /**
@@ -43,49 +42,41 @@ public:
     void stopSpawn();
     
     /**
-    @brief Called per spawnDelay and spawn a sprite
+     @brief Called per spawnDelay and spawn a sprite
      */
     void spawnTheSprite(float dt);
-
-    /* Getter && Setter */
+    
+    /* Accessor function for vector which stores spawned sprite */
+    cocos2d::Vector<class MySprite*> getSpawnedList() const;
+    
+    /* Accessor function for max spawn number */
     uint32_t getMaxSpawnNumber() const;
+    
+    /* Accessor function for spawning delay */
     float getSpawnDelay() const;
+    
+    /* Accessor function for number of current spawned sprite */
     uint32_t getCurrentSpawnNumber() const;
+    
+    /* Accessor function for what to spawn  */
     const std::string& getWhatToSpawn() const;
     
-    void setSpawnDelay(float newSpawnDelay);
-    void setMaxSpawnNumber(uint32_t newMaxSpawnNumber) const;
-    void setWhatToSpawn(std::string newSpriteToSpawn);
-    
 private:
-    /**
-     @brief Information about spawnArea as ValueMap
-     */
+    /* Information about spawn area */
     cocos2d::ValueMap _spawnArea;
     
-    /**
-     @brief A string retains what to spawn a sprite
-     */
+    /* The sprite to spawn */
     std::string _whatToSpawn;
     
-    /**
-     @brief A string retains sprite's image file name
-     */
+    /* Texture of sprite to spawn */
     std::string _filename;
     
-    /**
-     @brief Delay time for spawning an sprite
-     */
+    /* Delay time for spawning an sprite */
     float _spawnDelay;
     
-    /**
-     @brief Number of maximum spawn sprite
-     */
+    /* Number of maximum spawning */
     uint32_t _maxSpawnNumber;
-    
-    /**
-     @brief Number of currently spawned sprite
-     */
+    /* Number of currently spawned sprite */
     uint32_t _currentSpawnNumber;
     
 private:
@@ -99,7 +90,6 @@ private:
      @brief Returns a sprite on whatToSpawn.
      If whatToSpawn is not class, returns nullptr.
      */
-    //cocos2d::Sprite* createSpriteToSpawn() const;
     class MySprite* createSpriteToSpawn() const;
     
 };
