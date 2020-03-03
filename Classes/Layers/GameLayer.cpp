@@ -135,21 +135,18 @@ bool GameLayer::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void
 
 void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
 {
-    if (auto player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f))
-    {
-        player->setName(ID);
-        // TODO: Make it simple...
-        TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
-        if (objectGroup)
-        {
-            ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
-            float x = spawnPoint["x"].asFloat();
-            float y = spawnPoint["y"].asFloat();
-            player->setPosition({x+_tiledMap->getTileSize().width/2, y+_tiledMap->getTileSize().height/2});
-            _playersManager.insert({ID, player});
-            addChild(player);
-        }
+    TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
+    Vec2 position = Vec2({0,0});
+
+    if (objectGroup){
+        ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
+        float x = spawnPoint["x"].asFloat();
+        float y = spawnPoint["y"].asFloat();
+        position = Vec2({x+_tiledMap->getTileSize().width/2, y+_tiledMap->getTileSize().height/2});
     }
+
+    addPlayerSpriteInWorld(ID, position);
+    
 }
 
 void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& position)
