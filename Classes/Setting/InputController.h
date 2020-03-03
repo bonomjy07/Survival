@@ -12,22 +12,33 @@
 class InputController
 {
 public:
-    enum class InputEvent { KeyPressed = 0, KeyReleased };
+    enum class InputEvent { KeyPressed = 1, KeyReleased };
     
 private:
     struct MyPair
     {
         std::string action;
         InputEvent inputEvent;
-        bool operator<(const MyPair& p) const // User-defined type key for map needs overloading operator<
+        
+        bool operator==(const MyPair& other) const
         {
-            if (this->action == p.action)
-                return this->inputEvent < p.inputEvent;
-            return this->action < p.action;
+            return ((this->action == other.action) &&
+                    (this->inputEvent == other.inputEvent));
         }
     };
-    std::map<MyPair, std::function<void(void*)>> inputBinder;
-
+    
+    struct MyHashFunction
+    {
+        size_t operator()(const MyPair& p) const
+        {
+            size_t h1 = std::hash<std::string>{}(p.action);
+            size_t h2 = std::hash<int>{}(static_cast<int>(p.inputEvent));
+            return h1^(h2<<1);
+        }
+    };
+    
+    std::unordered_map<MyPair, std::function<void(void*)>, MyHashFunction> inputBinder;
+    
 public:
     /* Binds action && input-event to function */
     void bindAction(const std::string& action, InputEvent inputEvent, std::function<void(void*)> func);
