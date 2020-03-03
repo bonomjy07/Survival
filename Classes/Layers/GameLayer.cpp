@@ -161,6 +161,9 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& positi
         _occupied.insert(position);
         _playersManager.insert({ID, player});
         addChild(player);
+
+        if ( !ID.compare(Multi::SOCKET_ID) )
+            _player = player;
     }
 }
 
