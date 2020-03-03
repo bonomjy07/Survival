@@ -173,7 +173,11 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     {
         getPlayerSprite()->collect();
     }
-    
+
+    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Use") )
+    {
+        getPlayerSprite()->useItemOnHand();
+    }
     // ESC action
     if (EventKeyboard::KeyCode::KEY_ESCAPE == keyCode)
     {
