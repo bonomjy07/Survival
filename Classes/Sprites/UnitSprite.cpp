@@ -42,7 +42,7 @@ void UnitSprite::takeDamage(float deltaDamage)
 {
     setCurrentHealth(_currentHealth - deltaDamage);
     
-    if (_currentHealth < 0.f)
+    if (_currentHealth <= 0.f)
     {
         onDeath();
     }
@@ -52,13 +52,18 @@ void UnitSprite::onDeath()
 {
     if (auto gameLayer = dynamic_cast<GameLayer*>(getParent()))
     {
+        if (Multi::ROLE_STATUS == Multi::Role::None){
+            getParent()->removeChild(this);
+            log("UnitSprite deleted");
+        }
         if (Multi::Role::Client ==  Multi::ROLE_STATUS)
         {
             // TODO: Show visual effect and ....
             std::string data = "";
             gameLayer->getMulti()->emit("", Value(data));
-            getParent()->removeChild(this);
-            log("UnitSprite deleted");
+        }
+        else{
+            // TODO: host
         }
     }
 }
