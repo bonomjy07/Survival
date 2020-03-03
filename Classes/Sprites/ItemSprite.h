@@ -17,6 +17,7 @@ public:
 
     void setItemTexture();
     void wasCollected();
+    void wasUsed();
 protected:
     Item *item;
 };
