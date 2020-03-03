@@ -25,6 +25,7 @@ Sword::Sword()
 Sword::~Sword(){}
 
 bool Sword::init(){
+    _damage = 10;
     return true;
 }
 

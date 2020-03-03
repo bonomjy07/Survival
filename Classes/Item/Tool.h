@@ -12,8 +12,10 @@ public:
 
      virtual bool use()=0;
      virtual bool isMaterial()=0;
+
+    float getDamage(){ return _damage; } 
 protected:
-    int damage;
+    float _damage;
 };
 
 class Sword : public Tool
