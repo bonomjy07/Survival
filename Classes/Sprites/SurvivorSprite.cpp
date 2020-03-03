@@ -95,6 +95,46 @@ void SurvivorSprite::collect()
     }
 }
 
+void SurvivorSprite::useItemOnHand(){
+    if (!_itemOnHand)
+        return;
+    if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
+    {
+        // Get nodes at the sprite's position
+        Vector<Node*> nodes;
+        Vec2 position = {0,0};
+        switch (_currentDirection)
+        {
+        case Direction::Up:
+            position = {0, 32};
+            break;
+        case Direction::Down:
+            position = {0, -32};
+            break;
+        case Direction::Left:
+            position = {-32, 0};
+            break;
+        case Direction::Right:
+            position = {32, 0};
+        }
+        gameLayer->checkNodesAtPosition(getPosition()+position, &nodes);
+        for (const auto node : nodes)
+        {
+            if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node)){
+                continue;
+            }
+            else if ( UnitSprite* unit = static_cast<UnitSprite*>(node) ) {
+                Item *item = _itemOnHand->getItem();
+                item->use();
+                if ( Tool *tool  = dynamic_cast<Tool*>(item) ){
+                    float damage = tool->getDamage();
+                    unit->takeDamage(damage);
+                }
+           }
+        }
+    }
+}
+
 void SurvivorSprite::drainStats(float dt)
 {
     _stat.updateCurrentStamina(-1.f);

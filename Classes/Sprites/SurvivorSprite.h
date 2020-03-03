@@ -31,7 +31,7 @@ public:
     void stopDrainStats();
     
     void collect();
-    //void useItemOnHand();
+    void useItemOnHand();
     void setItemOnHand(class ItemSprite*);
     void setPositionItemOnHand();
     
