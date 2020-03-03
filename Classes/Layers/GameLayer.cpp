@@ -173,9 +173,7 @@ class SurvivorSprite* GameLayer::getPlayerSprite(const std::string &ID) const
 
 class SurvivorSprite* GameLayer::getPlayerSprite() const
 {
-    if (_playersManager.find(getName()) == _playersManager.end())
-        return nullptr;
-    return _playersManager.at(getName());
+    return _player;
 }
 
 void GameLayer::onMovePressed(std::string ID, std::string direction)
