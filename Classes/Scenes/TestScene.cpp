@@ -156,13 +156,13 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         data["type"] = "keyPressed";
 
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            data["action"] = "up";
+            data["action"] = "Up";
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            data["action"] = "down";
+            data["action"] = "Down";
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            data["action"] = "right";
+            data["action"] = "Right";
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            data["action"] = "left";
+            data["action"] = "Left";
             
         multi->emit("action", data);
     }
@@ -235,13 +235,13 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         data["type"] = "keyReleased";
 
         if (EventKeyboard::KeyCode::KEY_W == keyCode)
-            data["action"] = "up";
+            data["action"] = "Up";
         else if (EventKeyboard::KeyCode::KEY_S == keyCode)
-            data["action"] = "down";
+            data["action"] = "Down";
         else if (EventKeyboard::KeyCode::KEY_D == keyCode)
-            data["action"] = "right";
+            data["action"] = "Right";
         else if (EventKeyboard::KeyCode::KEY_A == keyCode)
-            data["action"] = "left";
+            data["action"] = "Left";
             
         multi->emit("action", data);
     }

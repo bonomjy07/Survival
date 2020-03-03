@@ -182,22 +182,22 @@ void GameLayer::onMovePressed(std::string ID, std::string direction)
 {
     if (auto playerSprite = getPlayerSprite(ID))
     {
-        if (!direction.compare("up"))
+        if (!direction.compare("Up"))
         {
             playerSprite->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
             playerSprite->insertDirection(PawnSprite::Direction::Up);
         }
-        else if (!direction.compare("down"))
+        else if (!direction.compare("Down"))
         {
             playerSprite->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
             playerSprite->insertDirection(PawnSprite::Direction::Down);
         }
-        else if (!direction.compare("right"))
+        else if (!direction.compare("Right"))
         {
             playerSprite->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
             playerSprite->insertDirection(PawnSprite::Direction::Right);
         }
-        else if (!direction.compare("left"))
+        else if (!direction.compare("Left"))
         {
             playerSprite->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
             playerSprite->insertDirection(PawnSprite::Direction::Left);
@@ -210,22 +210,22 @@ void GameLayer::onMoveReleased(std::string ID, std::string direction)
 {
     if (auto playerSprite = getPlayerSprite(ID))
     {
-        if (!direction.compare("up"))
+        if (!direction.compare("Up"))
         {
             playerSprite->addDeltaPosition(0.f, -_tiledMap->getTileSize().height);
             playerSprite->eraseDirection(PawnSprite::Direction::Up);
         }
-        else if (!direction.compare("down"))
+        else if (!direction.compare("Down"))
         {
             playerSprite->addDeltaPosition(0.f, +_tiledMap->getTileSize().height);
             playerSprite->eraseDirection(PawnSprite::Direction::Down);
         }
-        else if (!direction.compare("right"))
+        else if (!direction.compare("Right"))
         {
             playerSprite->addDeltaPosition(-_tiledMap->getTileSize().width, 0.f);
             playerSprite->eraseDirection(PawnSprite::Direction::Right);
         }
-        else if (!direction.compare("left"))
+        else if (!direction.compare("Left"))
         {
             playerSprite->addDeltaPosition(+_tiledMap->getTileSize().width, 0.f);
             playerSprite->eraseDirection(PawnSprite::Direction::Left);
