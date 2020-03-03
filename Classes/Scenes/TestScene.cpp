@@ -185,17 +185,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Inventory") )
     {
-        auto parent = static_cast<Scene*>(getParent());
-        if (auto inventoryLayer = parent->getChildByName("InventoryLayer"))
-        {
-            parent->removeChild(inventoryLayer);
-        }
-        // Create inventory layer if it doens't exist
-        else if (auto inventoryLayer = InventoryLayer::create())
-        {
-            inventoryLayer->setInventory((_player->getInventory()));
-            parent->addChild(inventoryLayer);
-        }
+       toggleInventoryUI();
     }
 }
 
@@ -285,5 +275,19 @@ void TestScene::toggleStatUI()
                 statLayer->scheduleUpdate();
             }
         }
+    }
+}
+
+void TestScene::toggleInventoryUI(){
+    auto parent = static_cast<Scene*>(getParent());
+    if (auto inventoryLayer = parent->getChildByName("InventoryLayer"))
+    {
+        parent->removeChild(inventoryLayer);
+    }
+    // Create inventory layer if it doens't exist
+    else if (auto inventoryLayer = InventoryLayer::create())
+    {
+        inventoryLayer->setInventory((getPlayerSprite()->getInventory()));
+        parent->addChild(inventoryLayer);
     }
 }
