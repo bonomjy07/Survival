@@ -103,7 +103,6 @@ void SurvivorSprite::collect(void* arg)
             }
         }
     }
-    
 }
 
 void SurvivorSprite::useItemOnHand(){

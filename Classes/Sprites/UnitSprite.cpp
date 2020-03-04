@@ -36,6 +36,16 @@ float UnitSprite::getCurrentHealth() const
 void UnitSprite::setCurrentHealth(float newCurrentHealth)
 {
     _currentHealth = newCurrentHealth;
+    
+    if (Multi::ROLE_STATUS == Multi::Role::Host)
+    {
+        auto gameLayer = dynamic_cast<GameLayer*>(_parent);
+        CCASSERT(gameLayer, "GameLayer is invalid");
+        auto multi = gameLayer->getMulti();
+        CCASSERT(multi, "Multi object is invalid");
+        ValueMap data;
+        multi->emit("newHealth", data); // working title..
+    }
 }
 
 void UnitSprite::takeDamage(float deltaDamage)
