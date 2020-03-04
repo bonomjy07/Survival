@@ -31,7 +31,6 @@ public:
     
     void stopDrainStats();
     
-    void collect();
     void useItemOnHand();
     void setItemOnHand(class ItemSprite*);
     void setPositionItemOnHand();
@@ -45,9 +44,6 @@ private:
 private:
     void drainStats(float dt);
     
-    /* Test Test Test
-     * Test Test Test
-     */
 public:
     class InputController* getInputController() const;
     
@@ -67,10 +63,12 @@ private:
     void moveReleasedDown(void* arg);
     void moveReleasedRight(void* arg);
     void moveReleasedLeft(void* arg);
+    
+    void collect(void* arg);
    
-public:
+private:
     bool onContactBegin(cocos2d::PhysicsContact& contact);
     bool onContactSeparate(cocos2d::PhysicsContact& contact);
-    class ItemSprite* _itemOnMe;
+    class ItemSprite* _itemOnMyTile;
 };
 #endif /* SurvivorSprite_h */

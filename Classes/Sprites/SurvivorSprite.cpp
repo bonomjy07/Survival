@@ -32,7 +32,7 @@ void SurvivorSprite::update(float dt)
     setPositionItemOnHand();
 }
 
-SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat(), _itemOnMe(nullptr), _itemOnHand (nullptr)
+SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat(), _itemOnMyTile(nullptr), _itemOnHand (nullptr)
 {
     // Set base value for drain delay
     _drainDelay = 1.f;
@@ -78,16 +78,16 @@ void SurvivorSprite::stopDrainStats()
     }
 }
 
-void SurvivorSprite::collect()
+void SurvivorSprite::collect(void* arg)
 {
-    if (_itemOnMe)
+    if (_itemOnMyTile)
     {
-        inventory.pushBack(_itemOnMe->getItem());
-        _itemOnMe->wasCollected();
+        inventory.pushBack(_itemOnMyTile->getItem());
+        _itemOnMyTile->wasCollected();
 
-        if ( dynamic_cast<Sword*>(item) ) 
+        if ( dynamic_cast<Sword*>(_itemOnMyTile->getItem()) )
         {
-            setItemOnHand(itemSprite);
+            setItemOnHand(_itemOnMyTile);
         }
     }
 }
@@ -99,23 +99,10 @@ void SurvivorSprite::useItemOnHand(){
     {
         // Get nodes at the sprite's position
         Vector<Node*> nodes;
-        Vec2 position = {0,0};
-        switch (_currentDirection)
-        {
-        case Direction::Up:
-            position = {0, 32};
-            break;
-        case Direction::Down:
-            position = {0, -32};
-            break;
-        case Direction::Left:
-            position = {-32, 0};
-            break;
-        case Direction::Right:
-            position = {32, 0};
-        }
-        gameLayer->checkNodesAtPosition(getPosition()+position, &nodes);
-        for (const auto node : nodes)
+        Vec2 frontVec2 = getFrontVec2();
+        
+        gameLayer->checkNodesAtPosition(getPosition()+(frontVec2*32.f), &nodes);
+        for (const auto& node : nodes)
         {
             if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node)){
                 continue;
@@ -127,7 +114,9 @@ void SurvivorSprite::useItemOnHand(){
                     float damage = tool->getDamage();
                     unit->takeDamage(damage);
                 }
-           }
+            }
+        }
+    }
 }
 
 void SurvivorSprite::drainStats(float dt)
@@ -158,6 +147,8 @@ void SurvivorSprite::setupInputAction()
         _inputController->bindAction("Down", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedDown, this, arg));
         _inputController->bindAction("Right", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedRight, this, arg));
         _inputController->bindAction("Left", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedLeft, this, arg));
+        
+        _inputController->bindAction("Collect", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::collect, this, arg));
     }
 }
 
@@ -232,11 +223,11 @@ bool SurvivorSprite::onContactBegin(cocos2d::PhysicsContact &contact)
     ItemSprite* item;
     if ((item = dynamic_cast<ItemSprite*>(nodeA)))
     {
-        _itemOnMe = item;
+        _itemOnMyTile = item;
     }
     else if ((item = dynamic_cast<ItemSprite*>(nodeB)))
     {
-        _itemOnMe = item;
+        _itemOnMyTile = item;
     }
     
     return true;
@@ -244,6 +235,6 @@ bool SurvivorSprite::onContactBegin(cocos2d::PhysicsContact &contact)
 
 bool SurvivorSprite::onContactSeparate(cocos2d::PhysicsContact& contact)
 {
-    _itemOnMe = nullptr;
+    _itemOnMyTile = nullptr;
     return true;
 }

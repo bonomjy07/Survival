@@ -41,12 +41,6 @@ public:
      */
     void setViewPointCenter(const cocos2d::Vec2 position);
 
-    /* Send movement to host */
-    void onMovePressed(std::string ID, std::string direction);
-    
-    /* Send movement to host */
-    void onMoveReleased(std::string ID, std::string direction);
-
 public:
     void addPlayerSpriteInWorld(const std::string& ID);
     void addPlayerSpriteInWorld(const std::string& ID, const cocos2d::Vec2& position);
