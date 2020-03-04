@@ -47,8 +47,9 @@ public:
     /* Client-side function : updates new health for unit sprite */
     void onUnitNewHealth(cocos2d::network::SIOClient* client, const std::string& data);
     
-    /* Client-side function : Removes the unit sprite on game layer */
-    void onSpriteDeath(cocos2d::network::SIOClient* client, const std::string& data);
+    /* Client-side function : Removes the sprite on game layer */
+    void onSpriteDeletion(cocos2d::network::SIOClient* client, const std::string& data);
+    
     /** 
         Emit to server
         @param eventname It is the same variable as the emit() parameter of the client.

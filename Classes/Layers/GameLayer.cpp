@@ -146,7 +146,6 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
     }
 
     addPlayerSpriteInWorld(ID, position);
-    
 }
 
 void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& position)
@@ -169,7 +168,6 @@ class SurvivorSprite* GameLayer::getPlayerSprite(const std::string &ID) const
     if (_playersManager.find(ID) == _playersManager.end())
         return nullptr;
     return _playersManager.at(ID);
-
 }
 
 class SurvivorSprite* GameLayer::getPlayerSprite() const
@@ -180,4 +178,46 @@ class SurvivorSprite* GameLayer::getPlayerSprite() const
 std::set<Vec2>& GameLayer::getOccupied()
 {
     return _occupied;
+}
+
+/*
+class MySprite* GameLayer::getSprite(const std::string& ID)
+{
+    if (_mySpriteManager.find(ID) == _mySpriteManager.end())
+        return nullptr;
+    return _mySpriteManager.at(ID);
+}
+
+void GameLayer::addSprite(const std::string& ID, MySprite* mySprite)
+{
+    CCASSERT(mySprite, "Sprite is invalid");
+    
+    _mySpriteManager.insert({ID, mySprite});
+    addChild(mySprite);
+}
+
+void GameLayer::removeSprite(const std::string& ID)
+{
+    removeChild(_mySpriteManager.at(ID));
+    _mySpriteManager.erase(ID);
+}
+ */
+
+std::string GameLayer::getRandomID()
+{
+    static std::set<std::string> IDManager;
+    static const char alphanum[] =
+    "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+    std::string newID;
+    
+    do {
+        int len = floor(RandomHelper::random_real(10, 30));
+        for (int i = 0; i < len; ++i)
+            newID += alphanum[rand() % (sizeof(alphanum) - 1)];
+    } while (IDManager.find(newID) == IDManager.end());
+    IDManager.insert(newID);
+    
+    return newID;
 }

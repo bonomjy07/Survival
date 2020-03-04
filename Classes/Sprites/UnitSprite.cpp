@@ -35,16 +35,21 @@ float UnitSprite::getCurrentHealth() const
 
 void UnitSprite::setCurrentHealth(float newCurrentHealth)
 {
+    // Update new current health
     _currentHealth = newCurrentHealth;
     
+    // Broadcasts to client that current health is updated
     if (Multi::ROLE_STATUS == Multi::Role::Host)
     {
         auto gameLayer = dynamic_cast<GameLayer*>(_parent);
         CCASSERT(gameLayer, "GameLayer is invalid");
         auto multi = gameLayer->getMulti();
         CCASSERT(multi, "Multi object is invalid");
+        
         ValueMap data;
-        multi->emit("newHealth", data); // working title..
+        data["ID"] = getName();
+        data["NewHealth"] = newCurrentHealth;
+        multi->emit("UnitNewHealth", data); // working title..
     }
 }
 
@@ -60,6 +65,27 @@ void UnitSprite::takeDamage(float deltaDamage)
 
 void UnitSprite::onDeath()
 {
+    // Delete this sprite
+    CCASSERT(this, "This node is already deleted ?");
+    getParent()->removeChild(this);
+    log("unit sprite is delete(%s)", getName().c_str());
+    
+    // Broadcasts to all client that this sprite is dead
+    if (Multi::ROLE_STATUS == Multi::Role::Host)
+    {
+        auto gameLayer = dynamic_cast<GameLayer*>(_parent);
+        CCASSERT(gameLayer, "GameLayer is invalid");
+        auto multi = gameLayer->getMulti();
+        CCASSERT(multi, "Multi object is invalid");
+        
+        ValueMap data;
+        data["ID"] = getName();
+        multi->emit("SpriteDeletion", data);
+    }
+    
+    return;
+    // /////////////////////
+    
     if (auto gameLayer = dynamic_cast<GameLayer*>(getParent()))
     {
         if (Multi::ROLE_STATUS == Multi::Role::None){

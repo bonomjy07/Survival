@@ -85,5 +85,9 @@ protected:
     class KeyBinder *gameKeyBinder;
     // synchronize
     std::set<cocos2d::Vec2> _occupied;
+    
+private:
+    std::string getRandomID();
+
 };
 #endif // GAME_LAYER_H__

@@ -246,15 +246,6 @@ void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& dat
             auto ctrl = player->getInputController();
             ctrl->takeAction(action, InputController::InputEvent::KeyReleased);
         }
-        
-        /*
-        // key pressed action
-        if ( !type.compare("keyPressed") )
-            layer->onMovePressed(id, action);
-        // key released action
-        else if ( !type.compare("keyReleased") )
-            layer->onMoveReleased(id, action);
-         */
     }
 }
 
