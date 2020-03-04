@@ -12,11 +12,23 @@ void InputController::bindAction(const std::string &action, InputController::Inp
     inputBinder.insert({{action, inputEvent}, func});
 }
 
-void InputController::takeAction(const std::string &action, InputEvent inputEvent)
+// void InputController::takeAction(const std::string &action, InputEvent inputEvent)
+// {
+//     auto it = inputBinder.find({action, inputEvent});
+//     if (it != inputBinder.end())
+//     {
+//         it->second(nullptr);
+//     }
+// }
+
+void InputController::takeAction(std::string action, InputEvent inputevent)
 {
-    auto it = inputBinder.find({action, inputEvent});
-    if (it != inputBinder.end())
-    {
-        it->second(nullptr);
-    }
+    if ( onPreAction != nullptr )
+        onPreAction(action, inputevent);
+    if ( onPressed != nullptr && inputevent == InputEvent::KeyPressed )
+        onPressed(action, inputevent);
+    if ( onReleased != nullptr && inputevent == InputEvent::KeyReleased )
+        onReleased(action, inputevent);
+    if ( onPostAction != nullptr )
+        onPostAction(action, inputevent);
 }

@@ -42,8 +42,20 @@ private:
 public:
     /* Binds action && input-event to function */
     void bindAction(const std::string& action, InputEvent inputEvent, std::function<void(void*)> func);
+    #define BIND_ACTION(__selector__) std::bind(&__selector__, this, std::placeholders::_1, std::placeholders::_2)
     
     /* Handles action */
-    void takeAction(const std::string& action, InputEvent inputEvent);
+    //void takeAction(const std::string& action, InputEvent inputEvent);
+    void takeAction(std::string action, InputEvent inputevent);
+
+public:
+    /* before action */
+    std::function<void (std::string, InputEvent)> onPreAction;
+    /* if InputEvent is KeyPressed */
+    std::function<void (std::string, InputEvent)> onPressed;
+    /* if InputEvent is KeyReleased */
+    std::function<void (std::string, InputEvent)> onReleased;
+    /* after action */
+    std::function<void (std::string, InputEvent)> onPostAction;
 };
 #endif /* InputController_h */
