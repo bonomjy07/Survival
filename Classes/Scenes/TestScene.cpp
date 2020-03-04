@@ -82,6 +82,7 @@ bool TestScene::init()
         deerMeatSprite2->setItem(item);
         deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
         deerMeatSprite2->initPhysicsBody();
+        deerMeatSprite2->setName("I'm groot");
         this->addChild(deerMeatSprite2);
     }
 
@@ -129,6 +130,11 @@ void TestScene::update(float deltaTime)
 
 void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
+    if (EventKeyboard::KeyCode::KEY_1 == keyCode)
+    {
+        auto p = getPlayerSprite();
+        p->collect();
+    }
     // Pawn's movement
     if (Multi::ROLE_STATUS == Multi::Role::None || Multi::ROLE_STATUS == Multi::Role::Host)
     {

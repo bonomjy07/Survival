@@ -65,6 +65,10 @@ private:
     void moveReleasedDown(void* arg);
     void moveReleasedRight(void* arg);
     void moveReleasedLeft(void* arg);
-    
+   
+public:
+    bool onContactBegin(cocos2d::PhysicsContact& contact);
+    bool onContactSeparate(cocos2d::PhysicsContact& contact);
+    class ItemSprite* _itemOnMe;
 };
 #endif /* SurvivorSprite_h */
