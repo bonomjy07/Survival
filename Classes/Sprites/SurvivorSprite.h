@@ -27,8 +27,8 @@ public:
 public:
     const Stat& getStat() const;
     cocos2d::Vector<class Item*> *getInventory(){ return &inventory; };
-    void startDrainStats();
     
+    void startDrainStats();
     void stopDrainStats();
     
     void useItemOnHand();

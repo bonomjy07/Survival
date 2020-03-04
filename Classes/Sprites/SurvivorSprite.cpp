@@ -80,16 +80,30 @@ void SurvivorSprite::stopDrainStats()
 
 void SurvivorSprite::collect(void* arg)
 {
-    if (_itemOnMyTile)
+    if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
     {
-        inventory.pushBack(_itemOnMyTile->getItem());
-        _itemOnMyTile->wasCollected();
-
-        if ( dynamic_cast<Sword*>(_itemOnMyTile->getItem()) )
+        // Get nodes at the sprite's position
+        Vector<Node*> nodes;
+        gameLayer->checkNodesAtPosition(getPosition(), &nodes);
+        for (const auto node : nodes)
         {
-            setItemOnHand(_itemOnMyTile);
+            if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node))
+            {
+                gameLayer->removeChild(itemSprite);
+                Item *item = itemSprite->getItem();
+                inventory.pushBack(item);
+                // TODO: Implement inventory member variable.....
+                
+                // TODO: inventory.pushback(itemSprite->getItem());
+                itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
+                // TODO: log("Item %s was collected", itemSprite->getName());
+                if ( dynamic_cast<Sword*>(item) ) {
+                    setItemOnHand(itemSprite);
+                }
+            }
         }
     }
+    
 }
 
 void SurvivorSprite::useItemOnHand(){
