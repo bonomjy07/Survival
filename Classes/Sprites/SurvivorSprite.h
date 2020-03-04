@@ -13,6 +13,7 @@
 
 #include "PawnSprite.h"
 #include "Stat.h"
+#include "InputController.h"
 
 class SurvivorSprite : public PawnSprite
 {
@@ -54,17 +55,10 @@ private:
     void setupInputAction();
     
 private:
-    void movePressedUp(void* arg);
-    void movePressedDown(void* arg);
-    void movePressedRight(void* arg);
-    void movePressedLeft(void* arg);
+    void onPressed(std::string action, InputController::InputEvent inputevent);
+    void onReleased(std::string action, InputController::InputEvent inputevent);
     
-    void moveReleasedUp(void* arg);
-    void moveReleasedDown(void* arg);
-    void moveReleasedRight(void* arg);
-    void moveReleasedLeft(void* arg);
-    
-    void collect(void* arg);
+    void collect();
    
 private:
     bool onContactBegin(cocos2d::PhysicsContact& contact);

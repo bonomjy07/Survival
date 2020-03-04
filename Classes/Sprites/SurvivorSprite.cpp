@@ -78,7 +78,7 @@ void SurvivorSprite::stopDrainStats()
     }
 }
 
-void SurvivorSprite::collect(void* arg)
+void SurvivorSprite::collect()
 {
     if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
     {
@@ -149,71 +149,56 @@ InputController* SurvivorSprite::getInputController() const
 void SurvivorSprite::setupInputAction()
 {
     void* arg = nullptr;
-    
     if (_inputController)
     {
-        _inputController->bindAction("Up", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::movePressedUp, this, arg));
-        _inputController->bindAction("Down", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::movePressedDown, this, arg));
-        _inputController->bindAction("Right", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::movePressedRight, this, arg));
-        _inputController->bindAction("Left", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::movePressedLeft, this, arg));
-        
-        _inputController->bindAction("Up", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedUp, this, arg));
-        _inputController->bindAction("Down", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedDown, this, arg));
-        _inputController->bindAction("Right", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedRight, this, arg));
-        _inputController->bindAction("Left", InputController::InputEvent::KeyReleased, std::bind(&SurvivorSprite::moveReleasedLeft, this, arg));
-        
-        _inputController->bindAction("Collect", InputController::InputEvent::KeyPressed, std::bind(&SurvivorSprite::collect, this, arg));
+        _inputController->onPressed = BIND_ACTION(SurvivorSprite::onPressed);
+        _inputController->onReleased = BIND_ACTION(SurvivorSprite::onReleased);
     }
 }
 
-// //////////////////////////////////////////
-void SurvivorSprite::movePressedUp(void *arg)
-{
-    addDeltaPosition(0.f, +32.f);
-    insertDirection(Direction::Up);
+void SurvivorSprite::onPressed(std::string action, InputController::InputEvent inputevent){
+    Vec2 position = {0,0};
+    if (!action.compare("Up")) {
+        addDeltaPosition(0.f, +32.f);
+        insertDirection(Direction::Up);
+    }
+    else if (!action.compare("Down")) {
+        addDeltaPosition(0.f, -32.f);
+        insertDirection(Direction::Down);
+    }
+    else if (!action.compare("Right")) {
+        addDeltaPosition(+32.f, 0.f);
+        insertDirection(Direction::Right);
+    }
+    else if (!action.compare("Left")) {
+        addDeltaPosition(-32.f, 0.f);
+        insertDirection(Direction::Left);
+    }
+    else if (!action.compare("Collect")) {
+        collect();
+    }
+    else if (!action.compare("Use")) {
+        useItemOnHand();
+    }
 }
 
-void SurvivorSprite::movePressedDown(void *arg)
-{
-    addDeltaPosition(0.f, -32.f);
-    insertDirection(Direction::Down);
-}
-
-void SurvivorSprite::movePressedRight(void *arg)
-{
-    addDeltaPosition(+32.f, 0.f);
-    insertDirection(Direction::Right);
-}
-
-void SurvivorSprite::movePressedLeft(void *arg)
-{
-    addDeltaPosition(-32.f, 0.f);
-    insertDirection(Direction::Left);
-}
-
-// //////////////////////////////////////////
-void SurvivorSprite::moveReleasedUp(void *arg)
-{
-    addDeltaPosition(0.f, -32.f);
-    eraseDirection(Direction::Up);
-}
-
-void SurvivorSprite::moveReleasedDown(void *arg)
-{
-    addDeltaPosition(0.f, +32.f);
-    eraseDirection(Direction::Down);
-}
-
-void SurvivorSprite::moveReleasedRight(void *arg)
-{
-    addDeltaPosition(-32.f, 0.f);
-    eraseDirection(Direction::Right);
-}
-
-void SurvivorSprite::moveReleasedLeft(void *arg)
-{
-    addDeltaPosition(+32.f, 0.f);
-    eraseDirection(Direction::Left);
+void SurvivorSprite::onReleased(std::string action, InputController::InputEvent inputevent){
+    if (!action.compare("Up")) {
+        addDeltaPosition(0.f, -32.f);
+        eraseDirection(Direction::Up);
+    }
+    else if (!action.compare("Down")) {
+        addDeltaPosition(0.f, +32.f);
+        eraseDirection(Direction::Down);
+    }
+    else if (!action.compare("Right")) {
+        addDeltaPosition(-32.f, 0.f);
+        eraseDirection(Direction::Right);
+    }
+    else if (!action.compare("Left")) {
+        addDeltaPosition(+32.f, 0.f);
+        eraseDirection(Direction::Left);
+    }
 }
 
 void SurvivorSprite::setPositionItemOnHand(){
