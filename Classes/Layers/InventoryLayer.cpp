@@ -70,9 +70,9 @@ void InventoryLayer::setInventory(cocos2d::Vector<class Item*> *inven)
             itemSprite->setItem(inventory->at(idx));
             auto size = child->getContentSize();
             itemSprite->setContentSize(size);
-            auto position = child->getPosition() + Vec2(size.width/2, size.height/2);
+            auto position = Vec2(size.width/2, size.height/2);
             itemSprite->setPosition(position);
-            gridView->addChild(itemSprite);
+            child->addChild(itemSprite);
         }
         idx++;
     }

@@ -10,6 +10,7 @@
 #include "Item.h"
 #include "ItemSprite.h"
 #include "InputController.h"
+#include "Tool.h"
 
 USING_NS_CC;
 
@@ -28,6 +29,7 @@ SurvivorSprite* SurvivorSprite::create(const std::string &filename, float maxHea
 void SurvivorSprite::update(float dt)
 {
     PawnSprite::update(dt);
+    setPositionItemOnHand();
 }
 
 SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
@@ -39,6 +41,7 @@ SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
     _inputController = new InputController();
     // Set input-action up
     setupInputAction();
+    _itemOnHand = nullptr;
 }
 
 SurvivorSprite::~SurvivorSprite()
@@ -79,19 +82,61 @@ void SurvivorSprite::collect()
         gameLayer->checkNodesAtPosition(getPosition(), &nodes);
         for (const auto node : nodes)
         {
-           if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node))
-           {
-               gameLayer->removeChild(itemSprite);
-               Item *item = itemSprite->getItem();
-               inventory.pushBack(item);
-               // TODO: Implement inventory member variable.....
-               
-               // TODO: inventory.pushback(itemSprite->getItem());
-               itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
-               // TODO: log("Item %s was collected", itemSprite->getName());
-               log("item...");
-               
-               // TODO: break; ??????
+            if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node))
+            {
+                gameLayer->removeChild(itemSprite);
+                Item *item = itemSprite->getItem();
+                inventory.pushBack(item);
+                // TODO: Implement inventory member variable.....
+                
+                // TODO: inventory.pushback(itemSprite->getItem());
+                itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
+                // TODO: log("Item %s was collected", itemSprite->getName());
+                if ( dynamic_cast<Sword*>(item) ) {
+                    setItemOnHand(itemSprite);
+                }
+                
+                // TODO: break; ??????
+            }
+        }
+    }
+}
+
+void SurvivorSprite::useItemOnHand(){
+    if (!_itemOnHand)
+        return;
+    if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
+    {
+        // Get nodes at the sprite's position
+        Vector<Node*> nodes;
+        Vec2 position = {0,0};
+        switch (_currentDirection)
+        {
+        case Direction::Up:
+            position = {0, 32};
+            break;
+        case Direction::Down:
+            position = {0, -32};
+            break;
+        case Direction::Left:
+            position = {-32, 0};
+            break;
+        case Direction::Right:
+            position = {32, 0};
+        }
+        gameLayer->checkNodesAtPosition(getPosition()+position, &nodes);
+        for (const auto node : nodes)
+        {
+            if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node)){
+                continue;
+            }
+            else if ( UnitSprite* unit = static_cast<UnitSprite*>(node) ) {
+                Item *item = _itemOnHand->getItem();
+                item->use();
+                if ( Tool *tool  = dynamic_cast<Tool*>(item) ){
+                    float damage = tool->getDamage();
+                    unit->takeDamage(damage);
+                }
            }
         }
     }
@@ -176,4 +221,17 @@ void SurvivorSprite::moveReleasedLeft(void *arg)
 {
     addDeltaPosition(+32.f, 0.f);
     eraseDirection(Direction::Left);
+}
+void SurvivorSprite::setPositionItemOnHand(){
+    if ( !_itemOnHand )
+        return;
+    
+    Vec2 position = this->getPosition();
+    _itemOnHand->setPosition(position.x+16.f, position.y+16.f);
+}
+
+void SurvivorSprite::setItemOnHand(ItemSprite* itemSprite){
+    _itemOnHand = itemSprite;
+    _parent->addChild(_itemOnHand);
+    setPositionItemOnHand();
 }

@@ -1,30 +1,12 @@
 
 #include "Item.h"
 
-Item::Item(const char * _des, const char * _img,
-     const char * _thumb, const int _weight)
-    :description(_des), imageFileName(_img),
-     thumbnailFileName(_thumb), weight(_weight)
+Item::Item(const char *name, const char *des, const char *img,
+    const char *thumb, const int weight)
+    : _name(name), _description(des), _imageFileName(img),
+    _thumbnailFileName(thumb), _weight(weight)
 {
 
 }
 
-Item::~Item()
-{
-
-}
-
-const char * Item::getDescription()
-{
-    return this->description;
-}
-
-const char * Item::getImageFileName()
-{
-    return this->imageFileName;
-}
-
-const char * Item::getThumbnailFileName()
-{
-    return this->thumbnailFileName;
-}
+Item::~Item(){}

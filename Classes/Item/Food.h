@@ -6,9 +6,9 @@
 class Food : public Item
 {
 public:
-    Food(const char * _des,  const char  * _img,
-     const char * _thumb, const int _weight);
-    ~Food();
+    Food(const char *name, const char *des, const char *img,
+    const char *thumb, const int weight);
+    virtual ~Food();
 
     virtual bool use()=0;
     virtual bool isMaterial()=0;
@@ -23,7 +23,7 @@ class DeerMeat : public Food
 {
 public:
     DeerMeat();
-    ~DeerMeat();
+    virtual ~DeerMeat();
     virtual bool init();
     CREATE_FUNC(DeerMeat);
     
@@ -31,6 +31,7 @@ public:
     virtual bool isMaterial() override;
 
 private:
+    static const char * const DEER_MEAT_NAME;
     static const char * const DEER_MEAT_DESCRIPTION;
     static const char * const DEER_MEAT_IMAGE_FILE_NAME;
     static const char * const DEER_MEAT_THUMBNAIL_FILE_NAME;

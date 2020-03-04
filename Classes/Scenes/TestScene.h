@@ -30,6 +30,8 @@ private:
     
     void toggleStatUI();
 
+    void toggleInventoryUI();
+
 };
 
 #endif // TEST_SCENE_H__

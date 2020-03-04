@@ -15,6 +15,7 @@
 #include "Multi.h"
 #include "ItemSprite.h"
 #include "Food.h"
+#include "Tool.h"
 #include "KeyBinder.h"
 
 #include "InputController.h"
@@ -85,12 +86,13 @@ bool TestScene::init()
         this->addChild(deerMeatSprite2);
     }
 
-    // Create player character
-    _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-    if (_player)
-    {
-        _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-        this->addChild(_player);
+    auto sword = ItemSprite::create();
+    if ( sword ){
+        auto item = Sword::create();
+        sword->setItem(item);
+        sword->setPosition(x - 48.f, y + 16.f);
+        sword->initPhysicsBody();
+        this->addChild(sword);
     }
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -185,6 +187,11 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         }
         multi->emit("action", data);
     }
+
+    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Use") )
+    {
+        getPlayerSprite()->useItemOnHand();
+    }
     
     // ESC action
     if (EventKeyboard::KeyCode::KEY_ESCAPE == keyCode)
@@ -199,17 +206,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Inventory") )
     {
-        auto parent = static_cast<Scene*>(getParent());
-        if (auto inventoryLayer = parent->getChildByName("InventoryLayer"))
-        {
-            parent->removeChild(inventoryLayer);
-        }
-        // Create inventory layer if it doens't exist
-        else if (auto inventoryLayer = InventoryLayer::create())
-        {
-            inventoryLayer->setInventory((_player->getInventory()));
-            parent->addChild(inventoryLayer);
-        }
+       toggleInventoryUI();
     }
 }
 
@@ -305,5 +302,19 @@ void TestScene::toggleStatUI()
                 statLayer->scheduleUpdate();
             }
         }
+    }
+}
+
+void TestScene::toggleInventoryUI(){
+    auto parent = static_cast<Scene*>(getParent());
+    if (auto inventoryLayer = parent->getChildByName("InventoryLayer"))
+    {
+        parent->removeChild(inventoryLayer);
+    }
+    // Create inventory layer if it doens't exist
+    else if (auto inventoryLayer = InventoryLayer::create())
+    {
+        inventoryLayer->setInventory((getPlayerSprite()->getInventory()));
+        parent->addChild(inventoryLayer);
     }
 }

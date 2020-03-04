@@ -32,12 +32,14 @@ public:
     void stopDrainStats();
     
     void collect();
-    //void useItemOnHand();
+    void useItemOnHand();
+    void setItemOnHand(class ItemSprite*);
+    void setPositionItemOnHand();
     
 private:
     Stat _stat;
     float _drainDelay;
-    class Item* _itemOnHand;
+    class ItemSprite* _itemOnHand;
     cocos2d::Vector<class Item*> inventory;
     
 private:
