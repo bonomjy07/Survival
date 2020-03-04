@@ -2,7 +2,6 @@
 #define ITEM_H__
 
 #include "cocos2d.h"
-#include "MySprite.h"
 
 class Item : public cocos2d::Ref
 {
