@@ -32,7 +32,7 @@ void SurvivorSprite::update(float dt)
     setPositionItemOnHand();
 }
 
-SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
+SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat(), _itemOnMe(nullptr), _itemOnHand (nullptr)
 {
     // Set base value for drain delay
     _drainDelay = 1.f;
@@ -41,7 +41,12 @@ SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat()
     _inputController = new InputController();
     // Set input-action up
     setupInputAction();
-    _itemOnHand = nullptr;
+
+    // Register contact listener
+    auto contactListener = EventListenerPhysicsContact::create();
+    contactListener->onContactSeparate = CC_CALLBACK_1(SurvivorSprite::onContactSeparate, this);
+    contactListener->onContactBegin = CC_CALLBACK_1(SurvivorSprite::onContactBegin, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 }
 
 SurvivorSprite::~SurvivorSprite()
@@ -75,29 +80,14 @@ void SurvivorSprite::stopDrainStats()
 
 void SurvivorSprite::collect()
 {
-    if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
+    if (_itemOnMe)
     {
-        // Get nodes at the sprite's position
-        Vector<Node*> nodes;
-        gameLayer->checkNodesAtPosition(getPosition(), &nodes);
-        for (const auto node : nodes)
+        inventory.pushBack(_itemOnMe->getItem());
+        _itemOnMe->wasCollected();
+
+        if ( dynamic_cast<Sword*>(item) ) 
         {
-            if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node))
-            {
-                gameLayer->removeChild(itemSprite);
-                Item *item = itemSprite->getItem();
-                inventory.pushBack(item);
-                // TODO: Implement inventory member variable.....
-                
-                // TODO: inventory.pushback(itemSprite->getItem());
-                itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
-                // TODO: log("Item %s was collected", itemSprite->getName());
-                if ( dynamic_cast<Sword*>(item) ) {
-                    setItemOnHand(itemSprite);
-                }
-                
-                // TODO: break; ??????
-            }
+            setItemOnHand(itemSprite);
         }
     }
 }
@@ -138,8 +128,6 @@ void SurvivorSprite::useItemOnHand(){
                     unit->takeDamage(damage);
                 }
            }
-        }
-    }
 }
 
 void SurvivorSprite::drainStats(float dt)
@@ -222,6 +210,7 @@ void SurvivorSprite::moveReleasedLeft(void *arg)
     addDeltaPosition(+32.f, 0.f);
     eraseDirection(Direction::Left);
 }
+
 void SurvivorSprite::setPositionItemOnHand(){
     if ( !_itemOnHand )
         return;
@@ -234,4 +223,27 @@ void SurvivorSprite::setItemOnHand(ItemSprite* itemSprite){
     _itemOnHand = itemSprite;
     _parent->addChild(_itemOnHand);
     setPositionItemOnHand();
+}
+
+bool SurvivorSprite::onContactBegin(cocos2d::PhysicsContact &contact)
+{
+    auto nodeA = contact.getShapeA()->getBody()->getNode();
+    auto nodeB = contact.getShapeB()->getBody()->getNode();
+    ItemSprite* item;
+    if ((item = dynamic_cast<ItemSprite*>(nodeA)))
+    {
+        _itemOnMe = item;
+    }
+    else if ((item = dynamic_cast<ItemSprite*>(nodeB)))
+    {
+        _itemOnMe = item;
+    }
+    
+    return true;
+}
+
+bool SurvivorSprite::onContactSeparate(cocos2d::PhysicsContact& contact)
+{
+    _itemOnMe = nullptr;
+    return true;
 }

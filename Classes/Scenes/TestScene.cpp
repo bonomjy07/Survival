@@ -83,6 +83,7 @@ bool TestScene::init()
         deerMeatSprite2->setItem(item);
         deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
         deerMeatSprite2->initPhysicsBody();
+        deerMeatSprite2->setName("I'm groot");
         this->addChild(deerMeatSprite2);
     }
 
@@ -94,6 +95,15 @@ bool TestScene::init()
         sword->initPhysicsBody();
         this->addChild(sword);
     }
+    // Create player character
+    /*
+     _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+     if (_player)
+     {
+     _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+     this->addChild(_player);
+     }
+     */
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -106,13 +116,13 @@ bool TestScene::init()
     // create key binder
     //KeyBinder::loadGameKeyActions();
     gameKeyBinder = new KeyBinder();
-
+    
     // Register keyboard listener
     auto listener = EventListenerKeyboard::create();
     listener->onKeyPressed = CC_CALLBACK_2(TestScene::onKeyPressed, this);
     listener->onKeyReleased = CC_CALLBACK_2(TestScene::onKeyReleased, this);
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-
+    
     // Allow update(float dt) to be called so that pawns move
     this->scheduleUpdate();
     
@@ -164,7 +174,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         ValueMap data = ValueMap();
         data["ID"] = Multi::SOCKET_ID;
         data["type"] = "keyPressed";
-
+        
         if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
         {
             data["action"] = "Up";

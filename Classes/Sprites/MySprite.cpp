@@ -19,6 +19,7 @@ bool MySprite::initPhysicsBody()
         log("Failed to create physcis body on MySprite");
         return false;
     }
+    pBody->setContactTestBitmask(0x01);
     pBody->setDynamic(false);
     this->addComponent(pBody);
     return true;

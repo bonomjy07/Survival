@@ -80,7 +80,6 @@ protected:
      */
     bool onQueryPointNodes(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* nodes);
     
-    
 public:
     class SpawnManager* _treeManager;
       

@@ -108,7 +108,6 @@ void MainScene::onStartGame() // Single....
             gameLayer->setName("");
             Multi::ROLE_STATUS = Multi::Role::None;
             gameLayer->addPlayerSpriteInWorld("");
-            // gameLayer->_treeManager->spawnTheSprite(10);
         }
 
         auto director = Director::getInstance();
