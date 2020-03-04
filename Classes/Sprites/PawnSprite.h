@@ -44,19 +44,15 @@ public:
      /* Retruns front vector for pawn */
     cocos2d::Vec2 getFrontVec2() const;
     
-    /**
-     @brief Adds delta position
-     */
+    /* Adds delta position */
     void addDeltaPosition(float x, float y);
     
-    /**
-     @brief Inserts new direction at begin of _directionList
-     */
+    /* Inserts new direction at begin of list */
     void insertDirection(Direction newDirection);
     
     /**
      @brief Erases released direction in _directionList
-     @details If multi key were pressed, get recent direction in _list
+     @details If multi key were pressed, get recent direction in begin of list
      */
     void eraseDirection(Direction releasedDirection);
     
