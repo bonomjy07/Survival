@@ -62,20 +62,29 @@ bool TestScene::init()
         return false;
     }
     
-    ValueMap spawnArea = objectGroup->getObject("SpawnArea");
-    if ((_treeManager = SpawnManager::create(spawnArea, "UnitSprite", "res/tileSet/qubodup-bush_berries_0.png")))
+    // Create trees randomly at spawn area
+    if ((Multi::ROLE_STATUS == Multi::Role::None) || (Multi::ROLE_STATUS == Multi::Role::Host))
     {
-        this->addChild(_treeManager);
-        _treeManager->startSpawn();
+        ValueMap spawnArea = objectGroup->getObject("SpawnArea");
+        std::set<Vec2> points;
+        getRandomPointsInArea(spawnArea, points, 10);
+        for (const auto& point : points)
+        {
+            if (auto tree = UnitSprite::create("res/tileSet/qubodup-bush_berries_0.png"))
+            {
+                tree->setName(getRandomID());
+                tree->setPosition(point);
+                addChild(tree);
+            }
+        }
     }
-
-
+    
     ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
-
-
-     // Create item sprite
+    
+    
+    // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
     {
@@ -86,7 +95,7 @@ bool TestScene::init()
         deerMeatSprite2->setName("I'm groot");
         this->addChild(deerMeatSprite2);
     }
-
+    
     auto sword = ItemSprite::create();
     if ( sword ){
         auto item = Sword::create();
@@ -104,7 +113,7 @@ bool TestScene::init()
      this->addChild(_player);
      }
      */
-
+    
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto label = Label::createWithTTF("Test World", "fonts/Marker Felt.ttf", 24);

@@ -4,6 +4,7 @@
 
 #include "TestScene.h"
 #include "SurvivorSprite.h"
+#include "ItemSprite.h"
 
 #include "InputController.h"
 
@@ -169,6 +170,29 @@ void Multi::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& 
         dataVector.push_back(Value(data));
     }
     emit("playerList", dataVector);
+    
+    // ////
+    return;
+    auto dataVector2 = ValueVector();
+    for (const auto node : layer->getChildren())
+    {
+        // Base properties
+        auto data = ValueMap();
+        data["ID"] = node->getName();
+        data["x"] = node->getPositionX();
+        data["y"] = node->getPositionY();
+        // Extra properties
+        if (UnitSprite* unitSprite = dynamic_cast<UnitSprite*>(node))
+        {
+            data["Health"] = unitSprite->getCurrentHealth();
+        }
+        else if (ItemSprite* unitSprite = dynamic_cast<ItemSprite*>(node))
+        {
+            // TODO: .....
+        }
+        dataVector2.push_back(Value(data));
+    }
+    emit("working title...", dataVector);
 }
 
 void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string &data)
@@ -218,20 +242,6 @@ void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& dat
         auto action = document["action"].GetString();
         std::string type = document["type"].GetString();
 
-        /*
-         if (type == 'input') {
-            ctrl->takeAction(action, KeyPressed);
-         }
-         else if (type == 'prorperty') {
-            sprite = getSprite(ID);
-            sprite->updateNewProps(list);
-         }
-         else if (type == 'movement') {
-            sprite = getSprite(ID);
-            sprite->moveThePawn();
-         }
-         */
-        
         // key pressed action
         if ( !type.compare("keyPressed") )
         {

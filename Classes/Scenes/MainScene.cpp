@@ -100,20 +100,20 @@ void MainScene::onStartGame() // Single....
 {
     log("Game start!");
     
+    Multi::ROLE_STATUS = Multi::Role::None;
+    
     if (auto tiledMapScene = TestScene::createScene())
     {
-        //if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
-        auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer"));
+        if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
         {
-            gameLayer->setName("");
-            Multi::ROLE_STATUS = Multi::Role::None;
             gameLayer->addPlayerSpriteInWorld("");
         }
-
+        
         auto director = Director::getInstance();
         director->pushScene(director->getRunningScene());
         director->replaceScene(tiledMapScene);
     }
+    return;
 }
 
 void MainScene::onKeyBinding()
@@ -140,9 +140,8 @@ void MainScene::onEnterGame()
     // Reads URI
     std::string uri = _uriTextField->getString();
     //uri = "172.30.1.46:8080";
-    uri = "192.168.219.101:8080";
+    //uri = "192.168.219.101:8080";
     
-    // Create gamelayer first, cuz gameLayer has delegate for client
     if (auto testScene = TestScene::createScene())
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))

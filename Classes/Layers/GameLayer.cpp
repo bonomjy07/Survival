@@ -180,29 +180,6 @@ std::set<Vec2>& GameLayer::getOccupied()
     return _occupied;
 }
 
-/*
-class MySprite* GameLayer::getSprite(const std::string& ID)
-{
-    if (_mySpriteManager.find(ID) == _mySpriteManager.end())
-        return nullptr;
-    return _mySpriteManager.at(ID);
-}
-
-void GameLayer::addSprite(const std::string& ID, MySprite* mySprite)
-{
-    CCASSERT(mySprite, "Sprite is invalid");
-    
-    _mySpriteManager.insert({ID, mySprite});
-    addChild(mySprite);
-}
-
-void GameLayer::removeSprite(const std::string& ID)
-{
-    removeChild(_mySpriteManager.at(ID));
-    _mySpriteManager.erase(ID);
-}
- */
-
 std::string GameLayer::getRandomID()
 {
     static std::set<std::string> IDManager;
@@ -213,11 +190,31 @@ std::string GameLayer::getRandomID()
     std::string newID;
     
     do {
-        int len = floor(RandomHelper::random_real(10, 30));
+        newID.clear();
+        int len = RandomHelper::random_int(1, 30);
         for (int i = 0; i < len; ++i)
             newID += alphanum[rand() % (sizeof(alphanum) - 1)];
-    } while (IDManager.find(newID) == IDManager.end());
+    } while (IDManager.find(newID) != IDManager.end());
     IDManager.insert(newID);
     
     return newID;
+}
+
+void GameLayer::getRandomPointsInArea(const cocos2d::ValueMap& spawnArea, std::set<cocos2d::Vec2>& points, int num)
+{
+    while (points.size() < num)
+    {
+        float x = spawnArea.at("x").asFloat();
+        float y = spawnArea.at("y").asFloat();
+        float width = spawnArea.at("width").asFloat();
+        float height = spawnArea.at("height").asFloat();
+        
+        float randX = floor(RandomHelper::random_real(x, x+width));
+        float randY = floor(RandomHelper::random_real(y, y+height));
+        // Trim random position as tile position
+        randX = randX - ((int)randX % 32) + 32/2;
+        randY = randY - ((int)randY % 32) + 32/2;
+        
+        points.insert({randX, randY});
+    }
 }

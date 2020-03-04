@@ -52,8 +52,7 @@ public:
 
     std::map<std::string, class SurvivorSprite*> getPlayersManager(){ return _playersManager; };
     Multi* getMulti(){ return dynamic_cast<Multi*>(getChildByName("MultiGame")); }
-    void addManager();
-    
+
 protected:
     /**
      @brief Return tile-location on position
@@ -74,11 +73,9 @@ protected:
      */
     bool onQueryPointNodes(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* nodes);
     
-public:
-    class SpawnManager* _treeManager;
-      
 protected:
     std::map<std::string, class SurvivorSprite*> _playersManager;
+    
     cocos2d::TMXTiledMap *_tiledMap;
     cocos2d::TMXLayer *_block;
     class SurvivorSprite* _player;
@@ -86,8 +83,8 @@ protected:
     // synchronize
     std::set<cocos2d::Vec2> _occupied;
     
-private:
+protected:
     std::string getRandomID();
-
+    void getRandomPointsInArea(const cocos2d::ValueMap& spawnArea, std::set<cocos2d::Vec2>& points, int num);
 };
 #endif // GAME_LAYER_H__
