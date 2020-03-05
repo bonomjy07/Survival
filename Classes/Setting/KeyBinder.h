@@ -14,6 +14,7 @@ public:
     virtual bool init();
 
     bool checkGameKeyAction(cocos2d::EventKeyboard::KeyCode key, std::string action);
+    std::string findGameKeyAction(cocos2d::EventKeyboard::KeyCode key);
     
     void getNewGameKeyTable();
     std::string findNewGameKeyAction(cocos2d::EventKeyboard::KeyCode key);

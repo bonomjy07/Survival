@@ -73,6 +73,11 @@ bool KeyBinder::checkGameKeyAction(EventKeyboard::KeyCode key, std::string actio
         return false;  
 }
 
+std::string KeyBinder::findGameKeyAction(cocos2d::EventKeyboard::KeyCode key)
+{
+    return findAction(0, key);
+}
+
 void KeyBinder::getNewGameKeyTable()
 {
     newGameKeyTable.clear();
