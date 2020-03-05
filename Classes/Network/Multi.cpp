@@ -140,7 +140,7 @@ void Multi::onRequestPlayerID(cocos2d::network::SIOClient* client, const std::st
             ROLE_STATUS = Role::Host;
             
             // Spawn units and my character
-            getParentLayer()->spawnSprite("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
+            getParentLayer()->addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
             getParentLayer()->addPlayerSpriteInWorld(SOCKET_ID);
         }
         else
@@ -229,7 +229,7 @@ void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string 
             }
             else if (!classname.compare("UnitSprite"))
             {
-                layer->addUnitSprite(ID, filename, {x, y}, health);
+                layer->addUnitSpriteInWorld(ID, filename, {x, y}, health);
             }
             else if (!classname.compare("ItemSprite"))
             {

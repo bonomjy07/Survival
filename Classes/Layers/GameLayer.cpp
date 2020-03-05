@@ -251,7 +251,7 @@ MySprite* GameLayer::createSpriteToSpawn(const std::string& classname, const std
     return sprite;
 }
 
-void GameLayer::spawnSprite(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn)
+void GameLayer::addSpritesInBox(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn)
 {
     // Get random points to spawn
     std::set<Vec2> points;
@@ -269,7 +269,7 @@ void GameLayer::spawnSprite(const std::string& classname, const std::string& fil
     }
 }
 
-void GameLayer::addUnitSprite(const std::string& ID, const std::string& filename, const cocos2d::Vec2& position, const float health)
+void GameLayer::addUnitSpriteInWorld(const std::string& ID, const std::string& filename, const cocos2d::Vec2& position, const float health)
 {
     if (auto unit = UnitSprite::create(filename, health))
     {

@@ -11,14 +11,10 @@ public:
     virtual bool init() override;
     
 public:
-    /**
-     @brief Returns true if tile at postion is collidable
-     */
+    /* Returns true if tile at postion is collidable */
     bool isCollidableTileForPosition(const cocos2d::Vec2& position);
     
-    /**
-     @brief Returns true if the position is within the world
-     */
+    /* Returns true if the position is within the world */
     bool isPositionWithinWorld(const cocos2d::Vec2& position);
     
     /**
@@ -35,30 +31,8 @@ public:
      @return Nodes will be retruned.
      */
     void checkNodesAtPosition(const cocos2d::Vec2& position, cocos2d::Vector<Node*>* nodes);
-
-    /**
-     @brief This function is Called every frame and set view-point on center
-     */
-    void setViewPointCenter(const cocos2d::Vec2 position);
-
-public:
-    void addPlayerSpriteInWorld(const std::string& ID);
-    void addPlayerSpriteInWorld(const std::string& ID, const cocos2d::Vec2& position);
-
-    class SurvivorSprite* getPlayerSprite(const std::string& ID) const;
-    class SurvivorSprite* getPlayerSprite() const;
-
-    std::set<cocos2d::Vec2>& getOccupied();
-
-    std::map<std::string, class SurvivorSprite*> getPlayersManager(){ return _playersManager; };
-    Multi* getMulti(){ return dynamic_cast<Multi*>(getChildByName("MultiGame")); }
-
-protected:
-    /**
-     @brief Return tile-location on position
-     */
-    cocos2d::Point getTileCoorForPosition(const cocos2d::Vec2& position);
     
+private:
     /**
      @brief Callback function for queryPoint()
      @param node Acutal type is Node**
@@ -73,26 +47,75 @@ protected:
      */
     bool onQueryPointNodes(cocos2d::PhysicsWorld& world, cocos2d::PhysicsShape& shape, void* nodes);
     
+public:
+    /* Return player sprite corresponding ID */
+    class SurvivorSprite* getPlayerSprite(const std::string& ID) const;
+    
+    /* Return player sprite corresponding MY-ID */
+    class SurvivorSprite* getPlayerSprite() const;
+    
+    /* Accessor function for occupied positions by player sprite */
+    std::set<cocos2d::Vec2>& getOccupied();
+    
+    /* Accessor function for player manager */
+    std::map<std::string, class SurvivorSprite*> getPlayersManager(){ return _playersManager; };
+    
+    /* Accessor function for Multi play delegate */
+    Multi* getMulti(){ return dynamic_cast<Multi*>(getChildByName("MultiGame")); }
+    
 protected:
+    /* This function is Called every frame and set view-point on center */
+    void setViewPointCenter(const cocos2d::Vec2 position);
+    
+    /* Return tile-location on position */
+    cocos2d::Point getTileCoorForPosition(const cocos2d::Vec2& position);
+    
+protected:
+    /**
+     Stores player ID to sprite address
+     @warning player deletion is not implemented...
+     */
     std::map<std::string, class SurvivorSprite*> _playersManager;
     
+    /* World map */
     cocos2d::TMXTiledMap *_tiledMap;
+    
+    /* Block tiles in world map */
     cocos2d::TMXLayer *_block;
+    
+    /* My play sprite */
     class SurvivorSprite* _player;
+    
+    /* Key binder */
     class KeyBinder *gameKeyBinder;
-    // synchronize
+    
+    /* Stores player's position to synchronize player's position */
     std::set<cocos2d::Vec2> _occupied;
     
 protected:
+    /* Return random ID for sprites */
     std::string getRandomID();
-    void getRandomPointsInArea(const cocos2d::ValueMap& spawnArea, std::set<cocos2d::Vec2>& points, int num);
-    void getRandomPointsInArea(const cocos2d::Vec2& origin, const cocos2d::Vec2 boxExtend, std::set<cocos2d::Vec2>& points, int num);
-    class MySprite* createSpriteToSpawn(const std::string& classname, const std::string& filename);
-
-public:
-    void spawnSprite(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn);
-
-    void addUnitSprite(const std::string& ID, const std::string& fileaname, const cocos2d::Vec2& position, const float health);
     
+    /* Return random points in spawn area as num */
+    void getRandomPointsInArea(const cocos2d::ValueMap& spawnArea, std::set<cocos2d::Vec2>& points, int num);
+    
+    /* Return random points in box as num */
+    void getRandomPointsInArea(const cocos2d::Vec2& origin, const cocos2d::Vec2 boxExtend, std::set<cocos2d::Vec2>& points, int num);
+    
+    /* Create sprite with file name corresponding class name, then Return the sprite */
+    class MySprite* createSpriteToSpawn(const std::string& classname, const std::string& filename);
+    
+public:
+    /* Spwan player sprite in the world, default position is hard coded */
+    void addPlayerSpriteInWorld(const std::string& ID);
+    
+    /* Spwan player sprite at position in the world */
+    void addPlayerSpriteInWorld(const std::string& ID, const cocos2d::Vec2& position);
+    
+    /* Spwan unit sprite at position in the world */
+    void addUnitSpriteInWorld(const std::string& ID, const std::string& fileaname, const cocos2d::Vec2& position, const float health);
+    
+    /* Spwan multiple sprite in the box */
+    void addSpritesInBox(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn);
 };
 #endif // GAME_LAYER_H__

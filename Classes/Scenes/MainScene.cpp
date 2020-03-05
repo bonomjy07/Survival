@@ -106,7 +106,7 @@ void MainScene::onStartGame() // Single....
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
         {
-            gameLayer->spawnSprite("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
+            gameLayer->addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
             gameLayer->addPlayerSpriteInWorld("");
         }
         
