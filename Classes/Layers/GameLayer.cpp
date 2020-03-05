@@ -86,6 +86,46 @@ void GameLayer::checkNodesAtPosition(const Vec2& position, Vector<Node*>* nodes)
     }
 }
 
+
+bool GameLayer::onQueryPointNode(PhysicsWorld &world, PhysicsShape &shape, void *node)
+{
+    PhysicsBody* pBody;
+    if (node && (pBody = shape.getBody()))
+    {
+        *static_cast<Node**>(node) = pBody->getNode();
+    }
+    return true;
+}
+
+bool GameLayer::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void* nodes)
+{
+    PhysicsBody* pBody;
+    if (nodes && (pBody = shape.getBody()))
+    {
+        Vector<Node*>* tmpNodes = static_cast<Vector<Node*>*>(nodes);
+        tmpNodes->pushBack(pBody->getNode());
+    }
+    return true;
+}
+
+
+class SurvivorSprite* GameLayer::getPlayerSprite(const std::string &ID) const
+{
+    if (_playersManager.find(ID) == _playersManager.end())
+        return nullptr;
+    return _playersManager.at(ID);
+}
+
+class SurvivorSprite* GameLayer::getPlayerSprite() const
+{
+    return _player;
+}
+
+std::set<Vec2>& GameLayer::getOccupied()
+{
+    return _occupied;
+}
+
 void GameLayer::setViewPointCenter(const cocos2d::Vec2 position)
 {
     Size WinSize = Director::getInstance()->getWinSize();
@@ -110,74 +150,6 @@ Point GameLayer::getTileCoorForPosition(const cocos2d::Vec2& position)
     int y = ((_tiledMap->getMapSize().height*_tiledMap->getTileSize().height) - position.y) / _tiledMap->getTileSize().height;
     
     return Point(x, y);
-}
-
-bool GameLayer::onQueryPointNode(PhysicsWorld &world, PhysicsShape &shape, void *node)
-{
-    PhysicsBody* pBody;
-    if (node && (pBody = shape.getBody()))
-    {
-        *static_cast<Node**>(node) = pBody->getNode();
-    }
-    return true;
-}
-
-bool GameLayer::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void* nodes)
-{
-    PhysicsBody* pBody;
-    if (nodes && (pBody = shape.getBody()))
-    {
-        Vector<Node*>* tmpNodes = static_cast<Vector<Node*>*>(nodes);
-        tmpNodes->pushBack(pBody->getNode());
-    }
-    return true;
-}
-
-void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
-{
-    TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
-    Vec2 position = Vec2({0,0});
-
-    if (objectGroup){
-        ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
-        float x = spawnPoint["x"].asFloat();
-        float y = spawnPoint["y"].asFloat();
-        position = Vec2({x+_tiledMap->getTileSize().width/2, y+_tiledMap->getTileSize().height/2});
-    }
-
-    addPlayerSpriteInWorld(ID, position);
-}
-
-void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& position)
-{
-    if (auto player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f))
-    {
-        player->setName(ID);
-        player->setPosition(position);
-        _occupied.insert(position);
-        _playersManager.insert({ID, player});
-        addChild(player);
-
-        if ( !ID.compare(Multi::SOCKET_ID) )
-            _player = player;
-    }
-}
-
-class SurvivorSprite* GameLayer::getPlayerSprite(const std::string &ID) const
-{
-    if (_playersManager.find(ID) == _playersManager.end())
-        return nullptr;
-    return _playersManager.at(ID);
-}
-
-class SurvivorSprite* GameLayer::getPlayerSprite() const
-{
-    return _player;
-}
-
-std::set<Vec2>& GameLayer::getOccupied()
-{
-    return _occupied;
 }
 
 std::string GameLayer::getRandomID()
@@ -251,6 +223,48 @@ MySprite* GameLayer::createSpriteToSpawn(const std::string& classname, const std
     return sprite;
 }
 
+
+void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
+{
+    TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
+    Vec2 position = Vec2({0,0});
+
+    if (objectGroup){
+        ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
+        float x = spawnPoint["x"].asFloat();
+        float y = spawnPoint["y"].asFloat();
+        position = Vec2({x+_tiledMap->getTileSize().width/2, y+_tiledMap->getTileSize().height/2});
+    }
+
+    addPlayerSpriteInWorld(ID, position);
+}
+
+void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& position)
+{
+    if (auto player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f))
+    {
+        player->setName(ID);
+        player->setPosition(position);
+        _occupied.insert(position);
+        _playersManager.insert({ID, player});
+        addChild(player);
+
+        if ( !ID.compare(Multi::SOCKET_ID) )
+            _player = player;
+    }
+}
+
+void GameLayer::addUnitSpriteInWorld(const std::string& ID, const std::string& filename, const cocos2d::Vec2& position, const float health)
+{
+    if (auto unit = UnitSprite::create(filename, health))
+    {
+        unit->setName(ID);
+        unit->setPosition(position);
+        unit->setCurrentHealth(health);
+        addChild(unit);
+    }
+}
+
 void GameLayer::addSpritesInBox(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn)
 {
     // Get random points to spawn
@@ -266,16 +280,5 @@ void GameLayer::addSpritesInBox(const std::string& classname, const std::string&
             sprite->setPosition(point);
             addChild(sprite);
         }
-    }
-}
-
-void GameLayer::addUnitSpriteInWorld(const std::string& ID, const std::string& filename, const cocos2d::Vec2& position, const float health)
-{
-    if (auto unit = UnitSprite::create(filename, health))
-    {
-        unit->setName(ID);
-        unit->setPosition(position);
-        unit->setCurrentHealth(health);
-        addChild(unit);
     }
 }
