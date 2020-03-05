@@ -146,26 +146,8 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         InputController* controller = nullptr;
         if (player && (controller = player->getInputController()))
         {
-            if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-            {
-                controller->takeAction("Up", InputController::InputEvent::KeyPressed);
-            }
-            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-            {
-                controller->takeAction("Down", InputController::InputEvent::KeyPressed);
-            }
-            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-            {
-                controller->takeAction("Right", InputController::InputEvent::KeyPressed);
-            }
-            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-            {
-                controller->takeAction("Left", InputController::InputEvent::KeyPressed);
-            }
-            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
-            {
-                controller->takeAction("Collect", InputController::InputEvent::KeyPressed);
-            }
+            std::string action = gameKeyBinder->findGameKeyAction(keyCode);
+            controller->takeAction(action, InputController::InputEvent::KeyPressed);
         }
     }
     else if (Multi::ROLE_STATUS == Multi::Role::Client)
@@ -174,33 +156,9 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         ValueMap data = ValueMap();
         data["ID"] = Multi::SOCKET_ID;
         data["type"] = "keyPressed";
-        
-        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-        {
-            data["action"] = "Up";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-        {
-            data["action"] = "Down";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-        {
-            data["action"] = "Right";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-        {
-            data["action"] = "Left";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
-        {
-            data["action"] = "Collect";
-        }
-        multi->emit("action", data);
-    }
+        data["action"] = gameKeyBinder->findGameKeyAction(keyCode);
 
-    if ( gameKeyBinder->checkGameKeyAction(keyCode, "Use") )
-    {
-        getPlayerSprite()->useItemOnHand();
+        multi->emit("action", data);
     }
     
     // ESC action
@@ -228,22 +186,8 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         InputController* controller = nullptr;
         if (player && (controller = player->getInputController()))
         {
-            if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-            {
-                controller->takeAction("Up", InputController::InputEvent::KeyReleased);
-            }
-            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-            {
-                controller->takeAction("Down", InputController::InputEvent::KeyReleased);
-            }
-            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-            {
-                controller->takeAction("Right", InputController::InputEvent::KeyReleased);
-            }
-            else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-            {
-                controller->takeAction("Left", InputController::InputEvent::KeyReleased);
-            }
+            std::string action = gameKeyBinder->findGameKeyAction(keyCode);
+            controller->takeAction(action, InputController::InputEvent::KeyReleased);
         }
     }
     else if (Multi::ROLE_STATUS == Multi::Role::Client)
@@ -252,24 +196,8 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         ValueMap data = ValueMap();
         data["ID"] = Multi::SOCKET_ID;
         data["type"] = "keyReleased";
-
-        //if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-        {
-            data["action"] = "Up";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-        {
-            data["action"] = "Down";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-        {
-            data["action"] = "Right";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-        {
-            data["action"] = "Left";
-        }
+        data["action"] = gameKeyBinder->findGameKeyAction(keyCode);
+        
         multi->emit("action", data);
     }
 }
