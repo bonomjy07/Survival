@@ -7,6 +7,12 @@
 
 #include "InputController.h"
 
+#if BHY_DEBUG
+#define SEVER_URI "localhost:8080"
+#else 
+#define SEVER_URI "192.168.219.102:8080"
+#endif
+
 USING_NS_CC;
 
 Multi::Role Multi::ROLE_STATUS = Multi::Role::None;
@@ -29,8 +35,7 @@ static Multi* create(std::string uri) {
 }
 
 bool Multi::init(){
-    //if ( !(_client = SocketIO::connect("localhost:8080", *this)) ){
-    if ( !(_client = SocketIO::connect("192.168.219.102:8080", *this)) ){
+    if ( !(_client = SocketIO::connect(SEVER_URI, *this)) ){
         return false;
     }
 
