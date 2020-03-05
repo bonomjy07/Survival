@@ -41,7 +41,10 @@ public:
     void takeDamage(float deltaDamage);
     
 protected:
+    /* Unit's current health, initiated by max health when unit is created */
     float _currentHealth;
+    
+    /* Unit's max health */
     float _maxHealth;
     
 protected:
