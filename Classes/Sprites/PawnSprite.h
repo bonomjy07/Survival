@@ -63,9 +63,7 @@ protected:
      */
     cocos2d::Vec2 _deltaPosition;
     
-    /**
-     @brief current direction is used not to allow diagnal movement
-     */
+    /* Current direction of Pawn */
     Direction _currentDirection;
     
 protected:
@@ -84,6 +82,4 @@ private:
     /* New direction has to be insert at begin(first) */
     std::list<Direction> _directionList;
 };
-
 #endif /* Pawn_h */
-
