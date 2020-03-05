@@ -218,3 +218,68 @@ void GameLayer::getRandomPointsInArea(const cocos2d::ValueMap& spawnArea, std::s
         points.insert({randX, randY});
     }
 }
+
+void GameLayer::getRandomPointsInArea(const cocos2d::Vec2& origin, const cocos2d::Vec2 boxExtend, std::set<cocos2d::Vec2>& points, int num)
+{
+    while (points.size() < num)
+    {
+        float randX = floor(RandomHelper::random_real(origin.x, boxExtend.x));
+        float randY = floor(RandomHelper::random_real(origin.y, boxExtend.y));
+        // Trim random position as tile position
+        randX = randX - ((int)randX % 32) + 32/2;
+        randY = randY - ((int)randY % 32) + 32/2;
+        
+        points.insert({randX, randY});
+    }
+}
+
+MySprite* GameLayer::createSpriteToSpawn(const std::string& classname, const std::string& filename) 
+{
+    MySprite* sprite = nullptr;
+    if (!classname.compare(""))
+    {
+        return sprite;
+    }
+    else if (!classname.compare("PawnSprite"))
+    {
+        sprite = PawnSprite::create(filename, 100.f);
+    }
+    else if (!classname.compare("UnitSprite"))
+    {
+        sprite = UnitSprite::create(filename);
+    }
+    return sprite;
+}
+
+void GameLayer::spawnSprite(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn)
+{
+    // Get random points to spawn
+    std::set<Vec2> points;
+    getRandomPointsInArea(origin, boxExtend, points, numOfSpawn);
+    
+    // Create sprite along with random point
+    for (const auto& point : points)
+    {
+        if (auto sprite = createSpriteToSpawn(classname, filename)) // TODO: what about copy-ctor, not calling func
+        {
+            sprite->setName(getRandomID());
+            sprite->setPosition(point);
+            addChild(sprite);
+        }
+    }
+}
+
+void GameLayer::fun()
+{
+    std::set<Vec2> points;
+    getRandomPointsInArea(_spawnArea, points, 10);
+    for (const auto& point : points)
+    {
+        if (auto tree = UnitSprite::create("res/tileSet/qubodup-bush_berries_0.png"))
+        {
+            tree->setName(getRandomID());
+            tree->setPosition(point);
+            addChild(tree);
+        }
+    }
+}

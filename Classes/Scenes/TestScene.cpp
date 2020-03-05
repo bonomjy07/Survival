@@ -62,23 +62,7 @@ bool TestScene::init()
         return false;
     }
     
-    // Create trees randomly at spawn area
-    if ((Multi::ROLE_STATUS == Multi::Role::None) || (Multi::ROLE_STATUS == Multi::Role::Host))
-    {
-        ValueMap spawnArea = objectGroup->getObject("SpawnArea");
-        std::set<Vec2> points;
-        getRandomPointsInArea(spawnArea, points, 10);
-        for (const auto& point : points)
-        {
-            if (auto tree = UnitSprite::create("res/tileSet/qubodup-bush_berries_0.png"))
-            {
-                tree->setName(getRandomID());
-                tree->setPosition(point);
-                addChild(tree);
-            }
-        }
-    }
-    
+     _spawnArea = objectGroup->getObject("SpawnArea");
     ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
@@ -135,6 +119,10 @@ bool TestScene::init()
     // Allow update(float dt) to be called so that pawns move
     this->scheduleUpdate();
     
+    
+    //auto eventListner = EventListenerCustom::create("SpawnUnit", CC_CALLBACK_1(GameLayer::fun, this));
+    //_eventDispatcher->addEventListenerWithSceneGraphPriority(event)
+
     return true;
 }
 
@@ -183,7 +171,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         ValueMap data = ValueMap();
         data["ID"] = Multi::SOCKET_ID;
         data["type"] = "keyPressed";
-        
+
         if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
         {
             data["action"] = "Up";
@@ -204,7 +192,9 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         {
             data["action"] = "Collect";
         }
-        multi->emit("action", data);
+        
+        if (data.find("action") != data.end())
+            multi->emit("action", data);
     }
 
     if ( gameKeyBinder->checkGameKeyAction(keyCode, "Use") )
@@ -279,7 +269,9 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         {
             data["action"] = "Left";
         }
-        multi->emit("action", data);
+        
+        if (data.find("action") != data.end())
+            multi->emit("action", data) ;
     }
 }
 

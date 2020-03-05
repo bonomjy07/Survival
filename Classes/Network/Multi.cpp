@@ -31,7 +31,7 @@ static Multi* create(std::string uri) {
 
 bool Multi::init(){
     //if ( !(_client = SocketIO::connect("localhost:8080", *this)) ){
-    if ( !(_client = SocketIO::connect("192.168.219.102:8080", *this)) ){
+    if ( !(_client = SocketIO::connect("192.168.219.103:8080", *this)) ){
         return false;
     }
 
@@ -136,6 +136,8 @@ void Multi::onRequestPlayerID(cocos2d::network::SIOClient* client, const std::st
         if (SOCKET_ID.compare(document["HostID"].GetString()) == 0)
         {
             ROLE_STATUS = Role::Host;
+            
+            getParentLayer()->fun(); // TODO: ....
         }
         else
         {

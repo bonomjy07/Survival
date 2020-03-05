@@ -106,6 +106,7 @@ void MainScene::onStartGame() // Single....
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
         {
+            gameLayer->spawnSprite("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
             gameLayer->addPlayerSpriteInWorld("");
         }
         
@@ -139,9 +140,7 @@ void MainScene::onEnterGame()
 {
     // Reads URI
     std::string uri = _uriTextField->getString();
-    //uri = "172.30.1.46:8080";
-    //uri = "192.168.219.101:8080";
-    
+
     if (auto testScene = TestScene::createScene())
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))
