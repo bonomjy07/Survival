@@ -140,21 +140,84 @@ void MainScene::onEnterGame()
 {
     // Reads URI
     std::string uri = _uriTextField->getString();
-
+    
     if (auto testScene = TestScene::createScene())
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))
         {
-            //auto multi = Multi::create(uri);
+            // Try to connect to server
             auto multi = Multi::create();
-            if ( multi ){
-                multi->setName("MultiGame");
-                gameLayer->addChild(multi);
-                
-                auto director = Director::getInstance();
-                director->pushScene(director->getRunningScene());
-                director->replaceScene(testScene);
+            CCASSERT(multi, "Failed to create object for multi play");
+            multi->setName("MultiGame");
+            gameLayer->addChild(multi);
+            
+            // Waiting to be connected
+            /*
+            int timedWait = 0;
+            while (++timedWait <= 10)
+            {
+                if ((Multi::ROLE_STATUS == Multi::Role::Host) || (Multi::ROLE_STATUS == Multi::Role::Client)) break;
+                log("waiting connection...");
+                sleep(1);
             }
+
+            // Host : Spawn units and player
+            if (Multi::ROLE_STATUS == Multi::Role::Host)
+            {
+                gameLayer->spawnSprite("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
+                gameLayer->addPlayerSpriteInWorld(Multi::SOCKET_ID);
+            }
+            // Client : Send that u r new player and get player list
+            else if (Multi::ROLE_STATUS == Multi::Role::Client)
+            {
+                ValueMap data;
+                data["ID"] = Multi::SOCKET_ID;
+                multi->emit("newPlayer", data); // server'll will respond with player list
+            }
+            else if (Multi::ROLE_STATUS == Multi::Role::None)
+            {
+                log("Failed to connect to server...");
+                return;
+            }
+             */
+
+            auto director = Director::getInstance();
+            director->pushScene(director->getRunningScene());
+            director->replaceScene(testScene);
         }
     }
+
+    /*
+     if (auto testScene = TestScene::createScene())
+     {
+     if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))
+     {
+     //auto multi = Multi::create(uri);
+     auto multi = Multi::create();
+     
+     int timedWait = 0;
+     bool isConnected = false;
+     while (++timedWait <= 10)
+     {
+     if ((Multi::ROLE_STATUS == Multi::Role::Host) || (Multi::ROLE_STATUS == Multi::Role::Client))
+     {
+     isConnected = true;
+     break;
+     }
+     log("waiting connection...");
+     sleep(1);
+     }
+     
+     if (isConnected == false) return;
+     
+     if ( multi ){
+     multi->setName("MultiGame");
+     gameLayer->addChild(multi);
+     
+     auto director = Director::getInstance();
+     director->pushScene(director->getRunningScene());
+     director->replaceScene(testScene);
+     }
+     }
+     } */
 }

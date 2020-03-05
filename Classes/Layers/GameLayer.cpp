@@ -269,17 +269,13 @@ void GameLayer::spawnSprite(const std::string& classname, const std::string& fil
     }
 }
 
-void GameLayer::fun()
+void GameLayer::addUnitSprite(const std::string& ID, const std::string& filename, const cocos2d::Vec2& position, const float health)
 {
-    std::set<Vec2> points;
-    getRandomPointsInArea(_spawnArea, points, 10);
-    for (const auto& point : points)
+    if (auto unit = UnitSprite::create(filename, health))
     {
-        if (auto tree = UnitSprite::create("res/tileSet/qubodup-bush_berries_0.png"))
-        {
-            tree->setName(getRandomID());
-            tree->setPosition(point);
-            addChild(tree);
-        }
+        unit->setName(ID);
+        unit->setPosition(position);
+        unit->setCurrentHealth(health);
+        addChild(unit);
     }
 }

@@ -89,12 +89,10 @@ protected:
     void getRandomPointsInArea(const cocos2d::Vec2& origin, const cocos2d::Vec2 boxExtend, std::set<cocos2d::Vec2>& points, int num);
     class MySprite* createSpriteToSpawn(const std::string& classname, const std::string& filename);
 
-    cocos2d::ValueMap _spawnArea;
-    
 public:
     void spawnSprite(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn);
+
+    void addUnitSprite(const std::string& ID, const std::string& fileaname, const cocos2d::Vec2& position, const float health);
     
-public:
-    void fun();
 };
 #endif // GAME_LAYER_H__

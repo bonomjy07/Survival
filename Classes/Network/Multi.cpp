@@ -31,7 +31,9 @@ static Multi* create(std::string uri) {
 
 bool Multi::init(){
     //if ( !(_client = SocketIO::connect("localhost:8080", *this)) ){
-    if ( !(_client = SocketIO::connect("192.168.219.103:8080", *this)) ){
+    //if ( !(_client = SocketIO::connect("192.168.219.103:8080", *this)) ){
+    //if ( !(_client = SocketIO::connect("172.30.1.56:8080", *this)) ){
+    if ( !(_client = SocketIO::connect("192.168.219.102:8080", *this)) ){
         return false;
     }
 
@@ -76,7 +78,7 @@ void Multi::onError(SIOClient* client, const std::string& data){
 
 void Multi::emit(const std::string &eventname, const Value &data){
     std::string args = parseData(data);
-    log(args.c_str());
+    //log(args.c_str());
 
     _client->emit(eventname, args);
 }
@@ -137,11 +139,18 @@ void Multi::onRequestPlayerID(cocos2d::network::SIOClient* client, const std::st
         {
             ROLE_STATUS = Role::Host;
             
-            getParentLayer()->fun(); // TODO: ....
+            // Spawn units and my character
+            getParentLayer()->spawnSprite("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
+            getParentLayer()->addPlayerSpriteInWorld(SOCKET_ID);
         }
         else
         {
             ROLE_STATUS = Role::Client;
+            
+            // Ask server that player list
+            ValueMap data;
+            data["ID"] = Multi::SOCKET_ID;
+            emit("newPlayer", data); // server'll will respond with player list
         }
     }
 }
@@ -149,7 +158,7 @@ void Multi::onRequestPlayerID(cocos2d::network::SIOClient* client, const std::st
 void Multi::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& data)
 {
     GameLayer* layer = getParentLayer();
-
+    
     // Get my ID
     rapidjson::Document document;
     document.Parse(data.c_str());
@@ -158,49 +167,49 @@ void Multi::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& 
         std::string ID = document["ID"].GetString();
         layer->addPlayerSpriteInWorld(ID, {336, 368});
     }
-
-    // Broadcasts player list to all clients
-    auto dataVector = ValueVector();
-
-    for (auto player : layer->getPlayersManager())
-    {
-        auto data = ValueMap();
-        data["ID"] = player.first;
-        data["x"] = player.second->getPositionX();
-        data["y"] = player.second->getPositionY();
-
-        dataVector.push_back(Value(data));
-    }
-    emit("playerList", dataVector);
     
-    // ////
-    return;
-    auto dataVector2 = ValueVector();
+    auto dataVector = ValueVector();
     for (const auto node : layer->getChildren())
     {
-        // Base properties
         auto data = ValueMap();
-        data["ID"] = node->getName();
-        data["x"] = node->getPositionX();
-        data["y"] = node->getPositionY();
-        // Extra properties
-        if (UnitSprite* unitSprite = dynamic_cast<UnitSprite*>(node))
+        
+        // Base properties
+        if (dynamic_cast<MySprite*>(node))
         {
-            data["Health"] = unitSprite->getCurrentHealth();
+            data["ID"] = node->getName();
+            data["x"] = node->getPositionX();
+            data["y"] = node->getPositionY();
+            // Extra properties
+            if (SurvivorSprite* player = dynamic_cast<SurvivorSprite*>(node))
+            {
+                data["ClassName"] = "SurvivorSprite";
+                data["FileName"] = player->getTexture()->getPath();
+                data["Health"] = player->getCurrentHealth();
+            }
+            else if (UnitSprite* unit = dynamic_cast<UnitSprite*>(node))
+            {
+                data["ClassName"] = "UnitSprite";
+                data["FileName"] = unit->getTexture()->getPath();
+                data["Health"] = unit->getCurrentHealth();
+            }
+            else if (ItemSprite* item = dynamic_cast<ItemSprite*>(node))
+            {
+                // TODO: .....
+                continue;
+                //data["ClassName"] = "ItemSprite";
+                //data["FileName"] = item->getTexture()->getPath();
+            }
+            dataVector.push_back(Value(data));
         }
-        else if (ItemSprite* unitSprite = dynamic_cast<ItemSprite*>(node))
-        {
-            // TODO: .....
-        }
-        dataVector2.push_back(Value(data));
     }
-    emit("working title...", dataVector);
+    emit("playerList", dataVector); // TODO:
 }
 
 void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string &data)
 {
     auto layer = getParentLayer();
-
+    
+    log("data :%s", data.c_str());
     rapidjson::Document document;
     document.Parse(data.c_str());
     if (!document.GetParseError())
@@ -210,7 +219,23 @@ void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string 
             std::string ID = ele["ID"].GetString();
             float x = ele["x"].GetFloat();
             float y = ele["y"].GetFloat();
-            layer->addPlayerSpriteInWorld(ID, {x,y});
+            std::string classname = ele["ClassName"].GetString();
+            std::string filename = ele["FileName"].GetString();
+            float health = ele["Health"].GetFloat();
+            
+            if (!classname.compare("SurvivorSprite"))
+            {
+                layer->addPlayerSpriteInWorld(ID, {x,y});
+            }
+            else if (!classname.compare("UnitSprite"))
+            {
+                layer->addUnitSprite(ID, filename, {x, y}, health);
+            }
+            else if (!classname.compare("ItemSprite"))
+            {
+                // TODO: ....
+                // layer->addUnitSprite(ID, filename, {x, y}, health);
+            }
         }
     }
 }
@@ -218,7 +243,7 @@ void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string 
 void Multi::onPawnMove(cocos2d::network::SIOClient* client, const std::string& data)
 {
     auto layer = getParentLayer();
-
+    
     if (Multi::Role::Client == ROLE_STATUS)
     {
         rapidjson::Document document;
@@ -235,7 +260,7 @@ void Multi::onPawnMove(cocos2d::network::SIOClient* client, const std::string& d
 
 void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& data){
     auto layer = getParentLayer();
-
+    
     rapidjson::Document document;
     document.Parse(data.c_str());
     if (!document.GetParseError())
@@ -243,7 +268,7 @@ void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& dat
         auto id = document["ID"].GetString();
         auto action = document["action"].GetString();
         std::string type = document["type"].GetString();
-
+        
         // key pressed action
         if ( !type.compare("keyPressed") )
         {
