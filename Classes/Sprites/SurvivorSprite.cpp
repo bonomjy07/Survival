@@ -153,6 +153,7 @@ void SurvivorSprite::setupInputAction()
     {
         _inputController->onPressed = BIND_ACTION(SurvivorSprite::onPressed);
         _inputController->onReleased = BIND_ACTION(SurvivorSprite::onReleased);
+        _inputController->onPostAction = BIND_ACTION(SurvivorSprite::onPostAction);
     }
 }
 
@@ -198,6 +199,40 @@ void SurvivorSprite::onReleased(std::string action, InputController::InputEvent 
     else if (!action.compare("Left")) {
         addDeltaPosition(+32.f, 0.f);
         eraseDirection(Direction::Left);
+    }
+}
+
+void SurvivorSprite::onPostAction(std::string action, InputController::InputEvent inputevent){
+
+    if (Multi::ROLE_STATUS == Multi::Role::Host){
+        if (!action.compare("Up")) {
+            return;
+        }
+        else if (!action.compare("Down")) {
+            return;
+        }
+        else if (!action.compare("Right")) {
+            return;
+        }
+        else if (!action.compare("Left")) {
+            return;
+        }
+
+        if (auto gameLayer = dynamic_cast<GameLayer*>(getParent())){
+            auto multi = gameLayer->getMulti();
+            ValueMap data = ValueMap();
+            data["ID"] = getName();
+            if ( inputevent == InputController::InputEvent::KeyPressed )
+                data["type"] = "keyPressed";
+            else if ( inputevent == InputController::InputEvent::KeyReleased )
+                data["type"] = "keyReleased";
+            else
+                data["type"] = "keyNone";
+
+            data["action"] = action;
+
+            multi->emit("doAction", data);
+        }
     }
 }
 

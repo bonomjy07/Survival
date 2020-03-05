@@ -57,6 +57,7 @@ private:
 private:
     void onPressed(std::string action, InputController::InputEvent inputevent);
     void onReleased(std::string action, InputController::InputEvent inputevent);
+    void onPostAction(std::string action, InputController::InputEvent inputevent);
     
     void collect();
    
