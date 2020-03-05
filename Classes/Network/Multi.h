@@ -39,7 +39,7 @@ public:
 
     /* Receive action from guest */
     void onAction(cocos2d::network::SIOClient* client, const std::string& data);
-
+    void doAction(cocos2d::network::SIOClient* client, const std::string& data);
     /* Broadcasts pawn's movement */
     void onPawnMove(cocos2d::network::SIOClient* client, const std::string& data);
     

@@ -44,6 +44,7 @@ bool Multi::init(){
     _client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
     _client->on("pawnMove", CC_CALLBACK_2(Multi::onPawnMove, this));
     _client->on("action", CC_CALLBACK_2(Multi::onAction, this));
+    _client->on("doAction", CC_CALLBACK_2(Multi::doAction, this));
 
     return true;
 }
@@ -58,6 +59,7 @@ bool Multi::init(std::string uri){
     _client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
     _client->on("pawnMove", CC_CALLBACK_2(Multi::onPawnMove, this));
     _client->on("action", CC_CALLBACK_2(Multi::onAction, this));
+    _client->on("doAction", CC_CALLBACK_2(Multi::doAction, this));
 
     return true;
 }
@@ -260,6 +262,34 @@ void Multi::onAction(cocos2d::network::SIOClient* client, const std::string& dat
         else if ( !type.compare("keyReleased") )
             layer->onMoveReleased(id, action);
          */
+    }
+}
+
+void Multi::doAction(cocos2d::network::SIOClient* client, const std::string& data){
+    auto layer = getParentLayer();
+
+    if (Multi::Role::Client == ROLE_STATUS)
+    {
+        rapidjson::Document document;
+        document.Parse(data.c_str());
+        if (!document.GetParseError())
+        {
+            auto id = document["ID"].GetString();
+            auto action = document["action"].GetString();
+            std::string type = document["type"].GetString();
+            
+            auto playerSprite = layer->getPlayerSprite(id);
+            
+            auto ctrl = playerSprite->getInputController();
+            
+             if ( !type.compare("keyPressed") ){
+                ctrl->takeAction(action, InputController::InputEvent::KeyPressed);
+            }
+            // key released action
+            else if ( !type.compare("keyReleased") ){
+                ctrl->takeAction(action, InputController::InputEvent::KeyReleased);
+            }
+        }
     }
 }
 
