@@ -1,14 +1,16 @@
 
 .cocos-project.json
 
-bin/
-
+# mac
 .DS_store
 
+# vi backup file
 **/*.swp
 
 CMakeLists.txt
 
+# build directory
+bin/
 cocos2d/
 proj.android/
 proj.ios_mac/
@@ -17,8 +19,12 @@ proj.win32/
 
 XVim2
 
+# visual studio code
 .vscode/
 
-#node.js
+# node.js
 node_modules/
 package-lock.json
+
+# develop file
+Classes/Network/local.setting
