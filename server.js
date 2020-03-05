@@ -29,13 +29,17 @@ io.on('connection', function (socket) {
         data = JSON.parse(data);
         io.to(host).emit('action', data);
     });
-
+    socket.on('doAction', function (data) {
+        data = JSON.parse(data);
+        socket.broadcast.emit('doAction', data);
+    });
+    
     // Host sends to all clients which pawn moves
     socket.on('pawnMove', function (data) {
         data = JSON.parse(data);
         socket.broadcast.emit('pawnMove', data);
     });
- 
+
     socket.on('disconnect', function () {
         console.log("disconnect");
         if ( socket.id === host ) {
