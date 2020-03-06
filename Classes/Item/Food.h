@@ -10,7 +10,7 @@ public:
     const char *thumb, const int weight);
     virtual ~Food();
 
-    virtual bool use()=0;
+    virtual bool use(UnitSprite *toUnit)=0;
     virtual bool isMaterial()=0;
 protected:
     // hunger recovery amount
@@ -27,7 +27,7 @@ public:
     virtual bool init();
     CREATE_FUNC(DeerMeat);
     
-    virtual bool use() override;
+    virtual bool use(UnitSprite *toUnit) override;
     virtual bool isMaterial() override;
 
 private:

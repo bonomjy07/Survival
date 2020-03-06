@@ -2,6 +2,7 @@
 #define ITEM_H__
 
 #include "cocos2d.h"
+#include "UnitSprite.h"
 
 class Item : public cocos2d::Ref
 {
@@ -18,7 +19,7 @@ public:
     const int getWeight(){ return _weight; }
 
     virtual bool isMaterial()=0;
-    virtual bool use()=0;
+    virtual bool use(UnitSprite *toUnit)=0;
 
 protected:
     // name of item

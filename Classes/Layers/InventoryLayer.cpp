@@ -59,15 +59,14 @@ void InventoryLayer::moveCenter()
     // this->setPosition(visibleSize.width/2 - gridSize.width/2, visibleSize.height/2);
 }
 
-void InventoryLayer::setInventory(cocos2d::Vector<class Item*> *inven)
+void InventoryLayer::setInventory(cocos2d::Vector<class ItemSprite*> *inven)
 {
     inventory = inven;
     int idx = 0;
     for (auto child : gridView->getChildren())
     {
         if ( inventory->size() > idx ){
-            auto itemSprite = ItemSprite::create();
-            itemSprite->setItem(inventory->at(idx));
+            auto itemSprite = inventory->at(idx);
             auto size = child->getContentSize();
             itemSprite->setContentSize(size);
             auto position = Vec2(size.width/2, size.height/2);

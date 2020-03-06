@@ -10,7 +10,7 @@ public:
      const char *thumb, const int weight);
      ~Tool();
 
-     virtual bool use()=0;
+     virtual bool use(UnitSprite *toUnit)=0;
      virtual bool isMaterial()=0;
 
     float getDamage(){ return _damage; } 
@@ -26,7 +26,7 @@ public:
     virtual bool init();
     CREATE_FUNC(Sword);
 
-    virtual bool use() override;
+    virtual bool use(UnitSprite *toUnit) override;
     virtual bool isMaterial() override;
 
 private:

@@ -27,20 +27,21 @@ public:
     
 public:
     const Stat& getStat() const;
-    cocos2d::Vector<class Item*> *getInventory(){ return &inventory; };
+    cocos2d::Vector<class ItemSprite*> *getInventory(){ return &inventory; };
     
     void startDrainStats();
     void stopDrainStats();
-    
-    void useItemOnHand();
-    void setItemOnHand(class ItemSprite*);
+
+    void setItemOnHand(class ItemSprite *itemSprite);
     void setPositionItemOnHand();
+    void doAction(const std::string action, const std::string itemSprite, const std::string toUnit);
+    void doAction(const std::string action, class ItemSprite *itemSprite, UnitSprite *toUnit);
     
 private:
     Stat _stat;
     float _drainDelay;
     class ItemSprite* _itemOnHand;
-    cocos2d::Vector<class Item*> inventory;
+    cocos2d::Vector<class ItemSprite*> inventory;
     
 private:
     void drainStats(float dt);
@@ -60,7 +61,8 @@ private:
 private:
     void onPressed(std::string action, InputController::InputEvent inputevent);
     void onReleased(std::string action, InputController::InputEvent inputevent);
-    void onPostAction(std::string action, InputController::InputEvent inputevent);
+    void emitDoAction(const std::string action, const std::string itemID);
+    void emitDoAction(const std::string action, const std::string itemID, const std::string toUnitID);
     
     void collect();
     /* Called when 'Up' action is pressed */
@@ -83,6 +85,10 @@ private:
     
     /* Called when 'Collecet' action is pressed */
     void collect(void* arg);
+    void collectAction(class ItemSprite *itemSprite);
+   
+    void useItemOnHand();
+    void useAction(class ItemSprite *itemSprite, UnitSprite *toUnit);
 
 private:
     bool onContactBegin(cocos2d::PhysicsContact& contact);
