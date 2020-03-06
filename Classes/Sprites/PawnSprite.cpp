@@ -77,29 +77,36 @@ Vec2 PawnSprite::getDeltaPositionOnDirection() const
 
 Vec2 PawnSprite::getFrontVec2() const
 {
-    if (Direction::Up == _currentDirection)
-    {
-        return {0.f, +1.f};
+    return getDirectionVec2(_currentDirection);
+}
+
+Vec2 PawnSprite::getDirectionVec2(const Direction &direction) const {
+    Vec2 vec = Vec2::ZERO;
+    switch(direction){
+        case Direction::Up:
+            vec =  {0.f, +1.f};
+            break;
+        case Direction::Down:
+            vec = {0.f, -1.f};
+            break;
+        case Direction::Right:
+            vec = {+1.f, 0.f};
+            break;
+        case Direction::Left:
+            vec = {-1.f, 0.f};
+            break;
     }
-    else if (Direction::Down == _currentDirection)
-    {
-        return {0.f, -1.f};
-    }
-    else if (Direction::Right == _currentDirection)
-    {
-        return {+1.f, 0.f};
-    }
-    else if (Direction::Left == _currentDirection)
-    {
-        return {-1.f, 0.f};
-    }
-    return Vec2::ZERO;
+    return vec;
 }
 
 void PawnSprite::addDeltaPosition(float x, float y)
 {
     _deltaPosition.x += x;
     _deltaPosition.y += y;
+}
+void PawnSprite::addDeltaPosition(Vec2 position)
+{
+    _deltaPosition += position;
 }
 
 void PawnSprite::insertDirection(Direction newDirection)

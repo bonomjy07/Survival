@@ -5,7 +5,7 @@ USING_NS_CC;
 
 std::map<EventKeyboard::KeyCode, std::string> KeyBinder::gameKeyTable;
 
-std::string KeyBinder::NONE = "None";
+const std::string KeyBinder::NONE = "None";
 
 KeyBinder::KeyBinder(){
     init();

@@ -64,30 +64,17 @@ private:
     void emitDoAction(const std::string action, const std::string itemID);
     void emitDoAction(const std::string action, const std::string itemID, const std::string toUnitID);
     
-    void collect();
     /* Called when 'Up' action is pressed */
-    void movePressedUp(void* arg);
-    /* Called when 'Down' action is pressed */
-    void movePressedDown(void* arg);
-    /* Called when 'Right' action is pressed */
-    void movePressedRight(void* arg);
-    /* Called when 'Left' action is pressed */
-    void movePressedLeft(void* arg);
+    void movePressed(Direction direction, void* arg);
     
     /* Called when 'Up' action is released */
-    void moveReleasedUp(void* arg);
-    /* Called when 'Down' action is released */
-    void moveReleasedDown(void* arg);
-    /* Called when 'Right' action is released */
-    void moveReleasedRight(void* arg);
-    /* Called when 'Left' action is released */
-    void moveReleasedLeft(void* arg);
+    void moveReleased(Direction direction, void* arg);
     
     /* Called when 'Collecet' action is pressed */
-    void collect(void* arg);
+    void collect(void *arg);
     void collectAction(class ItemSprite *itemSprite);
    
-    void useItemOnHand();
+    void useItemOnHand(void *arg);
     void useAction(class ItemSprite *itemSprite, UnitSprite *toUnit);
 
 private:

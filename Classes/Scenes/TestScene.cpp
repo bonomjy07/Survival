@@ -159,27 +159,6 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         data["ID"] = Multi::SOCKET_ID;
         data["type"] = "keyPressed";
         data["action"] = gameKeyBinder->findGameKeyAction(keyCode);
-
-        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-        {
-            data["action"] = "Up";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-        {
-            data["action"] = "Down";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-        {
-            data["action"] = "Right";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-        {
-            data["action"] = "Left";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
-        {
-            data["action"] = "Collect";
-        }
         
         if (data.at("action").asString() != KeyBinder::NONE)
             multi->emit("action", data);
@@ -221,23 +200,6 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         data["ID"] = Multi::SOCKET_ID;
         data["type"] = "keyReleased";
         data["action"] = gameKeyBinder->findGameKeyAction(keyCode);
-        
-        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
-        {
-            data["action"] = "Up";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
-        {
-            data["action"] = "Down";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
-        {
-            data["action"] = "Right";
-        }
-        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
-        {
-            data["action"] = "Left";
-        }
         
         if (data.at("action").asString() != KeyBinder::NONE)
             multi->emit("action", data);
