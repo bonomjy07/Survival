@@ -1,6 +1,6 @@
 
 #include "ItemSprite.h"
-
+#include "UnitSprite.h"
 USING_NS_CC;
 
 ItemSprite::ItemSprite(){}
@@ -47,7 +47,8 @@ void ItemSprite::wasCollected()
     log("ItemSprite: Item %s was collected", item->getName());
 }
 
-void ItemSprite::wasUsed()
+void ItemSprite::wasUsed(UnitSprite *toUnit)
 {
+    item->use(toUnit);
     log("ItemSprite: Item %s was used", item->getName());
 }

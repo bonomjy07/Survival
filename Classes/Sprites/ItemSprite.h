@@ -17,7 +17,7 @@ public:
 
     void setItemTexture();
     void wasCollected();
-    void wasUsed();
+    void wasUsed(class UnitSprite*);
 protected:
     Item *item;
 };
