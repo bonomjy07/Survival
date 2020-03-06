@@ -59,9 +59,6 @@ public:
     void emit(const std::string &eventname, const cocos2d::ValueMap &data);
     void emit(const std::string &eventname, const cocos2d::ValueVector &data);
 
-    // cocos2d::network::SIOClient* getClient(){ return _client; }
-    // void setClient(cocos2d::network::SIOClient* client){ _client = client; }
-
 private:
     class GameLayer* getParentLayer();
 

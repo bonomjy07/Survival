@@ -20,7 +20,7 @@ public:
     
 public:
     enum class Direction { Up = 0, Down, Right, Left };
-
+    
 public:
     PawnSprite(float maxHealth);
     virtual ~PawnSprite();
@@ -38,10 +38,10 @@ public:
      */
     cocos2d::Vec2 getDeltaPositionOnDirection() const;
     
-     /* Returns pawn's delta position as it is */
+    /* Returns pawn's delta position as it is */
     const cocos2d::Vec2& getDeltaPosition() const;
     
-     /* Retruns front vector for pawn */
+    /* Retruns front vector for pawn */
     cocos2d::Vec2 getFrontVec2() const;
     
     /* Adds delta position */
