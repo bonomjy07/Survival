@@ -6,6 +6,7 @@
 #include "SurvivorSprite.h"
 
 #include "InputController.h"
+#include "ItemSprite.h"
 
 #if BHY_DEBUG
 #define SEVER_URI "localhost:8080"
@@ -276,19 +277,14 @@ void Multi::doAction(cocos2d::network::SIOClient* client, const std::string& dat
         {
             auto id = document["ID"].GetString();
             auto action = document["action"].GetString();
-            std::string type = document["type"].GetString();
+            auto itemID = document["itemID"].GetString();
+            auto toUnitID = document["toUnitID"].GetString();
             
             auto playerSprite = layer->getPlayerSprite(id);
+            auto toUnit = layer->getPlayerSprite(toUnitID);
             
-            auto ctrl = playerSprite->getInputController();
-            
-             if ( !type.compare("keyPressed") ){
-                ctrl->takeAction(action, InputController::InputEvent::KeyPressed);
-            }
-            // key released action
-            else if ( !type.compare("keyReleased") ){
-                ctrl->takeAction(action, InputController::InputEvent::KeyReleased);
-            }
+            auto itemSprite = dynamic_cast<ItemSprite*>(layer->getChildByName(itemID));
+            playerSprite->doAction(action, itemSprite, toUnit);
         }
     }
 }
