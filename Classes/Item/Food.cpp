@@ -38,7 +38,7 @@ bool DeerMeat::init(){
     return true;
 }
 
-bool DeerMeat::use(){
+bool DeerMeat::use(UnitSprite *toUnit){
     return false;
 }
 

@@ -29,8 +29,12 @@ bool Sword::init(){
     return true;
 }
 
-bool Sword::use(){
-    return false;
+bool Sword::use(UnitSprite *toUnit){
+    // TODO : use effect of Sword
+    if (!toUnit)
+        return false;
+    toUnit->takeDamage(_damage);
+    return true;
 }
 
 bool Sword::isMaterial(){
