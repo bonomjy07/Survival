@@ -43,10 +43,11 @@ public:
     
     /* Retruns front vector for pawn */
     cocos2d::Vec2 getFrontVec2() const;
+    cocos2d::Vec2 getDirectionVec2(const Direction &direction) const;
     
     /* Adds delta position */
     void addDeltaPosition(float x, float y);
-    
+    void addDeltaPosition(cocos2d::Vec2);
     /* Inserts new direction at begin of list */
     void insertDirection(Direction newDirection);
     
