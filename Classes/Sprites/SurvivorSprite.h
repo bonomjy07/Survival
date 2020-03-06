@@ -34,6 +34,8 @@ public:
 
     void setItemOnHand(class ItemSprite *itemSprite);
     void setPositionItemOnHand();
+    void doAction(const std::string action, const std::string itemSprite, const std::string toUnit);
+    void doAction(const std::string action, class ItemSprite *itemSprite, UnitSprite *toUnit);
     
 private:
     Stat _stat;
@@ -56,10 +58,15 @@ private:
 private:
     void onPressed(std::string action, InputController::InputEvent inputevent);
     void onReleased(std::string action, InputController::InputEvent inputevent);
-    void onPostAction(std::string action, InputController::InputEvent inputevent);
+    void emitDoAction(const std::string action, const std::string itemID);
+    void emitDoAction(const std::string action, const std::string itemID, const std::string toUnitID);
     
     void collect();
+    void collectAction(class ItemSprite *itemSprite);
    
+    void useItemOnHand();
+    void useAction(class ItemSprite *itemSprite, UnitSprite *toUnit);
+
 private:
     bool onContactBegin(cocos2d::PhysicsContact& contact);
     bool onContactSeparate(cocos2d::PhysicsContact& contact);

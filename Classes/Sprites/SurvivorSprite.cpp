@@ -89,21 +89,28 @@ void SurvivorSprite::collect()
         {
             if (ItemSprite* itemSprite = dynamic_cast<ItemSprite*>(node))
             {
-                gameLayer->removeChild(itemSprite);
-                Item *item = itemSprite->getItem();
-                inventory.pushBack(item);
-                // TODO: Implement inventory member variable.....
-                
-                // TODO: inventory.pushback(itemSprite->getItem());
-                itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
-                // TODO: log("Item %s was collected", itemSprite->getName());
-                if ( dynamic_cast<Sword*>(item) ) {
-                    setItemOnHand(itemSprite);
-                }
+                collectAction(itemSprite);
+                emitDoAction("Collect", itemSprite->getName());
             }
         }
     }
     
+}
+
+void SurvivorSprite::collectAction(ItemSprite *itemSprite){
+    // TODO : collect effect of SurvivorSprite
+    if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
+    {
+        inventory.pushBack(itemSprite);
+        // TODO: Implement inventory member variable.....
+        
+        itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
+        
+        gameLayer->removeChild(itemSprite);
+        if ( dynamic_cast<Sword*>(itemSprite->getItem()) ) {
+            setItemOnHand(itemSprite);
+        }
+    }
 }
 
 void SurvivorSprite::useItemOnHand(){
@@ -122,15 +129,16 @@ void SurvivorSprite::useItemOnHand(){
                 continue;
             }
             else if ( UnitSprite* unit = static_cast<UnitSprite*>(node) ) {
-                Item *item = _itemOnHand->getItem();
-                item->use();
-                if ( Tool *tool  = dynamic_cast<Tool*>(item) ){
-                    float damage = tool->getDamage();
-                    unit->takeDamage(damage);
-                }
+                useAction(_itemOnHand, unit);
+                emitDoAction("Use", _itemOnHand->getName(), unit->getName());
             }
         }
     }
+}
+
+void SurvivorSprite::useAction(ItemSprite *itemSprite, UnitSprite *toUnit){
+    // TODO : use effect of SurvivorSprite
+    itemSprite->wasUsed(toUnit);
 }
 
 void SurvivorSprite::drainStats(float dt)
@@ -153,7 +161,6 @@ void SurvivorSprite::setupInputAction()
     {
         _inputController->onPressed = BIND_ACTION(SurvivorSprite::onPressed);
         _inputController->onReleased = BIND_ACTION(SurvivorSprite::onReleased);
-        _inputController->onPostAction = BIND_ACTION(SurvivorSprite::onPostAction);
     }
 }
 
@@ -202,36 +209,35 @@ void SurvivorSprite::onReleased(std::string action, InputController::InputEvent 
     }
 }
 
-void SurvivorSprite::onPostAction(std::string action, InputController::InputEvent inputevent){
-
+void SurvivorSprite::emitDoAction(const std::string action, const std::string itemID){
+    emitDoAction(action, itemID, "");
+}
+void SurvivorSprite::emitDoAction(const std::string action, const std::string itemID, const std::string toUnitID){
     if (Multi::ROLE_STATUS == Multi::Role::Host){
-        if (!action.compare("Up")) {
-            return;
-        }
-        else if (!action.compare("Down")) {
-            return;
-        }
-        else if (!action.compare("Right")) {
-            return;
-        }
-        else if (!action.compare("Left")) {
-            return;
-        }
 
         if (auto gameLayer = dynamic_cast<GameLayer*>(getParent())){
             auto multi = gameLayer->getMulti();
             ValueMap data = ValueMap();
             data["ID"] = getName();
-            if ( inputevent == InputController::InputEvent::KeyPressed )
-                data["type"] = "keyPressed";
-            else if ( inputevent == InputController::InputEvent::KeyReleased )
-                data["type"] = "keyReleased";
-            else
-                data["type"] = "keyNone";
-
+            data["itemID"] = itemID;
+            data["toUnitID"] = toUnitID;
             data["action"] = action;
 
             multi->emit("doAction", data);
+        }
+    }
+}
+void SurvivorSprite::doAction(const std::string action, const std::string itemID, std::string toUnitID){
+    // TODO : need MySprite Manager, find item and toUnit, doAction()
+    // doAction(action, itemSprite, toUnit);
+}
+void SurvivorSprite::doAction(const std::string action, ItemSprite *itemSprite, UnitSprite *toUnit){
+    if (Multi::ROLE_STATUS == Multi::Role::Client){
+        if (!action.compare("Collect")) {
+            collectAction(itemSprite);
+        }
+        else if (!action.compare("Use")) {
+            useAction(itemSprite, toUnit);
         }
     }
 }
