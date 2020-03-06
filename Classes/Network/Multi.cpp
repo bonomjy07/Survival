@@ -30,10 +30,7 @@ static Multi* create(std::string uri) {
 }
 
 bool Multi::init(){
-    //if ( !(_client = SocketIO::connect("localhost:8080", *this)) ){
-    //if ( !(_client = SocketIO::connect("192.168.219.103:8080", *this)) ){
-    //if ( !(_client = SocketIO::connect("172.30.1.56:8080", *this)) ){
-    if ( !(_client = SocketIO::connect("192.168.219.102:8080", *this)) ){
+    if ( !(_client = SocketIO::connect("localhost:8080", *this)) ){
         return false;
     }
 
@@ -139,18 +136,20 @@ void Multi::onRequestPlayerID(cocos2d::network::SIOClient* client, const std::st
         {
             ROLE_STATUS = Role::Host;
             
-            // Spawn units and my character
-            getParentLayer()->addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
-            getParentLayer()->addPlayerSpriteInWorld(SOCKET_ID);
+            // This event lets the world spawn units
+            EventCustom event("SpawnUnit");
+            const void* id = SOCKET_ID.c_str();
+            event.setUserData(const_cast<void*>(id));
+            _eventDispatcher->dispatchEvent(&event);
         }
         else
         {
             ROLE_STATUS = Role::Client;
             
-            // Ask server that player list
+            // Ask host that player list
             ValueMap data;
             data["ID"] = Multi::SOCKET_ID;
-            emit("newPlayer", data); // server'll will respond with player list
+            emit("newPlayer", data); // host'll respond with player list
         }
     }
 }

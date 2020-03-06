@@ -116,12 +116,17 @@ bool TestScene::init()
     listener->onKeyReleased = CC_CALLBACK_2(TestScene::onKeyReleased, this);
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
-    // Allow update(float dt) to be called so that pawns move
+    // Activate tick function
     this->scheduleUpdate();
     
-    
-    //auto eventListner = EventListenerCustom::create("SpawnUnit", CC_CALLBACK_1(GameLayer::fun, this));
-    //_eventDispatcher->addEventListenerWithSceneGraphPriority(event)
+    // This event happens when multi-game and you're the host
+    auto eventListner = EventListenerCustom::create("SpawnUnit", [=](EventCustom* event)
+    {
+        std::string id((char*)event->getUserData());
+        addPlayerSpriteInWorld(id);
+        addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
+    });
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(eventListner, this);
     
     return true;
 }
