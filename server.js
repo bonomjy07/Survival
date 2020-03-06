@@ -14,6 +14,19 @@ io.on('connection', function (socket) {
     if (host == '') 
         host = socket.id;
  
+    socket.emit('requestPlayerID', { HostID: host, MyID: socket.id });
+	
+	socket.on('newPlayer', function(data) {
+		data = JSON.parse(data);
+		io.to(host).emit('newPlayer', data);
+	});
+
+	socket.on('playerList', function(data) {
+		data = JSON.parse(data);
+		socket.broadcast.emit('playerList', data);
+	});
+
+	/*
     // Sends IDs to new clinet
     socket.emit('requestPlayerID', { HostID: host, MyID: socket.id });
     // Informs host that new client is connected
@@ -23,6 +36,7 @@ io.on('connection', function (socket) {
         data = JSON.parse(data);
         socket.broadcast.emit('playerList', data);
     });
+	*/
  
     // Send guest action data to host
     socket.on('action', function(data) {

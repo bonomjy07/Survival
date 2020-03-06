@@ -52,6 +52,7 @@ SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat(), _ite
 SurvivorSprite::~SurvivorSprite()
 {
     inventory.clear();
+    
     delete _inputController;
 }
 
@@ -103,7 +104,6 @@ void SurvivorSprite::collect()
             }
         }
     }
-    
 }
 
 void SurvivorSprite::useItemOnHand(){

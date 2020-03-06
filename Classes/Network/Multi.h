@@ -28,20 +28,29 @@ public:
     void onClose(cocos2d::network::SIOClient* client) override;
     void onError(cocos2d::network::SIOClient* client, const std::string& data) override;
 
-    /* Gets ID and Checks what role is */
+    /* Clinet side function : Gets ID and Checks what role is,
+     client can be the host if client is first man who entered the room */
     void onRequestPlayerID(cocos2d::network::SIOClient* client, const std::string& data);
     
-    /* Adds new player to player list and braodcasts player list */
+    /* Host-side function : Adds new player to player list and braodcasts player list */
     void onNewPlayer(cocos2d::network::SIOClient* client, const std::string& data);
     
-    /* Receives player list and create pawn about player list */
+    /* Client-side function : Receives player list and create pawn about player list */
     void onPlayerList(cocos2d::network::SIOClient* client, const std::string& data);
 
-    /* Receive action from guest */
+    /* Host-side function : Receives action from guest */
     void onAction(cocos2d::network::SIOClient* client, const std::string& data);
+    
     void doAction(cocos2d::network::SIOClient* client, const std::string& data);
-    /* Broadcasts pawn's movement */
+
+    /* Client-side function : Broadcasts pawn's movement */
     void onPawnMove(cocos2d::network::SIOClient* client, const std::string& data);
+    
+    /* Client-side function : updates new health for unit sprite */
+    void onUnitNewHealth(cocos2d::network::SIOClient* client, const std::string& data);
+    
+    /* Client-side function : Removes the sprite on game layer */
+    void onSpriteDeletion(cocos2d::network::SIOClient* client, const std::string& data);
     
     /** 
         Emit to server
@@ -51,9 +60,6 @@ public:
     void emit(const std::string &eventname, const cocos2d::Value &data);
     void emit(const std::string &eventname, const cocos2d::ValueMap &data);
     void emit(const std::string &eventname, const cocos2d::ValueVector &data);
-
-    // cocos2d::network::SIOClient* getClient(){ return _client; }
-    // void setClient(cocos2d::network::SIOClient* client){ _client = client; }
 
 private:
     class GameLayer* getParentLayer();

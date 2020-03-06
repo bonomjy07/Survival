@@ -9,6 +9,9 @@
 class KeyBinder : public cocos2d::Ref
 {
 public:
+    const static std::string NONE;
+    
+public:
     KeyBinder();
     virtual ~KeyBinder();
     virtual bool init();
@@ -23,6 +26,7 @@ public:
 
     static void initGameKeyActions();
     static std::string getKeyName(cocos2d::EventKeyboard::KeyCode key);
+    
 private:
     std::map<cocos2d::EventKeyboard::KeyCode, std::string>* getTable(int table);
     void setKeyAction(int table,cocos2d::EventKeyboard::KeyCode key, std::string action);

@@ -86,6 +86,46 @@ void GameLayer::checkNodesAtPosition(const Vec2& position, Vector<Node*>* nodes)
     }
 }
 
+
+bool GameLayer::onQueryPointNode(PhysicsWorld &world, PhysicsShape &shape, void *node)
+{
+    PhysicsBody* pBody;
+    if (node && (pBody = shape.getBody()))
+    {
+        *static_cast<Node**>(node) = pBody->getNode();
+    }
+    return true;
+}
+
+bool GameLayer::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void* nodes)
+{
+    PhysicsBody* pBody;
+    if (nodes && (pBody = shape.getBody()))
+    {
+        Vector<Node*>* tmpNodes = static_cast<Vector<Node*>*>(nodes);
+        tmpNodes->pushBack(pBody->getNode());
+    }
+    return true;
+}
+
+
+class SurvivorSprite* GameLayer::getPlayerSprite(const std::string &ID) const
+{
+    if (_playersManager.find(ID) == _playersManager.end())
+        return nullptr;
+    return _playersManager.at(ID);
+}
+
+class SurvivorSprite* GameLayer::getPlayerSprite() const
+{
+    return _player;
+}
+
+std::set<Vec2>& GameLayer::getOccupied()
+{
+    return _occupied;
+}
+
 void GameLayer::setViewPointCenter(const cocos2d::Vec2 position)
 {
     Size WinSize = Director::getInstance()->getWinSize();
@@ -112,26 +152,77 @@ Point GameLayer::getTileCoorForPosition(const cocos2d::Vec2& position)
     return Point(x, y);
 }
 
-bool GameLayer::onQueryPointNode(PhysicsWorld &world, PhysicsShape &shape, void *node)
+std::string GameLayer::getRandomID()
 {
-    PhysicsBody* pBody;
-    if (node && (pBody = shape.getBody()))
-    {
-        *static_cast<Node**>(node) = pBody->getNode();
-    }
-    return true;
+    static std::set<std::string> IDManager;
+    static const char alphanum[] =
+    "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+    std::string newID;
+    
+    do {
+        newID.clear();
+        int len = RandomHelper::random_int(1, 30);
+        for (int i = 0; i < len; ++i)
+            newID += alphanum[rand() % (sizeof(alphanum) - 1)];
+    } while (IDManager.find(newID) != IDManager.end());
+    IDManager.insert(newID);
+    
+    return newID;
 }
 
-bool GameLayer::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void* nodes)
+void GameLayer::getRandomPointsInArea(const cocos2d::ValueMap& spawnArea, std::set<cocos2d::Vec2>& points, int num)
 {
-    PhysicsBody* pBody;
-    if (nodes && (pBody = shape.getBody()))
+    while (points.size() < num)
     {
-        Vector<Node*>* tmpNodes = static_cast<Vector<Node*>*>(nodes);
-        tmpNodes->pushBack(pBody->getNode());
+        float x = spawnArea.at("x").asFloat();
+        float y = spawnArea.at("y").asFloat();
+        float width = spawnArea.at("width").asFloat();
+        float height = spawnArea.at("height").asFloat();
+        
+        float randX = floor(RandomHelper::random_real(x, x+width));
+        float randY = floor(RandomHelper::random_real(y, y+height));
+        // Trim random position as tile position
+        randX = randX - ((int)randX % 32) + 32/2;
+        randY = randY - ((int)randY % 32) + 32/2;
+        
+        points.insert({randX, randY});
     }
-    return true;
 }
+
+void GameLayer::getRandomPointsInArea(const cocos2d::Vec2& origin, const cocos2d::Vec2 boxExtend, std::set<cocos2d::Vec2>& points, int num)
+{
+    while (points.size() < num)
+    {
+        float randX = floor(RandomHelper::random_real(origin.x, boxExtend.x));
+        float randY = floor(RandomHelper::random_real(origin.y, boxExtend.y));
+        // Trim random position as tile position
+        randX = randX - ((int)randX % 32) + 32/2;
+        randY = randY - ((int)randY % 32) + 32/2;
+        
+        points.insert({randX, randY});
+    }
+}
+
+MySprite* GameLayer::createSpriteToSpawn(const std::string& classname, const std::string& filename) 
+{
+    MySprite* sprite = nullptr;
+    if (!classname.compare(""))
+    {
+        return sprite;
+    }
+    else if (!classname.compare("PawnSprite"))
+    {
+        sprite = PawnSprite::create(filename, 100.f);
+    }
+    else if (!classname.compare("UnitSprite"))
+    {
+        sprite = UnitSprite::create(filename);
+    }
+    return sprite;
+}
+
 
 void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
 {
@@ -146,7 +237,6 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
     }
 
     addPlayerSpriteInWorld(ID, position);
-    
 }
 
 void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& position)
@@ -164,20 +254,31 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& positi
     }
 }
 
-class SurvivorSprite* GameLayer::getPlayerSprite(const std::string &ID) const
+void GameLayer::addUnitSpriteInWorld(const std::string& ID, const std::string& filename, const cocos2d::Vec2& position, const float health)
 {
-    if (_playersManager.find(ID) == _playersManager.end())
-        return nullptr;
-    return _playersManager.at(ID);
-
+    if (auto unit = UnitSprite::create(filename, health))
+    {
+        unit->setName(ID);
+        unit->setPosition(position);
+        unit->setCurrentHealth(health);
+        addChild(unit);
+    }
 }
 
-class SurvivorSprite* GameLayer::getPlayerSprite() const
+void GameLayer::addSpritesInBox(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn)
 {
-    return _player;
-}
-
-std::set<Vec2>& GameLayer::getOccupied()
-{
-    return _occupied;
+    // Get random points to spawn
+    std::set<Vec2> points;
+    getRandomPointsInArea(origin, boxExtend, points, numOfSpawn);
+    
+    // Create sprite along with random point
+    for (const auto& point : points)
+    {
+        if (auto sprite = createSpriteToSpawn(classname, filename)) // TODO: what about copy-ctor, not calling func
+        {
+            sprite->setName(getRandomID());
+            sprite->setPosition(point);
+            addChild(sprite);
+        }
+    }
 }

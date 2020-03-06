@@ -62,20 +62,12 @@ bool TestScene::init()
         return false;
     }
     
-    ValueMap spawnArea = objectGroup->getObject("SpawnArea");
-    if ((_treeManager = SpawnManager::create(spawnArea, "UnitSprite", "res/tileSet/qubodup-bush_berries_0.png")))
-    {
-        this->addChild(_treeManager);
-        _treeManager->startSpawn();
-    }
-
-
+    //_spawnArea = objectGroup->getObject("SpawnArea");
     ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
 
-
-     // Create item sprite
+    // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
     {
@@ -83,26 +75,27 @@ bool TestScene::init()
         deerMeatSprite2->setItem(item);
         deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
         deerMeatSprite2->initPhysicsBody();
-        deerMeatSprite2->setName("I'm groot");
+        deerMeatSprite2->setName("Im_groot");
         this->addChild(deerMeatSprite2);
     }
-
+    
     auto sword = ItemSprite::create();
     if ( sword ){
         auto item = Sword::create();
         sword->setItem(item);
         sword->setPosition(x - 48.f, y + 16.f);
         sword->initPhysicsBody();
+        sword->setName("Im_sword");
         this->addChild(sword);
     }
     // Create player character
     /*
-     _player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-     if (_player)
-     {
-     _player->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-     this->addChild(_player);
-     }
+    auto p = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+    if (p)
+    {
+        p->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+        this->addChild(p);
+    }
      */
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -123,8 +116,17 @@ bool TestScene::init()
     listener->onKeyReleased = CC_CALLBACK_2(TestScene::onKeyReleased, this);
     this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
-    // Allow update(float dt) to be called so that pawns move
+    // Activate tick function
     this->scheduleUpdate();
+    
+    // This event happens when multi-game and you're the host
+    auto eventListner = EventListenerCustom::create("SpawnUnit", [=](EventCustom* event)
+    {
+        std::string id((char*)event->getUserData());
+        addPlayerSpriteInWorld(id);
+        addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
+    });
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(eventListner, this);
     
     return true;
 }
@@ -158,7 +160,29 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         data["type"] = "keyPressed";
         data["action"] = gameKeyBinder->findGameKeyAction(keyCode);
 
-        multi->emit("action", data);
+        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+        {
+            data["action"] = "Up";
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
+        {
+            data["action"] = "Down";
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+        {
+            data["action"] = "Right";
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+        {
+            data["action"] = "Left";
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Collect") )
+        {
+            data["action"] = "Collect";
+        }
+        
+        if (data.at("action").asString() != KeyBinder::NONE)
+            multi->emit("action", data);
     }
     
     // ESC action
@@ -198,7 +222,25 @@ void TestScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         data["type"] = "keyReleased";
         data["action"] = gameKeyBinder->findGameKeyAction(keyCode);
         
-        multi->emit("action", data);
+        if ( gameKeyBinder->checkGameKeyAction(keyCode, "Up") )
+        {
+            data["action"] = "Up";
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Down") )
+        {
+            data["action"] = "Down";
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Right") )
+        {
+            data["action"] = "Right";
+        }
+        else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Left") )
+        {
+            data["action"] = "Left";
+        }
+        
+        if (data.at("action").asString() != KeyBinder::NONE)
+            multi->emit("action", data);
     }
 }
 
