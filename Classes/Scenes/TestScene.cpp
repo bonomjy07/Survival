@@ -93,6 +93,7 @@ bool TestScene::init()
         sword->setItem(item);
         sword->setPosition(x - 48.f, y + 16.f);
         sword->initPhysicsBody();
+        sword->setName("TEST_SWORD");
         this->addChild(sword);
     }
     // Create player character
