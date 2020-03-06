@@ -245,7 +245,10 @@ void SurvivorSprite::setPositionItemOnHand(){
 }
 
 void SurvivorSprite::setItemOnHand(ItemSprite* itemSprite){
-    _itemOnHand = itemSprite;
+    if (_itemOnHand)
+        delete _itemOnHand;
+    _itemOnHand = ItemSprite::create();
+    _itemOnHand->setItem(itemSprite   ->getItem());
     _parent->addChild(_itemOnHand);
     setPositionItemOnHand();
 }

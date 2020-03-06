@@ -27,20 +27,19 @@ public:
     
 public:
     const Stat& getStat() const;
-    cocos2d::Vector<class Item*> *getInventory(){ return &inventory; };
+    cocos2d::Vector<class ItemSprite*> *getInventory(){ return &inventory; };
     
     void startDrainStats();
     void stopDrainStats();
-    
-    void useItemOnHand();
-    void setItemOnHand(class ItemSprite*);
+
+    void setItemOnHand(class ItemSprite *itemSprite);
     void setPositionItemOnHand();
     
 private:
     Stat _stat;
     float _drainDelay;
     class ItemSprite* _itemOnHand;
-    cocos2d::Vector<class Item*> inventory;
+    cocos2d::Vector<class ItemSprite*> inventory;
     
 private:
     void drainStats(float dt);
