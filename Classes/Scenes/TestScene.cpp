@@ -67,6 +67,7 @@ bool TestScene::init()
     float x = spawnPoint["x"].asFloat();
     float y = spawnPoint["y"].asFloat();
 
+    
     // Create item sprite
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
@@ -88,14 +89,24 @@ bool TestScene::init()
         sword->setName("Im_sword");
         this->addChild(sword);
     }
+    
+    auto sword2 = ItemSprite::create();
+    if ( sword2 ){
+        auto item = Sword::create();
+        sword2->setItem(item);
+        sword2->setPosition(x - 48.f, y + 16.f+32.f);
+        sword2->initPhysicsBody();
+        sword2->setName("Im_sword2");
+        this->addChild(sword2);
+    }
     // Create player character
     /*
-    auto p = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-    if (p)
-    {
-        p->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-        this->addChild(p);
-    }
+     auto p = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
+     if (p)
+     {
+     p->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
+     this->addChild(p);
+     }
      */
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -121,10 +132,11 @@ bool TestScene::init()
     
     // This event happens when multi-game and you're the host
     auto eventListner = EventListenerCustom::create("SpawnUnit", [=](EventCustom* event)
-    {
+                                                    {
         std::string id((char*)event->getUserData());
         addPlayerSpriteInWorld(id);
         addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
+        
     });
     _eventDispatcher->addEventListenerWithSceneGraphPriority(eventListner, this);
     
@@ -177,7 +189,7 @@ void TestScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
     }
     else if ( gameKeyBinder->checkGameKeyAction(keyCode, "Inventory") )
     {
-       toggleInventoryUI();
+        toggleInventoryUI();
     }
 }
 
