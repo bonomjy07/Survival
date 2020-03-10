@@ -207,13 +207,17 @@ void Multi::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& 
         if (SurvivorSprite* player = dynamic_cast<SurvivorSprite*>(sprite))
         {
             data["ClassName"] = "SurvivorSprite";
-            data["FileName"] = player->getTexture()->getPath();
+            std::string filename = player->getTexture()->getPath();
+            std::string::size_type n = filename.find("/res/");
+            data["FileName"] = filename.substr(n+1);
             data["Health"] = player->getCurrentHealth();
         }
         else if (UnitSprite* unit = dynamic_cast<UnitSprite*>(sprite))
         {
             data["ClassName"] = "UnitSprite";
-            data["FileName"] = unit->getTexture()->getPath();
+            std::string filename = unit->getTexture()->getPath();
+            std::string::size_type n = filename.find("/res/");
+            data["FileName"] = filename.substr(n+1);
             data["Health"] = unit->getCurrentHealth();
         }
         else if (ItemSprite* item = dynamic_cast<ItemSprite*>(sprite))
