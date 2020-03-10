@@ -6,10 +6,13 @@
 //
 
 #include "MySprite.h"
+#include "MSManager.h"
 
 USING_NS_CC;
 
-MySprite::~MySprite() {}
+MySprite::~MySprite() {
+    MSManager::remove(this->getName());
+}
 
 bool MySprite::initPhysicsBody()
 {
@@ -23,4 +26,9 @@ bool MySprite::initPhysicsBody()
     pBody->setDynamic(false);
     this->addComponent(pBody);
     return true;
+}
+
+void MySprite::setName(const std::string& name){
+    Node::setName(name);
+    MSManager::addMySprite(this);
 }
