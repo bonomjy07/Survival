@@ -47,6 +47,9 @@ bool Multi::init(){
     _client->on("pawnMove", CC_CALLBACK_2(Multi::onPawnMove, this));
     _client->on("action", CC_CALLBACK_2(Multi::onAction, this));
     _client->on("doAction", CC_CALLBACK_2(Multi::doAction, this));
+    
+    _client->on("NewUnitHealth", CC_CALLBACK_2(Multi::onUnitNewHealth, this));
+    _client->on("SpriteDeletion", CC_CALLBACK_2(Multi::onSpriteDeletion, this));
 
     return true;
 }
@@ -63,6 +66,9 @@ bool Multi::init(std::string uri){
     _client->on("action", CC_CALLBACK_2(Multi::onAction, this));
     _client->on("doAction", CC_CALLBACK_2(Multi::doAction, this));
 
+    _client->on("NewUnitHealth", CC_CALLBACK_2(Multi::onUnitNewHealth, this));
+    _client->on("SpriteDeletion", CC_CALLBACK_2(Multi::onSpriteDeletion, this));
+    
     return true;
 }
 
@@ -313,6 +319,35 @@ void Multi::doAction(cocos2d::network::SIOClient* client, const std::string& dat
             
             auto itemSprite = dynamic_cast<ItemSprite*>(layer->getChildByName(itemID));
             playerSprite->doAction(action, itemSprite, toUnit);
+        }
+    }
+}
+
+void Multi::onUnitNewHealth(cocos2d::network::SIOClient* client, const std::string& data)
+{
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        auto id = document["ID"].GetString();
+        auto newHealth = document["newHealth"].GetFloat();
+        if (auto unit = dynamic_cast<UnitSprite*>(getParentLayer()->getChildByName(id)))
+        {
+            unit->setCurrentHealth(newHealth);
+        }
+    }
+}
+   
+void Multi::onSpriteDeletion(cocos2d::network::SIOClient* client, const std::string& data)
+{
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        auto id = document["ID"].GetString();
+        if (auto unit = dynamic_cast<UnitSprite*>(getParentLayer()->getChildByName(id)))
+        {
+            unit->onDeath();
         }
     }
 }

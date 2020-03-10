@@ -26,18 +26,6 @@ io.on('connection', function (socket) {
 		socket.broadcast.emit('playerList', data);
 	});
 
-	/*
-    // Sends IDs to new clinet
-    socket.emit('requestPlayerID', { HostID: host, MyID: socket.id });
-    // Informs host that new client is connected
-    io.to(host).emit('newPlayer', { ID: socket.id });
-    // Host sends player list to new client
-    socket.on('playerList', function (data) {
-        data = JSON.parse(data);
-        socket.broadcast.emit('playerList', data);
-    });
-	*/
- 
     // Send guest action data to host
     socket.on('action', function(data) {
         data = JSON.parse(data);
@@ -48,10 +36,21 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('doAction', data);
     });
     
+	// TODO need to implement unified way of broadcasting
     // Host sends to all clients which pawn moves
     socket.on('pawnMove', function (data) {
         data = JSON.parse(data);
         socket.broadcast.emit('pawnMove', data);
+    });
+
+    socket.on('NewUnitHealth', function (data) {
+        data = JSON.parse(data);
+        socket.broadcast.emit('NewUnitHealth', data);
+    });
+
+    socket.on('SpriteDeletion', function (data) {
+        data = JSON.parse(data);
+        socket.broadcast.emit('SpriteDeletion', data);
     });
 
     socket.on('disconnect', function () {

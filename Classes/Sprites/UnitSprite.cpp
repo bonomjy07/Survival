@@ -49,7 +49,7 @@ void UnitSprite::setCurrentHealth(float newCurrentHealth)
         ValueMap data;
         data["ID"] = getName();
         data["NewHealth"] = newCurrentHealth;
-        multi->emit("UnitNewHealth", data); // working title..
+        multi->emit("UnitNewHealth", data); 
     }
 }
 
@@ -65,11 +65,6 @@ void UnitSprite::takeDamage(float deltaDamage)
 
 void UnitSprite::onDeath()
 {
-    // Delete this sprite
-    CCASSERT(this, "This node is already deleted ?");
-    getParent()->removeChild(this);
-    log("unit sprite is delete(%s)", getName().c_str());
-    
     // Broadcasts to all client that this sprite is dead
     if (Multi::ROLE_STATUS == Multi::Role::Host)
     {
@@ -83,9 +78,12 @@ void UnitSprite::onDeath()
         multi->emit("SpriteDeletion", data);
     }
     
-    return;
+    // Delete this sprite
+    CCASSERT(this, "This node is already deleted ?");
+    getParent()->removeChild(this);
+    log("unit sprite is delete(%s)", getName().c_str());
     // /////////////////////
-    
+    /*
     if (auto gameLayer = dynamic_cast<GameLayer*>(getParent()))
     {
         if (Multi::ROLE_STATUS == Multi::Role::None){
@@ -102,5 +100,6 @@ void UnitSprite::onDeath()
             // TODO: host
         }
     }
+     */
 }
 
