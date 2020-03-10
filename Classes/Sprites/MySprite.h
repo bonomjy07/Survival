@@ -16,7 +16,8 @@ class MySprite : public cocos2d::Sprite
 {
 public:
     virtual ~MySprite();
-    
+    virtual void setName(const std::string& name);
+
 public:
     /**
      @brief Creates physics body and adds it to sprite

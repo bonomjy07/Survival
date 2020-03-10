@@ -8,6 +8,7 @@
 
 #include "InputController.h"
 #include "ItemSprite.h"
+#include "MSManager.h"
 
 #if BHY_DEBUG
 #define SEVER_URI "localhost:8080"
@@ -90,7 +91,7 @@ void Multi::onError(SIOClient* client, const std::string& data){
 
 void Multi::emit(const std::string &eventname, const Value &data){
     std::string args = parseData(data);
-    //log(args.c_str());
+    log("emit : %s", args.c_str());
 
     _client->emit(eventname, args);
 }
@@ -110,31 +111,41 @@ std::string Multi::parseData(const Value &data){
         ret += "[";
         auto dataVector = data.asValueVector();
         for ( auto iter=dataVector.begin(); iter<dataVector.end(); iter++ ) {
-            if ( iter != dataVector.begin() )
-                ret += ",";
             ret += parseData(*iter);
+            if ( iter+1 != dataVector.end() )
+                ret += ",";
         }
         ret += "]";
     }
     else if ( type == Value::Type::MAP ) {
         ret += "{";
         auto dataMap = data.asValueMap();
+        bool isFirst = true;
         for ( auto iter=dataMap.begin(); iter!=dataMap.end(); iter++ ) {
             auto pair = (*iter);
             std::string key = pair.first;
             
-            if ( iter != dataMap.begin() )
-                ret += ",";
-            ret += "\"" + key + "\"";
-            ret += ":";
-            ret += parseData(pair.second);
+            if (parseData(pair.second).compare("")){
+                if (!isFirst){
+                    if (iter!=dataMap.begin())
+                        ret += ",";
+                }
+                ret += "\"" + key + "\"";
+                ret += ":";
+                ret += parseData(pair.second);
+                isFirst = false;
+            }
         }
         ret += "}";
     }
-    else if ( type == Value::Type::STRING )
-        ret += "\"" + data.asString() + "\"";
+    else if ( type == Value::Type::STRING ){
+        if (data.asString().compare(""))
+            ret += "\"" + data.asString() + "\"";
+    }
     else if ( type == Value::Type::FLOAT )
         ret += std::to_string(data.asFloat());
+    else if (type == Value::Type::BOOLEAN)
+        ret += data.asBool()?"true":"false";
     // TODO : if data is other type, write code like above (float type)
     return ret;
 }
@@ -183,38 +194,39 @@ void Multi::onNewPlayer(cocos2d::network::SIOClient* client, const std::string& 
     }
     
     auto dataVector = ValueVector();
-    for (const auto node : layer->getChildren())
+    for (const auto pair : MSManager::_manager)
     {
+        const auto type = pair.second.first;
+        const auto sprite = pair.second.second;
         auto data = ValueMap();
         
-        // Base properties
-        if (dynamic_cast<MySprite*>(node))
+        data["ID"] = sprite->getName();
+        data["x"] = sprite->getPositionX();
+        data["y"] = sprite->getPositionY();
+        // Extra properties
+        if (SurvivorSprite* player = dynamic_cast<SurvivorSprite*>(sprite))
         {
-            data["ID"] = node->getName();
-            data["x"] = node->getPositionX();
-            data["y"] = node->getPositionY();
-            // Extra properties
-            if (SurvivorSprite* player = dynamic_cast<SurvivorSprite*>(node))
-            {
-                data["ClassName"] = "SurvivorSprite";
-                data["FileName"] = player->getTexture()->getPath();
-                data["Health"] = player->getCurrentHealth();
-            }
-            else if (UnitSprite* unit = dynamic_cast<UnitSprite*>(node))
-            {
-                data["ClassName"] = "UnitSprite";
-                data["FileName"] = unit->getTexture()->getPath();
-                data["Health"] = unit->getCurrentHealth();
-            }
-            else if (ItemSprite* item = dynamic_cast<ItemSprite*>(node))
-            {
-                // TODO: .....
-                continue;
-                //data["ClassName"] = "ItemSprite";
-                //data["FileName"] = item->getTexture()->getPath();
-            }
-            dataVector.push_back(Value(data));
+            data["ClassName"] = "SurvivorSprite";
+            data["FileName"] = player->getTexture()->getPath();
+            data["Health"] = player->getCurrentHealth();
         }
+        else if (UnitSprite* unit = dynamic_cast<UnitSprite*>(sprite))
+        {
+            data["ClassName"] = "UnitSprite";
+            data["FileName"] = unit->getTexture()->getPath();
+            data["Health"] = unit->getCurrentHealth();
+        }
+        else if (ItemSprite* item = dynamic_cast<ItemSprite*>(sprite))
+        {
+            data["ClassName"] = "ItemSprite";
+            data["ItemType"] = item->getItem()->getName();
+            if (item->getParent() == layer)
+                data["onLayer"] = true;
+            else
+                data["onLayer"] = false;
+        }
+        dataVector.push_back(Value(data));
+        
     }
     emit("playerList", dataVector); // TODO:
 }
@@ -231,11 +243,18 @@ void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string 
         for (const auto& ele : document.GetArray())
         {
             std::string ID = ele["ID"].GetString();
+            if (MSManager::hasMySprite(ID))
+                continue;
             float x = ele["x"].GetFloat();
             float y = ele["y"].GetFloat();
             std::string classname = ele["ClassName"].GetString();
-            std::string filename = ele["FileName"].GetString();
-            float health = ele["Health"].GetFloat();
+            std::string filename = "";
+            float health = 0.f;
+
+            if (ele.HasMember("FileName"))
+                filename = ele["FileName"].GetString();
+            if (ele.HasMember("Health"))
+                health = ele["Health"].GetFloat();
             
             if (!classname.compare("SurvivorSprite"))
             {
@@ -247,8 +266,12 @@ void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string 
             }
             else if (!classname.compare("ItemSprite"))
             {
-                // TODO: ....
-                // layer->addUnitSprite(ID, filename, {x, y}, health);
+                std::string itemtype = ele["ItemType"].GetString();
+                if (ele["onLayer"].GetBool())
+                    layer->addItemSpriteInWorld(ID, itemtype, {x, y});
+                else
+                    ItemSprite::create(itemtype);
+                
             }
         }
     }
@@ -312,13 +335,19 @@ void Multi::doAction(cocos2d::network::SIOClient* client, const std::string& dat
             auto id = document["ID"].GetString();
             auto action = document["action"].GetString();
             auto itemID = document["itemID"].GetString();
-            auto toUnitID = document["toUnitID"].GetString();
+            Node* toUnit = nullptr;
+            if (document.HasMember("toUnitID")){
+                auto toUnitID = document["toUnitID"].GetString();
+                toUnit = MSManager::getAsUnit(toUnitID);
+            }
             
             auto playerSprite = layer->getPlayerSprite(id);
-            auto toUnit = layer->getPlayerSprite(toUnitID);
             
-            auto itemSprite = dynamic_cast<ItemSprite*>(layer->getChildByName(itemID));
-            playerSprite->doAction(action, itemSprite, toUnit);
+            auto itemSprite = MSManager::getAsItem(itemID);
+
+            auto ctrl = playerSprite->getInputController();
+            ctrl->takeAction(action, itemSprite, toUnit);
+
         }
     }
 }

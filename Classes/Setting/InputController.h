@@ -38,14 +38,18 @@ private:
     };
     
     std::unordered_map<MyPair, std::function<void(void*)>, MyHashFunction> inputBinder;
+    std::unordered_map<std::string, std::function<void(void*, void*)>> doActionBinder;
     
 public:
     /* Binds action && input-event to function */
     void bindAction(const std::string& action, InputEvent inputEvent, std::function<void(void*)> func);
-    #define BIND_ACTION(__selector__) std::bind(&__selector__, this, std::placeholders::_1)
-    #define BIND_ACTION_1(__selector__, __param1__) std::bind(&__selector__, this, __param1__, std::placeholders::_1)
+    void bindAction(const std::string& action, std::function<void(void*, void*)> func);
+    
+    #define BIND_ACTION_1(__selector__, ...) std::bind(&__selector__, this, ## __VA_ARGS__, std::placeholders::_1)
+    #define BIND_ACTION_2(__selector__, ...) std::bind(&__selector__, this, ## __VA_ARGS__, std::placeholders::_1, std::placeholders::_2)
     
     /* Handles action */
     void takeAction(const std::string& action, InputEvent inputEvent);
+    void takeAction(const std::string &action, void *arg1=nullptr, void *arg2=nullptr);
 };
 #endif /* InputController_h */

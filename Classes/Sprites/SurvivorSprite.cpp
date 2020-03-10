@@ -109,19 +109,19 @@ void SurvivorSprite::collect(void *arg)
     }
 }
 
-void SurvivorSprite::collectAction(ItemSprite *itemSprite){
+void SurvivorSprite::collectAction(void *arg){
+    auto itemSprite = static_cast<ItemSprite*>(arg);
+    if (!(itemSprite)) {
+        return;
+    }
     // TODO : collect effect of SurvivorSprite
-    if (auto gameLayer = dynamic_cast<GameLayer*>(this->_parent))
-    {
-        inventory.pushBack(itemSprite);
-        // TODO: Implement inventory member variable.....
-        
-        itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
-        
-        gameLayer->removeChild(itemSprite);
-        if ( dynamic_cast<Sword*>(itemSprite->getItem()) ) {
-            setItemOnHand(itemSprite);
-        }
+    inventory.pushBack(itemSprite);
+    // TODO: Implement inventory member variable.....
+    
+    itemSprite->wasCollected(); // Show visual effect and delete ItemSprite on gameLayer
+    
+    if ( dynamic_cast<Sword*>(itemSprite->getItem()) ) {
+        setItemOnHand(itemSprite);
     }
 }
 
@@ -148,8 +148,16 @@ void SurvivorSprite::useItemOnHand(void *arg){
     }
 }
 
-void SurvivorSprite::useAction(ItemSprite *itemSprite, UnitSprite *toUnit){
+void SurvivorSprite::useAction(void *arg1, void *arg2){
     // TODO : use effect of SurvivorSprite
+    auto itemSprite = static_cast<ItemSprite*>(arg1);
+    if (!(itemSprite)) {
+        return;
+    }
+    auto toUnit = static_cast<UnitSprite*>(arg2);
+    if (!(toUnit)) {
+        return;
+    }
     itemSprite->wasUsed(toUnit);
 }
 
@@ -171,6 +179,7 @@ void SurvivorSprite::setupInputAction()
     void* arg = nullptr;
     if (_inputController)
     {
+        // inputBinder
         _inputController->bindAction("Up", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::movePressed, Direction::Up));
         _inputController->bindAction("Down", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::movePressed, Direction::Down));
         _inputController->bindAction("Right", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::movePressed, Direction::Right));
@@ -181,14 +190,15 @@ void SurvivorSprite::setupInputAction()
         _inputController->bindAction("Right", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::moveReleased, Direction::Right));
         _inputController->bindAction("Left", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::moveReleased, Direction::Left));
         
-        _inputController->bindAction("Collect", InputController::InputEvent::KeyPressed, BIND_ACTION(SurvivorSprite::collect));
-        _inputController->bindAction("Use", InputController::InputEvent::KeyPressed, BIND_ACTION(SurvivorSprite::useItemOnHand));
+        _inputController->bindAction("Collect", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::collect));
+        _inputController->bindAction("Use", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::useItemOnHand));
+
+        // doActionBinder
+        _inputController->bindAction("Collect", BIND_ACTION_1(SurvivorSprite::collectAction));
+        _inputController->bindAction("Use", BIND_ACTION_2(SurvivorSprite::useAction));
     }
 }
 
-void SurvivorSprite::emitDoAction(const std::string action, const std::string itemID){
-    emitDoAction(action, itemID, "");
-}
 void SurvivorSprite::emitDoAction(const std::string action, const std::string itemID, const std::string toUnitID){
     if (Multi::ROLE_STATUS == Multi::Role::Host){
 
@@ -201,20 +211,6 @@ void SurvivorSprite::emitDoAction(const std::string action, const std::string it
             data["action"] = action;
 
             multi->emit("doAction", data);
-        }
-    }
-}
-void SurvivorSprite::doAction(const std::string action, const std::string itemID, std::string toUnitID){
-    // TODO : need MySprite Manager, find item and toUnit, doAction()
-    // doAction(action, itemSprite, toUnit);
-}
-void SurvivorSprite::doAction(const std::string action, ItemSprite *itemSprite, UnitSprite *toUnit){
-    if (Multi::ROLE_STATUS == Multi::Role::Client){
-        if (!action.compare("Collect")) {
-            collectAction(itemSprite);
-        }
-        else if (!action.compare("Use")) {
-            useAction(itemSprite, toUnit);
         }
     }
 }
