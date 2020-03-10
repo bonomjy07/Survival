@@ -7,7 +7,6 @@
 class Item : public cocos2d::Ref
 {
 public:
-    Item();
     Item(const char *name, const char *des, const char * img,
     const char * thumb, const int weight);
     virtual ~Item();
@@ -22,7 +21,7 @@ public:
     virtual bool use(UnitSprite *toUnit)=0;
 
 protected:
-    // name of item
+    /* name of item for type checking */
     const char * const _name;
 
     // description of item
