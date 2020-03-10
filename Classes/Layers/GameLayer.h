@@ -114,6 +114,9 @@ public:
     
     /* Spwan unit sprite at position in the world */
     void addUnitSpriteInWorld(const std::string& ID, const std::string& fileaname, const cocos2d::Vec2& position, const float health);
+
+    /* Spwan item sprite at position in the world */
+    void addItemSpriteInWorld(const std::string& ID, const std::string& itemtype, const cocos2d::Vec2& position);
     
     /* Spwan multiple sprite in the box */
     void addSpritesInBox(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn);

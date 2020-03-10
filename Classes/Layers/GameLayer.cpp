@@ -2,6 +2,7 @@
 #include "GameLayer.h"
 #include "SurvivorSprite.h"
 #include "SpawnManager.h"
+#include "ItemSprite.h"
 
 #include "json/rapidjson.h"
 #include "json/document.h"
@@ -261,6 +262,16 @@ void GameLayer::addUnitSpriteInWorld(const std::string& ID, const std::string& f
         unit->setName(ID);
         unit->setPosition(position);
         unit->setCurrentHealth(health);
+        addChild(unit);
+    }
+}
+
+void GameLayer::addItemSpriteInWorld(const std::string& ID, const std::string& itemtype, const cocos2d::Vec2& position)
+{
+    if (auto unit = ItemSprite::create(itemtype))
+    {
+        unit->setName(ID);
+        unit->setPosition(position);
         addChild(unit);
     }
 }
