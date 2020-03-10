@@ -34,8 +34,6 @@ public:
 
     void setItemOnHand(class ItemSprite *itemSprite);
     void setPositionItemOnHand();
-    void doAction(const std::string action, const std::string itemSprite, const std::string toUnit);
-    void doAction(const std::string action, class ItemSprite *itemSprite, UnitSprite *toUnit);
     
 private:
     Stat _stat;
@@ -61,8 +59,7 @@ private:
 private:
     void onPressed(std::string action, InputController::InputEvent inputevent);
     void onReleased(std::string action, InputController::InputEvent inputevent);
-    void emitDoAction(const std::string action, const std::string itemID);
-    void emitDoAction(const std::string action, const std::string itemID, const std::string toUnitID);
+    void emitDoAction(const std::string action, const std::string itemID, const std::string toUnitID="");
     
     /* Called when 'Up' action is pressed */
     void movePressed(Direction direction, void* arg);
@@ -72,10 +69,10 @@ private:
     
     /* Called when 'Collecet' action is pressed */
     void collect(void *arg);
-    void collectAction(class ItemSprite *itemSprite);
+    void collectAction(void *arg);
    
     void useItemOnHand(void *arg);
-    void useAction(class ItemSprite *itemSprite, UnitSprite *toUnit);
+    void useAction(void *itemSprite, void *toUnit);
 
 private:
     bool onContactBegin(cocos2d::PhysicsContact& contact);
