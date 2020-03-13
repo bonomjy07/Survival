@@ -112,14 +112,12 @@ bool GameLayer::onQueryPointNodes(PhysicsWorld& world, PhysicsShape& shape, void
 
 class SurvivorSprite* GameLayer::getPlayerSprite(const std::string &ID) const
 {
-    if (_playersManager.find(ID) == _playersManager.end())
-        return nullptr;
-    return _playersManager.at(ID);
+    return dynamic_cast<SurvivorSprite*>(getChildByName(ID));
 }
 
 class SurvivorSprite* GameLayer::getPlayerSprite() const
 {
-    return _player;
+    return dynamic_cast<SurvivorSprite*>(getChildByName(Multi::SOCKET_ID));
 }
 
 std::set<Vec2>& GameLayer::getOccupied()
@@ -166,7 +164,9 @@ std::string GameLayer::getRandomID()
         newID.clear();
         int len = RandomHelper::random_int(1, 30);
         for (int i = 0; i < len; ++i)
+        {
             newID += alphanum[rand() % (sizeof(alphanum) - 1)];
+        }
     } while (IDManager.find(newID) != IDManager.end());
     IDManager.insert(newID);
     
@@ -230,7 +230,8 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
     TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
     Vec2 position = Vec2({0,0});
 
-    if (objectGroup){
+    if (objectGroup)
+    {
         ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
         float x = spawnPoint["x"].asFloat();
         float y = spawnPoint["y"].asFloat();
@@ -247,11 +248,12 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& positi
         player->setName(ID);
         player->setPosition(position);
         _occupied.insert(position);
-        _playersManager.insert({ID, player});
         addChild(player);
 
         if ( !ID.compare(Multi::SOCKET_ID) )
+        {
             _player = player;
+        }
     }
 }
 

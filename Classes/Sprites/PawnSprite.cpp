@@ -32,8 +32,8 @@ void PawnSprite::update(float dt)
         {
             if (auto gameLayer = dynamic_cast<GameLayer*>(_parent))
             {
-                gameLayer->getOccupied().erase(getPosition());
-                gameLayer->getOccupied().insert(newPosition);
+                //gameLayer->getOccupied().erase(getPosition());
+                //gameLayer->getOccupied().insert(newPosition);
                 moveThePawn(newPosition);
             }
         }
@@ -80,9 +80,11 @@ Vec2 PawnSprite::getFrontVec2() const
     return getDirectionVec2(_currentDirection);
 }
 
-Vec2 PawnSprite::getDirectionVec2(const Direction &direction) const {
+Vec2 PawnSprite::getDirectionVec2(const Direction &direction) const
+{
     Vec2 vec = Vec2::ZERO;
-    switch(direction){
+    switch (direction)
+    {
         case Direction::Up:
             vec =  {0.f, +1.f};
             break;
@@ -104,6 +106,7 @@ void PawnSprite::addDeltaPosition(float x, float y)
     _deltaPosition.x += x;
     _deltaPosition.y += y;
 }
+
 void PawnSprite::addDeltaPosition(Vec2 position)
 {
     _deltaPosition += position;
@@ -164,7 +167,8 @@ void PawnSprite::moveThePawn(const Vec2 &newPosition)
         runAction(moveTo);
         
         // If multiplayer game, broadcasts pawn's movement to clients
-        if (Multi::ROLE_STATUS == Multi::Role::Host){
+        if (Multi::ROLE_STATUS == Multi::Role::Host)
+        {
             auto multi = dynamic_cast<Multi*>(gameLayer->getChildByName("MultiGame"));
             ValueMap data = ValueMap();
             data["ID"] = getName();

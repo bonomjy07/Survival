@@ -36,8 +36,6 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('doAction', data);
     });
     
-	// TODO need to implement unified way of broadcasting
-    // Host sends to all clients which pawn moves
     socket.on('pawnMove', function (data) {
         data = JSON.parse(data);
         socket.broadcast.emit('pawnMove', data);

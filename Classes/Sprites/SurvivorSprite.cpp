@@ -79,14 +79,16 @@ void SurvivorSprite::stopDrainStats()
     }
 }
 
-void SurvivorSprite::movePressed(Direction direction, void *arg){
-    Vec2 delta = getDirectionVec2(direction) * 32;
+void SurvivorSprite::startMove(Direction direction, void *arg)
+{
+    Vec2 delta = getDirectionVec2(direction) * 32.f; // '32.f' is tile size
     addDeltaPosition(delta);
     insertDirection(direction);
 }
 
-void SurvivorSprite::moveReleased(Direction direction, void *arg){
-    Vec2 delta = getDirectionVec2(direction) * -32;
+void SurvivorSprite::stopMove(Direction direction, void *arg)
+{
+    Vec2 delta = getDirectionVec2(direction) * -32.f;
     addDeltaPosition(delta);
     eraseDirection(direction);
 }
@@ -180,15 +182,15 @@ void SurvivorSprite::setupInputAction()
     if (_inputController)
     {
         // inputBinder
-        _inputController->bindAction("Up", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::movePressed, Direction::Up));
-        _inputController->bindAction("Down", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::movePressed, Direction::Down));
-        _inputController->bindAction("Right", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::movePressed, Direction::Right));
-        _inputController->bindAction("Left", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::movePressed, Direction::Left));
+        _inputController->bindAction("Up", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::startMove, Direction::Up));
+        _inputController->bindAction("Down", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::startMove, Direction::Down));
+        _inputController->bindAction("Right", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::startMove, Direction::Right));
+        _inputController->bindAction("Left", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::startMove, Direction::Left));
         
-        _inputController->bindAction("Up", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::moveReleased, Direction::Up));
-        _inputController->bindAction("Down", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::moveReleased, Direction::Down));
-        _inputController->bindAction("Right", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::moveReleased, Direction::Right));
-        _inputController->bindAction("Left", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::moveReleased, Direction::Left));
+        _inputController->bindAction("Up", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::stopMove, Direction::Up));
+        _inputController->bindAction("Down", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::stopMove, Direction::Down));
+        _inputController->bindAction("Right", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::stopMove, Direction::Right));
+        _inputController->bindAction("Left", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::stopMove, Direction::Left));
         
         _inputController->bindAction("Collect", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::collect));
         _inputController->bindAction("Use", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::useItemOnHand));

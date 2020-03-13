@@ -13,13 +13,13 @@
 #if BHY_DEBUG
 #define SEVER_URI "localhost:8080"
 #else 
-#define SEVER_URI "192.168.219.102:8080"
+#define SEVER_URI "34.64.184.29:8000"
 #endif
 
 USING_NS_CC;
 
 Multi::Role Multi::ROLE_STATUS = Multi::Role::None;
-std::string Multi::SOCKET_ID = "";
+std::string Multi::SOCKET_ID = "None";
 
 Multi::Multi(){}
 Multi::~Multi(){}

@@ -99,16 +99,7 @@ bool TestScene::init()
         sword2->setName("Im_sword2");
         this->addChild(sword2);
     }
-    // Create player character
-    /*
-     auto p = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f);
-     if (p)
-     {
-     p->setPosition(x + 16.f, y + 16.f); // Locate it center of tile.
-     this->addChild(p);
-     }
-     */
-    
+
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto label = Label::createWithTTF("Test World", "fonts/Marker Felt.ttf", 24);
@@ -131,12 +122,10 @@ bool TestScene::init()
     this->scheduleUpdate();
     
     // This event happens when multi-game and you're the host
-    auto eventListner = EventListenerCustom::create("SpawnUnit", [=](EventCustom* event)
-                                                    {
+    auto eventListner = EventListenerCustom::create("SpawnUnit", [=](EventCustom* event){
         std::string id((char*)event->getUserData());
         addPlayerSpriteInWorld(id);
         addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
-        
     });
     _eventDispatcher->addEventListenerWithSceneGraphPriority(eventListner, this);
     
