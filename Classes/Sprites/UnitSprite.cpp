@@ -82,24 +82,5 @@ void UnitSprite::onDeath()
     CCASSERT(this, "This node is already deleted ?");
     getParent()->removeChild(this);
     log("unit sprite is delete(%s)", getName().c_str());
-    // /////////////////////
-    /*
-    if (auto gameLayer = dynamic_cast<GameLayer*>(getParent()))
-    {
-        if (Multi::ROLE_STATUS == Multi::Role::None){
-            getParent()->removeChild(this);
-            log("UnitSprite deleted");
-        }
-        if (Multi::Role::Client ==  Multi::ROLE_STATUS)
-        {
-            // TODO: Show visual effect and ....
-            std::string data = "";
-            gameLayer->getMulti()->emit("", Value(data));
-        }
-        else{
-            // TODO: host
-        }
-    }
-     */
 }
 

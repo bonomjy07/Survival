@@ -57,9 +57,6 @@ public:
     /* Accessor function for occupied positions by player sprite */
     std::set<cocos2d::Vec2>& getOccupied();
     
-    /* Accessor function for player manager */
-    std::map<std::string, class SurvivorSprite*> getPlayersManager(){ return _playersManager; };
-    
     /* Accessor function for Multi play delegate */
     Multi* getMulti(){ return dynamic_cast<Multi*>(getChildByName("MultiGame")); }
     
@@ -75,8 +72,7 @@ protected:
      Stores player ID to sprite address
      @warning player deletion is not implemented...
      */
-    std::map<std::string, class SurvivorSprite*> _playersManager;
-    
+
     /* World map */
     cocos2d::TMXTiledMap *_tiledMap;
     
@@ -85,7 +81,7 @@ protected:
     
     /* My play sprite */
     class SurvivorSprite* _player;
-    
+
     /* Key binder */
     class KeyBinder *gameKeyBinder;
     

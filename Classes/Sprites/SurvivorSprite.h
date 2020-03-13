@@ -57,15 +57,13 @@ private:
     void setupInputAction();
     
 private:
-    void onPressed(std::string action, InputController::InputEvent inputevent);
-    void onReleased(std::string action, InputController::InputEvent inputevent);
     void emitDoAction(const std::string action, const std::string itemID, const std::string toUnitID="");
     
-    /* Called when 'Up' action is pressed */
-    void movePressed(Direction direction, void* arg);
+    /* Called when 'Up','Down', 'Right', 'Left" action are pressed */
+    void startMove(Direction direction, void* arg);
     
-    /* Called when 'Up' action is released */
-    void moveReleased(Direction direction, void* arg);
+    /* Called when 'Up','Down', 'Right', 'Left" action are released */
+    void stopMove(Direction direction, void* arg);
     
     /* Called when 'Collecet' action is pressed */
     void collect(void *arg);
