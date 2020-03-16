@@ -68,11 +68,6 @@ protected:
     cocos2d::Point getTileCoorForPosition(const cocos2d::Vec2& position);
     
 protected:
-    /**
-     Stores player ID to sprite address
-     @warning player deletion is not implemented...
-     */
-
     /* World map */
     cocos2d::TMXTiledMap *_tiledMap;
     

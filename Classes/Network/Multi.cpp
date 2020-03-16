@@ -275,7 +275,6 @@ void Multi::onPlayerList(cocos2d::network::SIOClient *client, const std::string 
                     layer->addItemSpriteInWorld(ID, itemtype, {x, y});
                 else
                     ItemSprite::create(itemtype);
-                
             }
         }
     }

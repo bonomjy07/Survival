@@ -69,6 +69,7 @@ bool TestScene::init()
 
     
     // Create item sprite
+    /*
     auto deerMeatSprite2 = ItemSprite::create();
     if (deerMeatSprite2)
     {
@@ -99,6 +100,7 @@ bool TestScene::init()
         sword2->setName("Im_sword2");
         this->addChild(sword2);
     }
+     */
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();

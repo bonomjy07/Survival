@@ -36,7 +36,7 @@ public:
     
     /**
      @Brief Takes the damages unit gets
-     @details Delta damage will be added to current health
+     @details Delta damage will be subtract to current health
      */
     void takeDamage(float deltaDamage);
     
