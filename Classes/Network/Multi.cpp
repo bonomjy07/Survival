@@ -22,7 +22,10 @@ Multi::Role Multi::ROLE_STATUS = Multi::Role::None;
 std::string Multi::SOCKET_ID = "None";
 
 Multi::Multi(){}
-Multi::~Multi(){}
+Multi::~Multi()
+{
+    _client = nullptr;
+}
 
 static Multi* create(std::string uri) {
     Multi *pRet = new(std::nothrow) Multi();
