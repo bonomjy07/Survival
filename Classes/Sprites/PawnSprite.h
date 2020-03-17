@@ -77,7 +77,7 @@ public:
      Moves the pawn to new position
      @warning CanPawnMove function must be called before call this function
      */
-    void moveThePawn(const cocos2d::Vec2& newPosition);
+    virtual void moveThePawn(const cocos2d::Vec2& newPosition);
     
 private:
     /* New direction has to be insert at begin(first) */

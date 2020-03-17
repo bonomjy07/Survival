@@ -12,6 +12,9 @@
 #include "InputController.h"
 #include "Tool.h"
 
+#include <stdio.h>
+#include <sys/syslimits.h>
+
 USING_NS_CC;
 
 SurvivorSprite* SurvivorSprite::create(const std::string &filename, float maxHealth)
@@ -42,11 +45,29 @@ SurvivorSprite::SurvivorSprite(float health) : PawnSprite(health), _stat(), _ite
     // Set input-action up
     setupInputAction();
 
-    // Register contact listener
-    auto contactListener = EventListenerPhysicsContact::create();
-    contactListener->onContactSeparate = CC_CALLBACK_1(SurvivorSprite::onContactSeparate, this);
-    contactListener->onContactBegin = CC_CALLBACK_1(SurvivorSprite::onContactBegin, this);
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+    // Create animation frames
+    Vector<SpriteFrame*> frames;
+    storeAnimationCache("res/pokemon/pokemon_up.plist");
+    frames = getAnimationFrames("pokemon_up_%d.png");
+    _walkingFrames.insert({Direction::Up, frames});
+    
+    storeAnimationCache("res/pokemon/pokemon_down.plist");
+    frames = getAnimationFrames("pokemon_down_%d.png");
+    _walkingFrames.insert({Direction::Down, frames});
+    
+    storeAnimationCache("res/pokemon/pokemon_right.plist");
+    frames = getAnimationFrames("pokemon_right_%d.png");
+    _walkingFrames.insert({Direction::Right, frames});
+    
+    storeAnimationCache("res/pokemon/pokemon_left.plist");
+    frames = getAnimationFrames("pokemon_left_%d.png");
+    _walkingFrames.insert({Direction::Left, frames});
+    
+    /*Register contact listener
+     auto contactListener = EventListenerPhysicsContact::create();
+     contactListener->onContactSeparate = CC_CALLBACK_1(SurvivorSprite::onContactSeparate, this);
+     contactListener->onContactBegin = CC_CALLBACK_1(SurvivorSprite::onContactBegin, this);
+     _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);*/
 }
 
 SurvivorSprite::~SurvivorSprite()
@@ -256,4 +277,43 @@ bool SurvivorSprite::onContactSeparate(cocos2d::PhysicsContact& contact)
 {
     _itemOnMyTile = nullptr;
     return true;
+}
+
+void SurvivorSprite::storeAnimationCache(const std::string& plistname)
+{
+    // Store plist in frame cache
+    auto frameCache = SpriteFrameCache::getInstance();
+    frameCache->addSpriteFramesWithFile(plistname);
+}
+
+Vector<SpriteFrame*> SurvivorSprite::getAnimationFrames(const std::string &format)
+{
+    // Get frames in plist in frame cache
+    Vector<SpriteFrame*> frames;
+    auto frameCache = SpriteFrameCache::getInstance();
+    for (int i = 3; i >= 0; --i)
+    {
+        char filename[PATH_MAX] = {0};
+        sprintf(filename, format.c_str(), i);
+        frames.pushBack(frameCache->getSpriteFrameByName(filename));
+    }
+    
+    return frames;
+}
+
+void SurvivorSprite::runAnimation(PawnSprite::Direction direction)
+{
+    auto it = _walkingFrames.find(direction);
+    if (it != _walkingFrames.end())
+    {
+        auto animation = Animation::createWithSpriteFrames(it->second, 0.125f/4);
+        auto animate = Animate::create(animation);
+        runAction(animate);
+    }
+}
+
+void SurvivorSprite::moveThePawn(const cocos2d::Vec2 &newPosition)
+{
+    PawnSprite::moveThePawn(newPosition);
+    runAnimation(getCurrentDirection());
 }

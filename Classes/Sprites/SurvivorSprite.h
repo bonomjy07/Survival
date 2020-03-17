@@ -76,5 +76,14 @@ private:
     bool onContactBegin(cocos2d::PhysicsContact& contact);
     bool onContactSeparate(cocos2d::PhysicsContact& contact);
     class ItemSprite* _itemOnMyTile;
+    
+private:
+    std::map<PawnSprite::Direction, const cocos2d::Vector<cocos2d::SpriteFrame*>> _walkingFrames;
+    void storeAnimationCache(const std::string& format);
+    cocos2d::Vector<cocos2d::SpriteFrame*> getAnimationFrames(const std::string& format);
+    void runAnimation(PawnSprite::Direction direction);
+    
+public:
+    void moveThePawn(const cocos2d::Vec2& newPosition) override;
 };
 #endif /* SurvivorSprite_h */

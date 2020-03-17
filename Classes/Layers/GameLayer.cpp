@@ -243,7 +243,7 @@ void GameLayer::addPlayerSpriteInWorld(const std::string &ID)
 
 void GameLayer::addPlayerSpriteInWorld(const std::string &ID, const Vec2& position)
 {
-    if (auto player = SurvivorSprite::create("res/TestResource/TileImage/img_test_player.png", 100.f))
+    if (auto player = SurvivorSprite::create("res/pokemon/pokemon_down_0.png", 100.f))
     {
         player->setName(ID);
         player->setPosition(position);
