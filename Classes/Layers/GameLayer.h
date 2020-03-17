@@ -59,7 +59,7 @@ public:
     
     /* Accessor function for Multi play delegate */
     Multi* getMulti(){ return dynamic_cast<Multi*>(getChildByName("MultiGame")); }
-    
+
 protected:
     /* This function is Called every frame and set view-point on center */
     void setViewPointCenter(const cocos2d::Vec2 position);

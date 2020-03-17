@@ -174,6 +174,7 @@ void PawnSprite::moveThePawn(const Vec2 &newPosition)
             data["ID"] = getName();
             data["x"] = newPosition.x;
             data["y"] = newPosition.y;
+            data["direction"] = static_cast<int>(_currentDirection);
 
             multi->emit("pawnMove", data);
         }

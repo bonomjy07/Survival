@@ -153,7 +153,7 @@ void MainScene::onEnterGame()
             CCASSERT(multi, "Failed to create object for multi play");
             multi->setName("MultiGame");
             gameLayer->addChild(multi);
-            
+
             auto director = Director::getInstance();
             director->pushScene(director->getRunningScene());
             director->replaceScene(testScene);

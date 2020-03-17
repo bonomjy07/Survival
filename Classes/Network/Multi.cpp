@@ -13,7 +13,7 @@
 #if BHY_DEBUG
 #define SEVER_URI "localhost:8080"
 #else 
-#define SEVER_URI "34.64.184.29:8000"
+#define SEVER_URI "192.168.219.102:8080"
 #endif
 
 USING_NS_CC;
@@ -41,7 +41,7 @@ bool Multi::init(){
     if ( !(_client = SocketIO::connect(SEVER_URI, *this)) ){
         return false;
     }
-
+    
     _client->on("requestPlayerID", CC_CALLBACK_2(Multi::onRequestPlayerID, this));
     _client->on("newPlayer", CC_CALLBACK_2(Multi::onNewPlayer, this));
     _client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
@@ -146,6 +146,8 @@ std::string Multi::parseData(const Value &data){
         ret += std::to_string(data.asFloat());
     else if (type == Value::Type::BOOLEAN)
         ret += data.asBool()?"true":"false";
+    else if (type == Value::Type::INTEGER)
+        ret += std::to_string(data.asInt());
     // TODO : if data is other type, write code like above (float type)
     return ret;
 }
@@ -292,7 +294,9 @@ void Multi::onPawnMove(cocos2d::network::SIOClient* client, const std::string& d
         {
             std::string ID = document["ID"].GetString();
             Vec2 newPosition(document["x"].GetFloat(), document["y"].GetFloat());
+            PawnSprite::Direction direction = static_cast<PawnSprite::Direction>(document["direction"].GetInt());
             auto playerSprite = layer->getPlayerSprite(ID);
+            playerSprite->setCurrentDirection(direction);
             playerSprite->moveThePawn(newPosition);
         }
     }
