@@ -202,12 +202,13 @@ void SurvivorSprite::setupInputAction()
     void* arg = nullptr;
     if (_inputController)
     {
-        // inputBinder
+        // Register 'startMove(Direction, void*)'
         _inputController->bindAction("Up", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::startMove, Direction::Up));
         _inputController->bindAction("Down", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::startMove, Direction::Down));
         _inputController->bindAction("Right", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::startMove, Direction::Right));
         _inputController->bindAction("Left", InputController::InputEvent::KeyPressed, BIND_ACTION_1(SurvivorSprite::startMove, Direction::Left));
         
+        // Register 'stopMove(Direction, void*)'
         _inputController->bindAction("Up", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::stopMove, Direction::Up));
         _inputController->bindAction("Down", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::stopMove, Direction::Down));
         _inputController->bindAction("Right", InputController::InputEvent::KeyReleased, BIND_ACTION_1(SurvivorSprite::stopMove, Direction::Right));
