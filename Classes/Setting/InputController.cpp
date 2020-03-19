@@ -11,6 +11,7 @@ void InputController::bindAction(const std::string &action, InputController::Inp
 {
     inputBinder.insert({{action, inputEvent}, func});
 }
+
 void InputController::bindAction(const std::string& action, std::function<void (void*, void*)> func){
     doActionBinder.insert({action, func});
 }
@@ -23,6 +24,7 @@ void InputController::takeAction(const std::string &action, InputEvent inputEven
         it->second(nullptr);
     }
 }
+
 void InputController::takeAction(const std::string &action, void *arg1, void *arg2)
 {
     auto it = doActionBinder.find(action);
