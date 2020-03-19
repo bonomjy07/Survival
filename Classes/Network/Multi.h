@@ -68,7 +68,8 @@ private:
     std::string parseData(const cocos2d::Value &data);
 
 private:
-    SIOClient* _client;
+    //SIOClient* _client;
+    cocos2d::RefPtr<SIOClient> _client;
 };
 
 #endif // MULTI_H__

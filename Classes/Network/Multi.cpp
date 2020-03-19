@@ -24,7 +24,8 @@ std::string Multi::SOCKET_ID = "None";
 Multi::Multi(){}
 Multi::~Multi()
 {
-    _client = nullptr;
+    //_client = nullptr;
+    //_client.reset();
 }
 
 static Multi* create(std::string uri) {
@@ -44,7 +45,7 @@ bool Multi::init(){
     if ( !(_client = SocketIO::connect(SEVER_URI, *this)) ){
         return false;
     }
-    
+
     _client->on("requestPlayerID", CC_CALLBACK_2(Multi::onRequestPlayerID, this));
     _client->on("newPlayer", CC_CALLBACK_2(Multi::onNewPlayer, this));
     _client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
@@ -85,6 +86,7 @@ void Multi::onMessage(SIOClient* client, const std::string& data){
 }
 void Multi::onClose(SIOClient* client){
     // SocketIO::disconnect success
+    _client.reset();
     cocos2d::log("onClose()");
 }
 void Multi::onError(SIOClient* client, const std::string& data){
@@ -96,7 +98,10 @@ void Multi::emit(const std::string &eventname, const Value &data){
     std::string args = parseData(data);
     log("emit : %s", args.c_str());
 
-    _client->emit(eventname, args);
+    if (_client)
+    {
+        _client->emit(eventname, args);
+    }
 }
 
 void Multi::emit(const std::string &eventname, const ValueMap &data){
