@@ -108,9 +108,10 @@ void MainScene::onStartGame()
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(tiledMapScene->getChildByName("GameLayer")))
         {
-            gameLayer->addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
             gameLayer->addPlayerSpriteInWorld(Multi::SOCKET_ID);
-            // gamelayer->addITem...*();
+            gameLayer->addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
+            gameLayer->addItemSpriteInWorld(gameLayer->getRandomID(), "Sword", {32*10+16, 32*12+16});
+            gameLayer->addItemSpriteInWorld(gameLayer->getRandomID(), "DeerMeat", {32*10+16, 32*13+16});
         }
         
         auto director = Director::getInstance();

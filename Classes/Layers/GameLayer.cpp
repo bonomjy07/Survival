@@ -272,6 +272,7 @@ void GameLayer::addItemSpriteInWorld(const std::string& ID, const std::string& i
 {
     if (auto unit = ItemSprite::create(itemtype))
     {
+        unit->initPhysicsBody(); // M:Add physics body
         unit->setName(ID);
         unit->setPosition(position);
         addChild(unit);

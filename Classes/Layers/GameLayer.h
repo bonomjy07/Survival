@@ -83,10 +83,11 @@ protected:
     /* Stores player's position to synchronize player's position */
     std::set<cocos2d::Vec2> _occupied;
     
-protected:
+public:
     /* Return random ID for sprites */
     std::string getRandomID();
     
+protected:
     /* Return random points in spawn area as num */
     void getRandomPointsInArea(const cocos2d::ValueMap& spawnArea, std::set<cocos2d::Vec2>& points, int num);
     
