@@ -78,12 +78,20 @@ private:
     class ItemSprite* _itemOnMyTile;
     
 private:
+    /** Each direction animation are stored in walking frames */
     std::map<PawnSprite::Direction, const cocos2d::Vector<cocos2d::SpriteFrame*>> _walkingFrames;
+    
+    /** Store animation frame in  cocos2dx cache */
     void storeAnimationCache(const std::string& format);
+    
+    /** Return animation frames from resource files corresponding the format */
     cocos2d::Vector<cocos2d::SpriteFrame*> getAnimationFrames(const std::string& format);
+    
+    /** Run animation corresponding the direction */
     void runAnimation(PawnSprite::Direction direction);
     
 public:
+    /** Added walking animations when the character walks */
     void moveThePawn(const cocos2d::Vec2& newPosition) override;
 };
 #endif /* SurvivorSprite_h */
