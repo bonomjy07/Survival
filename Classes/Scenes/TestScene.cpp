@@ -8,6 +8,7 @@
 
 #include "PauseLayer.h"
 #include "StatLayer.h"
+#include "HandLayer.h"
 
 #include "InventoryLayer.h"
 
@@ -26,6 +27,7 @@ USING_NS_CC;
 
 Scene* TestScene::createScene()
 {
+    // Create scene for holding test scene
     auto scene = Scene::createWithPhysics();
     if (auto pWorld = scene->getPhysicsWorld())
     {
@@ -33,10 +35,13 @@ Scene* TestScene::createScene()
         pWorld->setGravity(Vec2(0.f, 0.f)); // No gravity
     }
     
+    // Create test scene
     auto layer = TestScene::create();
     layer->setName("GameLayer");
 
+    // Add test scene to scene holder
     scene->addChild(layer);
+    scene->addChild(HandLayer::create());
     return scene;
 }
 
@@ -48,11 +53,12 @@ bool TestScene::init()
     }
     
     // Create tile map and layer in tile map
-    // TODO: if statement for nullptr
-    _tiledMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx");
-    _block = _tiledMap->getLayer("BlockLayer");
-    _block->setVisible(false);
-    this->addChild(_tiledMap);
+    if (_tiledMap = TMXTiledMap::create("res/TestResource/TileMap/test_tilemap.tmx"))
+    {
+        _block = _tiledMap->getLayer("BlockLayer");
+        _block->setVisible(false);
+        this->addChild(_tiledMap);
+    }
     
     // Get SpawnPoint location
     TMXObjectGroup* objectGroup = _tiledMap->getObjectGroup("Objects");
