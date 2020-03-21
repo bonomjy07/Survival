@@ -112,5 +112,9 @@ public:
     
     /* Spwan multiple sprite in the box */
     void addSpritesInBox(const std::string& classname, const std::string& filename, const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend, int numOfSpawn);
+    
+public: // Testing...
+    template<class T>
+    void addSpritesInBox(const cocos2d::Vec2& origin, const cocos2d::Vec2& boxExtend);
 };
 #endif // GAME_LAYER_H__
