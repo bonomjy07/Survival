@@ -302,7 +302,7 @@ Vector<SpriteFrame*> SurvivorSprite::getAnimationFrames(const std::string &forma
     return frames;
 }
 
-void SurvivorSprite::runAnimation(PawnSprite::Direction direction)
+void SurvivorSprite::runWalkingAnimation(PawnSprite::Direction direction)
 {
     auto it = _walkingFrames.find(direction);
     if (it != _walkingFrames.end())
@@ -316,5 +316,5 @@ void SurvivorSprite::runAnimation(PawnSprite::Direction direction)
 void SurvivorSprite::moveThePawn(const cocos2d::Vec2 &newPosition)
 {
     PawnSprite::moveThePawn(newPosition);
-    runAnimation(getCurrentDirection());
+    runWalkingAnimation(getCurrentDirection());
 }

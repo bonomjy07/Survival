@@ -88,7 +88,7 @@ private:
     cocos2d::Vector<cocos2d::SpriteFrame*> getAnimationFrames(const std::string& format);
     
     /** Run animation corresponding the direction */
-    void runAnimation(PawnSprite::Direction direction);
+    void runWalkingAnimation(PawnSprite::Direction direction);
     
 public:
     /** Added walking animations when the character walks */
