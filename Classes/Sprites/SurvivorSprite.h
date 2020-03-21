@@ -53,7 +53,7 @@ private:
     class InputController* _inputController;
     
 private:
-    /* Binds functions with action */
+    /* Binds functions with actions */
     void setupInputAction();
     
 private:
