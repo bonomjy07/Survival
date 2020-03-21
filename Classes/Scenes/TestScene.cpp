@@ -62,46 +62,6 @@ bool TestScene::init()
         return false;
     }
     
-    //_spawnArea = objectGroup->getObject("SpawnArea");
-    ValueMap spawnPoint = objectGroup->getObject("SpawnPoint");
-    float x = spawnPoint["x"].asFloat();
-    float y = spawnPoint["y"].asFloat();
-
-    
-    // Create item sprite
-    /*
-    auto deerMeatSprite2 = ItemSprite::create();
-    if (deerMeatSprite2)
-    {
-        auto item = DeerMeat::create();
-        deerMeatSprite2->setItem(item);
-        deerMeatSprite2->setPosition(x + 48.f, y + 16.f); // Locate it center of tile.
-        deerMeatSprite2->initPhysicsBody();
-        deerMeatSprite2->setName("Im_groot");
-        this->addChild(deerMeatSprite2);
-    }
-    
-    auto sword = ItemSprite::create();
-    if ( sword ){
-        auto item = Sword::create();
-        sword->setItem(item);
-        sword->setPosition(x - 48.f, y + 16.f);
-        sword->initPhysicsBody();
-        sword->setName("Im_sword");
-        this->addChild(sword);
-    }
-    
-    auto sword2 = ItemSprite::create();
-    if ( sword2 ){
-        auto item = Sword::create();
-        sword2->setItem(item);
-        sword2->setPosition(x - 48.f, y + 16.f+32.f);
-        sword2->initPhysicsBody();
-        sword2->setName("Im_sword2");
-        this->addChild(sword2);
-    }
-     */
-
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto label = Label::createWithTTF("Test World", "fonts/Marker Felt.ttf", 24);
