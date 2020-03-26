@@ -49,13 +49,15 @@ void UnitSprite::setCurrentHealth(float newCurrentHealth)
         ValueMap data;
         data["ID"] = getName();
         data["NewHealth"] = newCurrentHealth;
-        multi->emit("UnitNewHealth", data); 
+        multi->emit("UnitNewHealth", data);
     }
 }
 
 void UnitSprite::takeDamage(float deltaDamage)
 {
     setCurrentHealth(_currentHealth - deltaDamage);
+    
+    runDamagedAnimation();
     
     if (_currentHealth <= 0.f)
     {
@@ -84,3 +86,6 @@ void UnitSprite::onDeath()
     log("unit sprite is delete(%s)", getName().c_str());
 }
 
+void UnitSprite::runDamagedAnimation()
+{
+}

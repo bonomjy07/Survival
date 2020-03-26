@@ -41,12 +41,18 @@ public:
     void takeDamage(float deltaDamage);
     
     virtual void onDeath();
+    
+    /** Show some vfx.. */
+    virtual void runDamagedAnimation();
+    
 protected:
     /* Unit's current health, initiated by max health when unit is created */
     float _currentHealth;
     
     /* Unit's max health */
     float _maxHealth;
+
+    cocos2d::Vector<class SpriteFrame*> _hitFrames;
 };
 
 #endif /* UnitSprite_h */
