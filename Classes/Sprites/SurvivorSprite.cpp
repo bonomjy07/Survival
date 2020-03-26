@@ -75,6 +75,7 @@ SurvivorSprite::~SurvivorSprite()
     inventory.clear();
     
     delete _inputController;
+    _inputController = nullptr;
 }
 
 const Stat& SurvivorSprite::getStat() const
