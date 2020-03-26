@@ -71,6 +71,9 @@ protected:
     /* Returns true if new position is valid position to move */
     bool canPawnMove(const cocos2d::Vec2& newPosition);
     
+    /** Called when direction is changed */
+    virtual void onDirectionChange();
+    
 public:
     /**
      @brief Called every frame if delta position is not zero.

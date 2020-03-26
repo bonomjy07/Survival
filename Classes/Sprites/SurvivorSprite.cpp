@@ -106,11 +106,6 @@ void SurvivorSprite::startMove(Direction direction, void *arg)
     Vec2 delta = getDirectionVec2(direction) * 32.f; // '32.f' is tile size
     addDeltaPosition(delta);
     insertDirection(direction);
-    
-    // Show it turn around when it is stuck by tiles
-    Vector<SpriteFrame*> walkingFrames = _walkingFrames.at(direction);
-    Texture2D* directionFrame = walkingFrames.at(0)->getTexture();
-    setTexture(directionFrame);
 }
 
 void SurvivorSprite::stopMove(Direction direction, void *arg)
@@ -317,6 +312,13 @@ void SurvivorSprite::runWalkingAnimation(PawnSprite::Direction direction)
         auto animate = Animate::create(animation);
         runAction(animate);
     }
+}
+
+void SurvivorSprite::onDirectionChange()
+{
+    Vector<SpriteFrame*> walkingFrames = _walkingFrames.at(_currentDirection);
+    Texture2D* directionFrame = walkingFrames.at(0)->getTexture();
+    setTexture(directionFrame);
 }
 
 void SurvivorSprite::moveThePawn(const cocos2d::Vec2 &newPosition)

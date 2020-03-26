@@ -90,6 +90,8 @@ private:
     /** Run animation corresponding the direction */
     void runWalkingAnimation(PawnSprite::Direction direction);
     
+    void onDirectionChange() override;
+    
 public:
     /** Added walking animations when the character walks */
     void moveThePawn(const cocos2d::Vec2& newPosition) override;

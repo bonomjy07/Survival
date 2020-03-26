@@ -46,7 +46,11 @@ PawnSprite::~PawnSprite() {}
 
 void PawnSprite::setCurrentDirection(const Direction& newDirection)
 {
+    // Set new direiction
     _currentDirection = newDirection;
+    
+    // Do some task when direction is changed
+    onDirectionChange();
 }
 
 const PawnSprite::Direction& PawnSprite::getCurrentDirection() const
@@ -156,6 +160,10 @@ bool PawnSprite::canPawnMove(const Vec2& newPosition)
         }
     }
     return false;
+}
+
+void PawnSprite::onDirectionChange()
+{
 }
 
 void PawnSprite::moveThePawn(const Vec2 &newPosition)
