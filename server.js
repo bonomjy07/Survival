@@ -11,7 +11,7 @@ io.on('connection', function (socket) {
     console.log("connected : ", socket.id);
     playerList.push(socket.id);
  
-    if (host == '') 
+    if (host == '')  // First one is the 'Host'
         host = socket.id;
  
     socket.emit('requestPlayerID', { HostID: host, MyID: socket.id });
