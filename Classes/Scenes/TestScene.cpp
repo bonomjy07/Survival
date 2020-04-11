@@ -95,6 +95,7 @@ bool TestScene::init()
         addPlayerSpriteInWorld(id);
         addSpritesInBox("UnitSprite", "res/tileSet/qubodup-bush_berries_0.png", Vec2(416.f, 384.f), Vec2(416.f+320.f, 384.f+64.f), 10);
         addItemSpriteInWorld(getRandomID(), "Sword", {32*10+16, 32*12+16});
+        addItemSpriteInWorld(getRandomID(), "Sword", {32*11+16, 32*12+16});
         addItemSpriteInWorld(getRandomID(), "DeerMeat", {32*10+16, 32*13+16});
     });
     _eventDispatcher->addEventListenerWithSceneGraphPriority(eventListner, this);

@@ -46,6 +46,11 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('NewUnitHealth', data);
     });
 
+    socket.on('NewPawnDirection', function (data) {
+        data = JSON.parse(data);
+        socket.broadcast.emit('NewPawnDirection', data);
+    });
+
     socket.on('SpriteDeletion', function (data) {
         data = JSON.parse(data);
         socket.broadcast.emit('SpriteDeletion', data);

@@ -54,6 +54,7 @@ bool Multi::init(){
     _client->on("doAction", CC_CALLBACK_2(Multi::doAction, this));
     
     _client->on("NewUnitHealth", CC_CALLBACK_2(Multi::onUnitNewHealth, this));
+    _client->on("NewPawnDirection", CC_CALLBACK_2(Multi::onPawnNewDirection, this));
     _client->on("SpriteDeletion", CC_CALLBACK_2(Multi::onSpriteDeletion, this));
 
     return true;
@@ -302,9 +303,7 @@ void Multi::onPawnMove(cocos2d::network::SIOClient* client, const std::string& d
         {
             std::string ID = document["ID"].GetString();
             Vec2 newPosition(document["x"].GetFloat(), document["y"].GetFloat());
-            PawnSprite::Direction direction = static_cast<PawnSprite::Direction>(document["direction"].GetInt());
             auto playerSprite = layer->getPlayerSprite(ID);
-            playerSprite->setCurrentDirection(direction);
             playerSprite->moveThePawn(newPosition);
         }
     }
@@ -381,7 +380,22 @@ void Multi::onUnitNewHealth(cocos2d::network::SIOClient* client, const std::stri
         }
     }
 }
-   
+
+void Multi::onPawnNewDirection(cocos2d::network::SIOClient *client, const std::string &data)
+{
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        auto id = document["ID"].GetString();
+        auto newDirection = document["newDirection"].GetInt();
+        if (auto pawn = dynamic_cast<PawnSprite*>(getParentLayer()->getChildByName(id)))
+        {
+            pawn->setCurrentDirection((PawnSprite::Direction)newDirection);
+        }
+    }
+}
+
 void Multi::onSpriteDeletion(cocos2d::network::SIOClient* client, const std::string& data)
 {
     rapidjson::Document document;

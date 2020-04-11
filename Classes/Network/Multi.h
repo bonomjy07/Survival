@@ -49,6 +49,9 @@ public:
     /* Client-side function : updates new health for unit sprite */
     void onUnitNewHealth(cocos2d::network::SIOClient* client, const std::string& data);
     
+    /* Client-side function : updates new health for unit sprite */
+    void onPawnNewDirection(cocos2d::network::SIOClient* client, const std::string& data);
+    
     /* Client-side function : Removes the sprite on game layer */
     void onSpriteDeletion(cocos2d::network::SIOClient* client, const std::string& data);
     

@@ -48,9 +48,20 @@ void PawnSprite::setCurrentDirection(const Direction& newDirection)
 {
     // Set new direiction
     _currentDirection = newDirection;
-    
-    // Do some task when direction is changed
+    // Do some task likes vfx.. when direction is changed
     onDirectionChange();
+    
+    // Broadcast new direction
+    if (Multi::ROLE_STATUS == Multi::Role::Host)
+    {
+        auto gameLayer = static_cast<GameLayer*>(_parent);
+        auto multi = dynamic_cast<Multi*>(gameLayer->getChildByName("MultiGame"));
+        ValueMap data = ValueMap();
+        data["ID"] = getName();
+        data["newDirection"] = static_cast<int>(_currentDirection);
+
+        multi->emit("NewPawnDirection", data);
+    }
 }
 
 const PawnSprite::Direction& PawnSprite::getCurrentDirection() const
