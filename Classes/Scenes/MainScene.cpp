@@ -8,6 +8,7 @@
 
 #include "MainScene.h"
 #include "TestScene.h"
+#include "HostScene.h"
 #include "KeyTableScene.h"
 #include "network/SocketIO.h"
 
@@ -138,6 +139,23 @@ void MainScene::onExitGame()
 
 void MainScene::onHostGame()
 {
+    // Reads URI
+    std::string uri = _uriTextField->getString();
+    
+    if (auto hostScene = HostScene::createScene())
+    {
+        
+        // Try to connect to server
+        auto multi = Multi::create();
+        CCASSERT(multi, "Failed to create object for multi play");
+        multi->setName("MultiGame");
+        hostScene->addChild(multi);
+
+        auto director = Director::getInstance();
+        director->pushScene(director->getRunningScene());
+        director->replaceScene(hostScene);
+        
+    }
 }
 
 void MainScene::onEnterGame()
