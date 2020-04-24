@@ -145,6 +145,7 @@ void MainScene::onEnterGame()
     // Reads URI
     std::string uri = _uriTextField->getString();
     
+    // Create Test Scene
     if (auto testScene = TestScene::createScene())
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))
@@ -155,6 +156,7 @@ void MainScene::onEnterGame()
             multi->setName("MultiGame");
             gameLayer->addChild(multi);
 
+            // Switch current scene to TestScene
             auto director = Director::getInstance();
             director->pushScene(director->getRunningScene());
             director->replaceScene(testScene);
