@@ -46,16 +46,7 @@ bool Multi::init(){
         return false;
     }
 
-    _client->on("requestPlayerID", CC_CALLBACK_2(Multi::onRequestPlayerID, this));
-    _client->on("newPlayer", CC_CALLBACK_2(Multi::onNewPlayer, this));
-    _client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
-    _client->on("pawnMove", CC_CALLBACK_2(Multi::onPawnMove, this));
-    _client->on("action", CC_CALLBACK_2(Multi::onAction, this));
-    _client->on("doAction", CC_CALLBACK_2(Multi::doAction, this));
-    
-    _client->on("NewUnitHealth", CC_CALLBACK_2(Multi::onUnitNewHealth, this));
-    _client->on("NewPawnDirection", CC_CALLBACK_2(Multi::onPawnNewDirection, this));
-    _client->on("SpriteDeletion", CC_CALLBACK_2(Multi::onSpriteDeletion, this));
+    initBindFunc(_client);
 
     return true;
 }
@@ -65,17 +56,25 @@ bool Multi::init(std::string uri){
         return false;
     }
 
-    _client->on("requestPlayerID", CC_CALLBACK_2(Multi::onRequestPlayerID, this));
-    _client->on("newPlayer", CC_CALLBACK_2(Multi::onNewPlayer, this));
-    _client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
-    _client->on("pawnMove", CC_CALLBACK_2(Multi::onPawnMove, this));
-    _client->on("action", CC_CALLBACK_2(Multi::onAction, this));
-    _client->on("doAction", CC_CALLBACK_2(Multi::doAction, this));
-
-    _client->on("NewUnitHealth", CC_CALLBACK_2(Multi::onUnitNewHealth, this));
-    _client->on("SpriteDeletion", CC_CALLBACK_2(Multi::onSpriteDeletion, this));
+    initBindFunc(_client);
     
     return true;
+}
+
+void Multi::initBindFunc(cocos2d::network::SIOClient *client){
+    if (!client)
+        return;
+    
+    client->on("requestPlayerID", CC_CALLBACK_2(Multi::onRequestPlayerID, this));
+    client->on("newPlayer", CC_CALLBACK_2(Multi::onNewPlayer, this));
+    client->on("playerList", CC_CALLBACK_2(Multi::onPlayerList, this));
+    client->on("pawnMove", CC_CALLBACK_2(Multi::onPawnMove, this));
+    client->on("action", CC_CALLBACK_2(Multi::onAction, this));
+    client->on("doAction", CC_CALLBACK_2(Multi::doAction, this));
+
+    client->on("NewUnitHealth", CC_CALLBACK_2(Multi::onUnitNewHealth, this));
+    client->on("NewPawnDirection", CC_CALLBACK_2(Multi::onPawnNewDirection, this));
+    client->on("SpriteDeletion", CC_CALLBACK_2(Multi::onSpriteDeletion, this));
 }
 
 void Multi::onConnect(SIOClient* client){

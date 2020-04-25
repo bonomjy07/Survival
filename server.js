@@ -2,9 +2,11 @@ console.log('Hello, Im Server');
  
 server = require('http').Server();
 var socketIO = require('socket.io');
+const Room = require('./server/lib/room');
 var io = socketIO.listen(server);
 var host = '';
 var playerList = [];
+var roomList = [];
 
 // connection
 io.on('connection', function (socket) {
@@ -14,7 +16,7 @@ io.on('connection', function (socket) {
     if (host == '')  // First one is the 'Host'
         host = socket.id;
  
-    socket.emit('requestPlayerID', { HostID: host, MyID: socket.id });
+    // socket.emit('requestPlayerID', { HostID: host, MyID: socket.id });
 	
 	socket.on('newPlayer', function(data) {
 		data = JSON.parse(data);
@@ -54,6 +56,21 @@ io.on('connection', function (socket) {
     socket.on('SpriteDeletion', function (data) {
         data = JSON.parse(data);
         socket.broadcast.emit('SpriteDeletion', data);
+    });
+
+    socket.on('make-room', function(data){
+        data = JSON.parse(data);
+        console.log(data);
+        newRoom = new Room(data.title, data.password, socket.id);
+        roomList[newRoom.title] = newRoom;
+        socket.join(newRoom.title, (err) => {
+            if (err !== null){
+                console.log(err);
+                return;
+            }
+            console.log('maked new room is ' + newRoom.title);
+        });
+        console.log(roomList[newRoom.title]);
     });
 
     socket.on('disconnect', function () {
