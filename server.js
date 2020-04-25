@@ -62,8 +62,15 @@ io.on('connection', function (socket) {
         data = JSON.parse(data);
         console.log(data);
         newRoom = new Room(data.title, data.password, socket.id);
-        console.log(newRoom.title);
-        roomList.push(newRoom);
+        roomList[newRoom.title] = newRoom;
+        socket.join(newRoom.title, (err) => {
+            if (err !== null){
+                console.log(err);
+                return;
+            }
+            console.log('maked new room is ' + newRoom.title);
+        });
+        console.log(roomList[newRoom.title]);
     });
 
     socket.on('disconnect', function () {
