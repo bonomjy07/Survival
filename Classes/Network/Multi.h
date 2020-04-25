@@ -19,6 +19,7 @@ public:
     virtual ~Multi();
     virtual bool init();
     virtual bool init(std::string uri);
+    void initBindFunc(cocos2d::network::SIOClient* clinet);
     CREATE_FUNC(Multi);
     static Multi* create(std::string uri);
 
