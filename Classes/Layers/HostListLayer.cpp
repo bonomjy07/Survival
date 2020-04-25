@@ -7,6 +7,15 @@
 
 #include "HostListLayer.h"
 
+
+Scene* HostListLayer::createScene()
+{
+    auto scene = Scene::create();
+    HostListLayer* layer = HostListLayer::create();
+    scene->addChild(layer);
+    return scene;
+}
+
 bool HostListLayer::init()
 {
     if (!Layer::init())
@@ -16,7 +25,7 @@ bool HostListLayer::init()
     
     Vector<MenuItem*> labels;
     // Create Exit Label
-    if (auto label = Label::createWithSystemFont("Exit", "fonts/arial", 16))
+    if (auto label = Label::createWithSystemFont("Back", "fonts/arial", 16))
     {
         if (auto exitLabel = MenuItemLabel::create(label, CC_CALLBACK_0(HostListLayer::onBack, this)))
         {
@@ -35,6 +44,7 @@ bool HostListLayer::init()
     if (auto menu = Menu::createWithArray(labels))
     {
         menu->alignItemsHorizontally();
+        menu->setPosition(400.f, 200.f);
         this->addChild(menu);
     }
 
@@ -64,7 +74,7 @@ void HostListLayer::onRefresh()
         // Create host
         HostLayout* hostLayout = HostLayout::create();
         hostLayout->updateHostLayout(host);
-        this->addChild(hostLayout);
+        addChild(hostLayout);
     }
 }
 

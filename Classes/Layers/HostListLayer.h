@@ -43,6 +43,7 @@ public:
 
 public:
     CREATE_FUNC(HostListLayer);
+    static cocos2d::Scene* createScene();
 };
 
 #endif /* HostListLayer_h */
