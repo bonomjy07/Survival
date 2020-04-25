@@ -17,6 +17,8 @@
 
 #include "Stat.h"
 
+#include "HostListLayer.h"
+
 USING_NS_CC;
 
 Scene* MainScene::createScene()
@@ -158,11 +160,21 @@ void MainScene::onHostGame()
     }
 }
 
+/*
+    1. Create Test Scene
+    2. Create Multi Object
+    3. Add multi-obj to Test Scene
+    4. Store Test Scene in stack
+    5. Create Host list layer
+    6. Replace Host list layer
+    7. Later,,, Host list layer'll be pop, then Test Scene is running
+ */
 void MainScene::onEnterGame()
 {
     // Reads URI
     std::string uri = _uriTextField->getString();
     
+    // Create Test Scene
     if (auto testScene = TestScene::createScene())
     {
         if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))
@@ -175,7 +187,9 @@ void MainScene::onEnterGame()
 
             auto director = Director::getInstance();
             director->pushScene(director->getRunningScene());
-            director->replaceScene(testScene);
+            director->pushScene(testScene);
+            
+            director->replaceScene(HostListLayer::createScene());
         }
     }
 }
