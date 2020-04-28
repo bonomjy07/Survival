@@ -35,7 +35,7 @@ bool RoomLayout::init()
     }
     
     // Button
-    if (auto label = Label::createWithSystemFont("Connect", "arial", 16))
+    if (auto label = Label::createWithSystemFont("Connect", "fonts/arial", 16))
     {
         _connectBtn = MenuItemLabel::create(label, CC_CALLBACK_0(RoomLayout::onClicked, this));
         if (_connectBtn)
