@@ -56,6 +56,9 @@ public:
     /* Client-side function : Removes the sprite on game layer */
     void onSpriteDeletion(cocos2d::network::SIOClient* client, const std::string& data);
     
+    /* Client-side function : Updates room list */
+    void onRoomList(cocos2d::network::SIOClient* client, const std::string& data);
+
     /** 
         Emit to server
         @param eventname It is the same variable as the emit() parameter of the client.

@@ -409,6 +409,19 @@ void Multi::onSpriteDeletion(cocos2d::network::SIOClient* client, const std::str
     }
 }
 
+void Multi::onRoomList(cocos2d::network::SIOClient *client, const std::string &data)
+{
+    rapidjson::Document document;
+    document.Parse((data.c_str()));
+    if (!document.GetParseError())
+    {
+        // Get Room List Layer
+        
+        // Update room list
+        
+    }
+}
+
 GameLayer* Multi::getParentLayer(){
     return static_cast<GameLayer*>(getParent());
 }
