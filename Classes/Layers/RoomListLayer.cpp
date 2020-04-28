@@ -65,8 +65,9 @@ void RoomListLayer::onRefresh()
     if (_multi)
     {
         ValueMap data;
-        data["MyID"] = Multi::SOCKET_ID;
-        _multi->emit("RefreshHosts", data); // multi'll call updateHosts
+        data.clear();
+        //data["MyID"] = Multi::SOCKET_ID;
+        _multi->emit("refresh-rooms", data); // multi'll call updateHosts
     }
 }
 
