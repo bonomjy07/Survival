@@ -75,7 +75,6 @@ io.on('connection', function (socket) {
 
 	// Give room list to client
 	socket.on('refresh-rooms', function(data) {
-		console.log("refress-rooms is called");
 		//data = JSON.parse(data);
 		socket.emit('roomlist', roomList);
 	});
