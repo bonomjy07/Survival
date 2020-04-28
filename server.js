@@ -76,11 +76,11 @@ io.on('connection', function (socket) {
 	// Give room list to client
 	socket.on('refresh-rooms', function(data) {
 		//data = JSON.parse(data);
-		socket.emit('RoomList', roomList);
+		socket.emit('roomlist', roomList);
 	});
 
     socket.on('disconnect', function () {
-        console.log("disconnect");
+        console.log("["+socket.id+"]"+ "is" + "disconnected");
         if ( socket.id === host ) {
             socket.disconnect();
             host = '';
