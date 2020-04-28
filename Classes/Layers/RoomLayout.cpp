@@ -22,7 +22,7 @@ bool RoomLayout::init()
     _ownerLabel = Label::createWithSystemFont("name label!", "arial", 16);
     if (_ownerLabel)
     {
-        //TODO: position ...
+        _ownerLabel->setPosition(0, 0);
         addChild(_ownerLabel);
     }
 
@@ -30,6 +30,7 @@ bool RoomLayout::init()
     _titleLabel = Label::createWithSystemFont("ID label!", "arial", 16);
     if (_titleLabel)
     {
+        _titleLabel->setPosition(30, 30);
         addChild(_titleLabel);
     }
     
@@ -39,6 +40,7 @@ bool RoomLayout::init()
         _connectBtn = MenuItemLabel::create(label, CC_CALLBACK_0(RoomLayout::onClicked, this));
         if (_connectBtn)
         {
+            _connectBtn->setPosition(60, 60);
             addChild(_connectBtn);
         }
     }
@@ -55,7 +57,7 @@ void RoomLayout::onClicked()
             ValueMap data;
             data["Title"] = _titleLabel->getString();
             data["Owner"] = _ownerLabel->getString();
-            multi->emit("refresh-rooms", data);
+            //TODO: connectio.d.adaskjhdkas
         }
     }
 }

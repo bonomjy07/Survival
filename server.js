@@ -76,11 +76,12 @@ io.on('connection', function (socket) {
 
 	// Give room list to client
 	socket.on('refresh-rooms', function(data) {
-		var rooms=[];
+		var rooms = [];
 		for (let [key, value] of Object.entries(roomList)) {
-			rooms.push(value);
+			rooms.push(JSON.parse(value));
 		}
-		rooms = JSON.parse(rooms);
+
+		//rooms = JSON.parse(rooms);
 		socket.emit('roomlist', rooms);
 	});
 

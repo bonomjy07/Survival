@@ -84,11 +84,15 @@ void RoomListLayer::updateRooms(std::vector<struct Room>& roomList)
     // Remove previous host layout list;
     removeChildByTag(HOST_LAYOUT);
     // Add room layout on this layer
+    float x = 100.f, y=100.f;
     for (Room room : _roomList)
     {
         if (RoomLayout* roomLayout = RoomLayout::create())
         {
             roomLayout->updateLayout(room);
+            roomLayout->setPosition({x, y});
+            x+= 100.f;
+            y+= 100.f;
             addChild(roomLayout);
         }
     }

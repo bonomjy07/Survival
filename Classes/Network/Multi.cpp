@@ -10,6 +10,9 @@
 #include "ItemSprite.h"
 #include "MSManager.h"
 
+#include "RoomLayout.h"
+#include "RoomListLayer.h"
+
 #if BHY_DEBUG
 #define SEVER_URI "localhost:8080"
 #else 
@@ -413,14 +416,36 @@ void Multi::onSpriteDeletion(cocos2d::network::SIOClient* client, const std::str
 
 void Multi::onRoomList(cocos2d::network::SIOClient *client, const std::string &data)
 {
-    log(data.c_str());
     rapidjson::Document document;
     document.Parse((data.c_str()));
     if (!document.GetParseError())
     {
         // Get Room List Layer
-        //log(data.c_str());
+        auto director = Director::getInstance();
+        auto runningScene = director->getRunningScene();
+        auto roomlistLayer = dynamic_cast<RoomListLayer*>(runningScene->getChildByName("RoomListLayer"));
+        
+        // Extract roomlist from received data
+        std::vector<Room> rooms;
+        for (const auto& ele : document.GetArray())
+        {
+            Room room;
+            room.title = ele["title"].GetString();
+            room.passwoard = ele["password"].GetString();
+            room.owner = ele["owner"].GetString();
+            room.isPublic = ele["isPublic"].GetBool();
+            room.capacity = ele["capacity"].GetUint();
+            //TODO: Implement userlist ...
+            //room.userlist = ....
+            rooms.push_back(room);
+        }
+        
+        log(data.c_str());
         // Update room list
+        if (roomlistLayer)
+        {
+            roomlistLayer->updateRooms(rooms);
+        }
     }
 }
 
