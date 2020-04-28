@@ -26,7 +26,6 @@ private:
     void onKeyBinding();
     void onExitGame();
     
-    // 테스트
 public:
     cocos2d::ui::TextField* _uriTextField;
 };
