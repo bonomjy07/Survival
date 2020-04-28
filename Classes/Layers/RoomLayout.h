@@ -31,9 +31,10 @@ class RoomLayout : public cocos2d::ui::Layout
     
     cocos2d::Label* _ownerLabel;
     
-    cocos2d::MenuItemLabel* _connectBtn;
+    //cocos2d::MenuItemLabel* _connectBtn;
+    cocos2d::ui::Button* _connectionBtn;
     
-    void onClicked();
+    void onClicked(cocos2d::Ref* ref);
         
 public:
     void updateLayout(const Room& host);

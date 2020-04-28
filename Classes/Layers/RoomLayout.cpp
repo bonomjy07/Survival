@@ -34,21 +34,19 @@ bool RoomLayout::init()
         addChild(_titleLabel);
     }
     
-    // Button
-    if (auto label = Label::createWithSystemFont("Connect", "fonts/arial", 16))
+    _connectionBtn = ui::Button::create();
+    if (_connectionBtn)
     {
-        _connectBtn = MenuItemLabel::create(label, CC_CALLBACK_0(RoomLayout::onClicked, this));
-        if (_connectBtn)
-        {
-            _connectBtn->setPosition(60, 60);
-            addChild(_connectBtn);
-        }
+        _connectionBtn->setTitleText("Connect");
+        _connectionBtn->setPosition({60.f, 60.f});
+        _connectionBtn->addClickEventListener(CC_CALLBACK_1(RoomLayout::onClicked, this));
+        addChild(_connectionBtn);
     }
 
     return true;
 }
 
-void RoomLayout::onClicked()
+void RoomLayout::onClicked(Ref* ref)
 {
     if (RoomListLayer* parent = dynamic_cast<RoomListLayer*>(_parent))
     {
