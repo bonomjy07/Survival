@@ -62,7 +62,8 @@ io.on('connection', function (socket) {
         data = JSON.parse(data);
         console.log(data);
         newRoom = new Room(data.title, data.password, socket.id);
-        roomList[newRoom.title] = newRoom;
+        //roomList[newRoom.title] = newRoom;
+        roomList[newRoom.title] = JSON.stringify(newRoom);
         socket.join(newRoom.title, (err) => {
             if (err !== null){
                 console.log(err);
@@ -75,12 +76,16 @@ io.on('connection', function (socket) {
 
 	// Give room list to client
 	socket.on('refresh-rooms', function(data) {
-		//data = JSON.parse(data);
-		socket.emit('roomlist', roomList);
+		var rooms=[];
+		for (let [key, value] of Object.entries(roomList)) {
+			rooms.push(value);
+		}
+		rooms = JSON.parse(rooms);
+		socket.emit('roomlist', rooms);
 	});
 
     socket.on('disconnect', function () {
-        console.log("["+socket.id+"]"+ "is " + "disconnected");
+        console.log("["+socket.id+"]"+ " is " + "disconnected");
         if ( socket.id === host ) {
             socket.disconnect();
             host = '';

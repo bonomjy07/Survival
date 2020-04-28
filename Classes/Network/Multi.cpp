@@ -413,15 +413,14 @@ void Multi::onSpriteDeletion(cocos2d::network::SIOClient* client, const std::str
 
 void Multi::onRoomList(cocos2d::network::SIOClient *client, const std::string &data)
 {
+    log(data.c_str());
     rapidjson::Document document;
     document.Parse((data.c_str()));
     if (!document.GetParseError())
     {
         // Get Room List Layer
-        log(data.c_str());
-        
+        //log(data.c_str());
         // Update room list
-        
     }
 }
 
