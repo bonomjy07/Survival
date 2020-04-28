@@ -75,6 +75,8 @@ void Multi::initBindFunc(cocos2d::network::SIOClient *client){
     client->on("NewUnitHealth", CC_CALLBACK_2(Multi::onUnitNewHealth, this));
     client->on("NewPawnDirection", CC_CALLBACK_2(Multi::onPawnNewDirection, this));
     client->on("SpriteDeletion", CC_CALLBACK_2(Multi::onSpriteDeletion, this));
+    
+    client->on("roomlist", CC_CALLBACK_2(Multi::onRoomList, this));
 }
 
 void Multi::onConnect(SIOClient* client){
@@ -416,6 +418,7 @@ void Multi::onRoomList(cocos2d::network::SIOClient *client, const std::string &d
     if (!document.GetParseError())
     {
         // Get Room List Layer
+        log(data.c_str());
         
         // Update room list
         

@@ -189,7 +189,12 @@ void MainScene::onEnterGame()
             director->pushScene(director->getRunningScene());
             director->pushScene(testScene);
             
-            director->replaceScene(RoomListLayer::createScene());
+            auto roomScene = RoomListLayer::createScene();
+            if (auto roomlist = dynamic_cast<RoomListLayer*>(roomScene->getChildByName("RoomListLayer")))
+            {
+                roomlist->setMuilti(multi);
+                director->replaceScene(roomScene);
+            }
         }
     }
 }

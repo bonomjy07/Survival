@@ -12,6 +12,7 @@ Scene* RoomListLayer::createScene()
 {
     auto scene = Scene::create();
     RoomListLayer* layer = RoomListLayer::create();
+    layer->setName("RoomListLayer");
     scene->addChild(layer);
     return scene;
 }
