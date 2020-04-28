@@ -67,7 +67,7 @@ void RoomListLayer::onRefresh()
     _multi->emit("RefreshHosts", data); // multi'll call updateHosts
     
     // Remove previous host layout list;
-    this->removeChildByTag(HOST_LAYOUT);
+    removeChildByTag(HOST_LAYOUT);
     // Add host layout on this layer
     for (Host host : _hostList)
     {
