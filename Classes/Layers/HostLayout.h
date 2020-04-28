@@ -15,18 +15,21 @@
 
 struct Host
 {
-    std::string ID;
-    std::string roomID;
-    std::string name;
+    std::string title;
+    std::string passwoard;
+    std::string owner;
+    bool isPublic;
+    unsigned int capacity;
+    std::vector<std::string> userList;
 };
 
 class HostLayout : public cocos2d::ui::Layout
 {
     bool init() override;
 
-    cocos2d::Label* _IDLabel;
+    cocos2d::Label* _titleLabel;
     
-    cocos2d::Label* _nameLabel;
+    cocos2d::Label* _ownerLabel;
     
     cocos2d::MenuItemLabel* _connectBtn;
     

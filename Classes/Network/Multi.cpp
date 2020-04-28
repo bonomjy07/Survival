@@ -13,7 +13,7 @@
 #if BHY_DEBUG
 #define SEVER_URI "localhost:8080"
 #else 
-#define SEVER_URI "192.168.219.100:8080"
+#define SEVER_URI "172.30.1.27:8080"
 #endif
 
 USING_NS_CC;

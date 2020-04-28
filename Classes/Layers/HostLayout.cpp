@@ -19,18 +19,18 @@ bool HostLayout::init()
     }
     
     // Name
-    _nameLabel = Label::createWithSystemFont("name label!", "arial", 16);
-    if (_nameLabel)
+    _ownerLabel = Label::createWithSystemFont("name label!", "arial", 16);
+    if (_ownerLabel)
     {
         //TODO: position ...
-        addChild(_nameLabel);
+        addChild(_ownerLabel);
     }
 
     // ID
-    _IDLabel = Label::createWithSystemFont("ID label!", "arial", 16);
-    if (_IDLabel)
+    _titleLabel = Label::createWithSystemFont("ID label!", "arial", 16);
+    if (_titleLabel)
     {
-        addChild(_IDLabel);
+        addChild(_titleLabel);
     }
     
     // Button
@@ -52,16 +52,16 @@ void HostLayout::onClicked()
     {
         if (Multi* multi = parent->getMuilti())
         {
-            // TODO: Room id ?
             ValueMap data;
-            data["HostID"] = _IDLabel->getString();
-            multi->emit("connect", data);
+            data["Title"] = _titleLabel->getString();
+            data["Owner"] = _ownerLabel->getString();
+            multi->emit("refresh-rooms", data);
         }
     }
 }
 
 void HostLayout::updateHostLayout(const Host& host)
 {
-    _nameLabel->setString(host.name);
-    _IDLabel->setString(host.ID);
+    _titleLabel->setString(host.title);
+    _ownerLabel->setString(host.owner);
 }
