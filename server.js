@@ -73,6 +73,12 @@ io.on('connection', function (socket) {
         console.log(roomList[newRoom.title]);
     });
 
+	// Give room list to client
+	socket.on('refresh-rooms', function(data) {
+		//data = JSON.parse(data);
+		socket.emit('RoomList', roomList);
+	});
+
     socket.on('disconnect', function () {
         console.log("disconnect");
         if ( socket.id === host ) {
