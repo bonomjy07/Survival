@@ -13,7 +13,7 @@
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 
-struct Host
+struct Room
 {
     std::string title;
     std::string passwoard;
@@ -36,7 +36,7 @@ class RoomLayout : public cocos2d::ui::Layout
     void onClicked();
         
 public:
-    void updateHostLayout(const Host& host);
+    void updateLayout(const Room& host);
         
 public:
     CREATE_FUNC(RoomLayout);

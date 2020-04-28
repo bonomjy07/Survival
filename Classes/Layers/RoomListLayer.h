@@ -24,7 +24,7 @@ class RoomListLayer : public cocos2d::Layer
     cocos2d::RefPtr<class Multi> _multi;
     
     /** Container for host  */
-    std::vector<struct Host> _hostList;
+    std::vector<struct Room> _roomList;
 
     /** Refresh button listener */
     void onRefresh();
@@ -39,7 +39,7 @@ public:
     void setMuilti(class Multi* multi);
     
     /** Updates host list based on hosts parameter */
-    void updateHosts(std::vector<struct Host>& hostList);
+    void updateRooms(std::vector<struct Room>& hostList);
 
 public:
     CREATE_FUNC(RoomListLayer);

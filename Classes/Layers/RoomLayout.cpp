@@ -60,7 +60,7 @@ void RoomLayout::onClicked()
     }
 }
 
-void RoomLayout::updateHostLayout(const Host& host)
+void RoomLayout::updateLayout(const Room& host)
 {
     _titleLabel->setString(host.title);
     _ownerLabel->setString(host.owner);

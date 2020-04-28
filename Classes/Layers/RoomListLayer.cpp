@@ -62,19 +62,11 @@ void RoomListLayer::onBack()
 #define HOST_LAYOUT 0x01
 void RoomListLayer::onRefresh()
 {
-    ValueMap data;
-    data["MyID"] = Multi::SOCKET_ID;
-    _multi->emit("RefreshHosts", data); // multi'll call updateHosts
-    
-    // Remove previous host layout list;
-    removeChildByTag(HOST_LAYOUT);
-    // Add host layout on this layer
-    for (Host host : _hostList)
+    if (_multi)
     {
-        // Create host
-        RoomLayout* hostLayout = RoomLayout::create();
-        hostLayout->updateHostLayout(host);
-        addChild(hostLayout);
+        ValueMap data;
+        data["MyID"] = Multi::SOCKET_ID;
+        _multi->emit("RefreshHosts", data); // multi'll call updateHosts
     }
 }
 
@@ -83,7 +75,19 @@ void RoomListLayer::setMuilti(class Multi *multi)
     this->_multi = multi;
 }
 
-void RoomListLayer::updateHosts(std::vector<struct Host>& hostList)
+void RoomListLayer::updateRooms(std::vector<struct Room>& roomList)
 {
-    _hostList = hostList;
+    _roomList = roomList;
+    
+    // Remove previous host layout list;
+    removeChildByTag(HOST_LAYOUT);
+    // Add room layout on this layer
+    for (Room room : _roomList)
+    {
+        if (RoomLayout* roomLayout = RoomLayout::create())
+        {
+            roomLayout->updateLayout(room);
+            addChild(roomLayout);
+        }
+    }
 }
