@@ -14,9 +14,9 @@
 #include "ui/CocosGUI.h"
 
 #include "Multi.h"
-#include "HostLayout.h"
+#include "RoomLayout.h"
 
-class HostListLayer : public cocos2d::Layer
+class RoomListLayer : public cocos2d::Layer
 {
     bool init() override;
     
@@ -42,7 +42,7 @@ public:
     void updateHosts(std::vector<struct Host>& hostList);
 
 public:
-    CREATE_FUNC(HostListLayer);
+    CREATE_FUNC(RoomListLayer);
     static cocos2d::Scene* createScene();
 };
 

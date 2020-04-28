@@ -5,18 +5,18 @@
 //  Created by jy_maeng on 2020/04/24.
 //
 
-#include "HostListLayer.h"
+#include "RoomListLayer.h"
 
 
-Scene* HostListLayer::createScene()
+Scene* RoomListLayer::createScene()
 {
     auto scene = Scene::create();
-    HostListLayer* layer = HostListLayer::create();
+    RoomListLayer* layer = RoomListLayer::create();
     scene->addChild(layer);
     return scene;
 }
 
-bool HostListLayer::init()
+bool RoomListLayer::init()
 {
     if (!Layer::init())
     {
@@ -27,7 +27,7 @@ bool HostListLayer::init()
     // Create Exit Label
     if (auto label = Label::createWithSystemFont("Back", "fonts/arial", 16))
     {
-        if (auto exitLabel = MenuItemLabel::create(label, CC_CALLBACK_0(HostListLayer::onBack, this)))
+        if (auto exitLabel = MenuItemLabel::create(label, CC_CALLBACK_0(RoomListLayer::onBack, this)))
         {
             labels.pushBack(exitLabel);
         }
@@ -35,7 +35,7 @@ bool HostListLayer::init()
     // Create Refresh Label
     if (auto label = Label::createWithSystemFont("Refresh", "fonts/arial", 16))
     {
-        if (auto refreshLabel = MenuItemLabel::create(label, CC_CALLBACK_0(HostListLayer::onRefresh, this)))
+        if (auto refreshLabel = MenuItemLabel::create(label, CC_CALLBACK_0(RoomListLayer::onRefresh, this)))
         {
             labels.pushBack(refreshLabel);
         }
@@ -51,7 +51,7 @@ bool HostListLayer::init()
     return true;
 }
 
-void HostListLayer::onBack()
+void RoomListLayer::onBack()
 {
     if (auto director = Director::getInstance())
     {
@@ -60,7 +60,7 @@ void HostListLayer::onBack()
 }
 
 #define HOST_LAYOUT 0x01
-void HostListLayer::onRefresh()
+void RoomListLayer::onRefresh()
 {
     ValueMap data;
     data["MyID"] = Multi::SOCKET_ID;
@@ -72,18 +72,18 @@ void HostListLayer::onRefresh()
     for (Host host : _hostList)
     {
         // Create host
-        HostLayout* hostLayout = HostLayout::create();
+        RoomLayout* hostLayout = RoomLayout::create();
         hostLayout->updateHostLayout(host);
         addChild(hostLayout);
     }
 }
 
-void HostListLayer::setMuilti(class Multi *multi)
+void RoomListLayer::setMuilti(class Multi *multi)
 {
     this->_multi = multi;
 }
 
-void HostListLayer::updateHosts(std::vector<struct Host>& hostList)
+void RoomListLayer::updateHosts(std::vector<struct Host>& hostList)
 {
     _hostList = hostList;
 }

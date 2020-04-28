@@ -5,13 +5,13 @@
 //  Created by jy_maeng on 2020/04/24.
 //
 
-#include "HostLayout.h"
-#include "HostListLayer.h"
+#include "RoomLayout.h"
+#include "RoomListLayer.h"
 #include "Multi.h"
 
 USING_NS_CC;
 
-bool HostLayout::init()
+bool RoomLayout::init()
 {
     if (!Layout::init())
     {
@@ -36,7 +36,7 @@ bool HostLayout::init()
     // Button
     if (auto label = Label::createWithSystemFont("Connect", "arial", 16))
     {
-        _connectBtn = MenuItemLabel::create(label, CC_CALLBACK_0(HostLayout::onClicked, this));
+        _connectBtn = MenuItemLabel::create(label, CC_CALLBACK_0(RoomLayout::onClicked, this));
         if (_connectBtn)
         {
             addChild(_connectBtn);
@@ -46,9 +46,9 @@ bool HostLayout::init()
     return true;
 }
 
-void HostLayout::onClicked()
+void RoomLayout::onClicked()
 {
-    if (HostListLayer* parent = dynamic_cast<HostListLayer*>(_parent))
+    if (RoomListLayer* parent = dynamic_cast<RoomListLayer*>(_parent))
     {
         if (Multi* multi = parent->getMuilti())
         {
@@ -60,7 +60,7 @@ void HostLayout::onClicked()
     }
 }
 
-void HostLayout::updateHostLayout(const Host& host)
+void RoomLayout::updateHostLayout(const Host& host)
 {
     _titleLabel->setString(host.title);
     _ownerLabel->setString(host.owner);

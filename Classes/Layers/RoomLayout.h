@@ -23,7 +23,7 @@ struct Host
     std::vector<std::string> userList;
 };
 
-class HostLayout : public cocos2d::ui::Layout
+class RoomLayout : public cocos2d::ui::Layout
 {
     bool init() override;
 
@@ -39,7 +39,7 @@ public:
     void updateHostLayout(const Host& host);
         
 public:
-    CREATE_FUNC(HostLayout);
+    CREATE_FUNC(RoomLayout);
 };
 
 #endif /* HostLayer_h */

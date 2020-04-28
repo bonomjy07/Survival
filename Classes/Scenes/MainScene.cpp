@@ -17,7 +17,7 @@
 
 #include "Stat.h"
 
-#include "HostListLayer.h"
+#include "RoomListLayer.h"
 
 USING_NS_CC;
 
@@ -189,7 +189,7 @@ void MainScene::onEnterGame()
             director->pushScene(director->getRunningScene());
             director->pushScene(testScene);
             
-            director->replaceScene(HostListLayer::createScene());
+            director->replaceScene(RoomListLayer::createScene());
         }
     }
 }
