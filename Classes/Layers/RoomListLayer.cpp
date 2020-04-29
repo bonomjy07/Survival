@@ -60,7 +60,6 @@ void RoomListLayer::onBack()
     }
 }
 
-#define HOST_LAYOUT 0x01
 void RoomListLayer::onRefresh()
 {
     if (_multi)
@@ -81,14 +80,16 @@ void RoomListLayer::updateRooms(std::vector<struct Room>& roomList)
 {
     _roomList = roomList;
     
+#define ROOM_LAYOUT 0x01
     // Remove previous host layout list;
-    removeChildByTag(HOST_LAYOUT);
+    removeChildByTag(ROOM_LAYOUT);
     // Add room layout on this layer
     float x = 100.f, y=100.f;
     for (Room room : _roomList)
     {
         if (RoomLayout* roomLayout = RoomLayout::create())
         {
+            roomLayout->setActionTag(ROOM_LAYOUT);
             roomLayout->updateLayout(room);
             roomLayout->setPosition({x, y});
             x+= 100.f;
