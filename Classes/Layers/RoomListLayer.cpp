@@ -83,11 +83,14 @@ void RoomListLayer::updateRooms(std::vector<struct Room>& roomList)
 {
     _roomList = roomList;
     
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    auto visibleOrigin = Director::getInstance()->getVisibleOrigin();
+    
 #define ROOM_LAYOUT 0x01
-    // Remove previous host layout list;
+    // Remove previous room list
     removeChildByTag(ROOM_LAYOUT);
-    // Add room layout on this layer
-    float x = 100.f, y=100.f;
+    float x = visibleOrigin.x + (visibleSize.width/2);
+    float y = visibleOrigin.y + (visibleSize.height - 100);
     for (Room room : _roomList)
     {
         if (RoomLayout* roomLayout = RoomLayout::create())
@@ -95,8 +98,7 @@ void RoomListLayer::updateRooms(std::vector<struct Room>& roomList)
             roomLayout->setActionTag(ROOM_LAYOUT);
             roomLayout->updateLayout(room);
             roomLayout->setPosition({x, y});
-            x+= 100.f;
-            y+= 100.f;
+            y -= roomLayout->getLayoutSize().height;
             addChild(roomLayout);
         }
     }
