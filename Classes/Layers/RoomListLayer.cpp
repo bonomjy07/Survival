@@ -95,7 +95,7 @@ void RoomListLayer::updateRooms(std::vector<struct Room>& roomList)
     {
         if (RoomLayout* roomLayout = RoomLayout::create())
         {
-            roomLayout->setActionTag(ROOM_LAYOUT);
+            roomLayout->setTag(ROOM_LAYOUT);
             roomLayout->updateLayout(room);
             roomLayout->setPosition({x, y});
             y -= roomLayout->getLayoutSize().height;
