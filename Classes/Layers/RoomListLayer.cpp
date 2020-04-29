@@ -44,8 +44,11 @@ bool RoomListLayer::init()
     // Create Menu
     if (auto menu = Menu::createWithArray(labels))
     {
+        auto visibleSize = Director::getInstance()->getVisibleSize();
+        auto visibleOrigin = Director::getInstance()->getVisibleOrigin();
+        
         menu->alignItemsHorizontally();
-        menu->setPosition(400.f, 200.f);
+        menu->setPosition(visibleOrigin.x+visibleSize.width/2, visibleOrigin.y+100);
         this->addChild(menu);
     }
 
