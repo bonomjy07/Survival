@@ -19,26 +19,26 @@ bool RoomLayout::init()
     }
     
     // Name
-    _ownerLabel = Label::createWithSystemFont("name label!", "arial", 16);
+    _ownerLabel = Label::createWithSystemFont("owner:", "arial", 16);
     if (_ownerLabel)
     {
-        _ownerLabel->setPosition(0, 0);
+        _ownerLabel->setPosition(0, 60.f);
         addChild(_ownerLabel);
     }
 
     // ID
-    _titleLabel = Label::createWithSystemFont("ID label!", "arial", 16);
+    _titleLabel = Label::createWithSystemFont("title:", "arial", 16);
     if (_titleLabel)
     {
-        _titleLabel->setPosition(30, 30);
+        _titleLabel->setPosition(0, 30.f);
         addChild(_titleLabel);
     }
     
     _connectionBtn = ui::Button::create();
     if (_connectionBtn)
     {
-        _connectionBtn->setTitleText("Connect");
-        _connectionBtn->setPosition({60.f, 60.f});
+        _connectionBtn->setTitleText("Connection Button");
+        _connectionBtn->setPosition({0.f, 0.f});
         _connectionBtn->addClickEventListener(CC_CALLBACK_1(RoomLayout::onClicked, this));
         addChild(_connectionBtn);
     }
@@ -62,6 +62,6 @@ void RoomLayout::onClicked(Ref* ref)
 
 void RoomLayout::updateLayout(const Room& host)
 {
-    _titleLabel->setString(host.title);
-    _ownerLabel->setString(host.owner);
+    _titleLabel->setString("title : " + host.title);
+    _ownerLabel->setString("owner : " + host.owner);
 }
