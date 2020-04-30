@@ -62,8 +62,7 @@ io.on('connection', function (socket) {
         data = JSON.parse(data);
         console.log(data);
         newRoom = new Room(data.title, data.password, socket.id);
-        //roomList[newRoom.title] = newRoom;
-        roomList[newRoom.title] = JSON.stringify(newRoom);
+        roomList[newRoom.title] = newRoom;
         socket.join(newRoom.title, (err) => {
             if (err !== null){
                 console.log(err);
@@ -78,10 +77,10 @@ io.on('connection', function (socket) {
 	socket.on('refresh-rooms', function(data) {
 		var rooms = [];
 		for (let [key, value] of Object.entries(roomList)) {
-			rooms.push(JSON.parse(value));
+			str = JSON.stringify(value);
+			rooms.push(JSON.parse(str));
 		}
 
-		//rooms = JSON.parse(rooms);
 		socket.emit('roomlist', rooms);
 	});
 
