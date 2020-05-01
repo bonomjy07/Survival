@@ -80,6 +80,7 @@ void Multi::initBindFunc(cocos2d::network::SIOClient *client){
     client->on("SpriteDeletion", CC_CALLBACK_2(Multi::onSpriteDeletion, this));
     
     client->on("roomlist", CC_CALLBACK_2(Multi::onRoomList, this));
+    client->on("make-room", CC_CALLBACK_2(Multi::onMakeRoom, this));
 }
 
 void Multi::onConnect(SIOClient* client){
@@ -451,4 +452,35 @@ void Multi::onRoomList(cocos2d::network::SIOClient *client, const std::string &d
 
 GameLayer* Multi::getParentLayer(){
     return static_cast<GameLayer*>(getParent());
+}
+
+void Multi::onMakeRoom(cocos2d::network::SIOClient* client, const std::string& data) {
+    rapidjson::Document document;
+    document.Parse(data.c_str());
+    if (!document.GetParseError())
+    {
+        auto title = document["title"].GetString();
+        auto password = document["password"].GetString();
+        
+        if (auto testScene = TestScene::createScene())
+        {
+            if (auto gameLayer = dynamic_cast<GameLayer*>(testScene->getChildByName("GameLayer")))
+            {
+                // Try to connect to server
+                // auto multi = Multi::create();
+                // CCASSERT(this, "Failed to create object for multi play");
+                this->retain();
+                this->removeFromParent();
+                // this->setName("MultiGame");
+                gameLayer->addChild(this);
+
+                auto director = Director::getInstance();
+                director->pushScene(director->getRunningScene());
+                director->replaceScene(testScene);
+                ValueMap data;
+                this->emit("maked-room", data);
+            }
+        }
+
+    }
 }

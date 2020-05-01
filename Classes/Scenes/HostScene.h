@@ -8,6 +8,9 @@
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 
+USING_NS_CC;
+using namespace cocos2d::ui;
+
 class HostScene : public cocos2d::Layer
 {
 public:
@@ -17,7 +20,14 @@ public:
     CREATE_FUNC(HostScene);
 
 private:
-    
+    Label *_roomTitleLabel;
+    ui::TextField *_roomTitleTextField;
+    Label *_roomPasswordLabel;
+    ui::TextField *_roomPasswordText;
+    Label *_roomCapacityLabel;
+    ui::TextField *_roomCapacityText;
+    Label *_roomPublicLabel;
+    ui::CheckBox *_publicCheckBox;
     /**
      @brief Called if 'apply' button is pressed
      */

@@ -59,6 +59,7 @@ public:
     /* Client-side function : Updates room list */
     void onRoomList(cocos2d::network::SIOClient* client, const std::string& data);
 
+    void onMakeRoom(cocos2d::network::SIOClient* client, const std::string& data);
     /** 
         Emit to server
         @param eventname It is the same variable as the emit() parameter of the client.

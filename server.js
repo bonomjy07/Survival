@@ -69,6 +69,7 @@ io.on('connection', function (socket) {
                 return;
             }
             console.log('maked new room is ' + newRoom.title);
+            socket.emit("make-room", data);
         });
         console.log(roomList[newRoom.title]);
     });
@@ -82,7 +83,12 @@ io.on('connection', function (socket) {
 		}
 
 		socket.emit('roomlist', rooms);
-	});
+    });
+    
+    socket.on('maked-room', function(data){
+        console.log("maked-room by " + socket.id);
+        socket.emit('requestPlayerID', { HostID: host, MyID: socket.id });
+    });
 
     socket.on('disconnect', function () {
         console.log("["+socket.id+"]"+ " is " + "disconnected");
